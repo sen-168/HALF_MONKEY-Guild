@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HALF MONKEY | Guild Command</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #090510;
+  --panel: rgba(20, 9, 30, .92);
+  --pink: #ff168f;
+  --pink2: #ff70c0;
+  --purple: #a76aff;
+  --gold: #e9c98a;
+  --white: #fff7ff;
+  --muted: #bdaed5;
+  --border: #ff168f48;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 22px;
+}
+
+#roster, #calendar, #member-services, #news { scroll-margin-top: 22px; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--white);
+  background:
+    radial-gradient(ellipse at 50% 15%, #251034 0%, transparent 50%),
+    linear-gradient(145deg, #08040e, #13071f 50%, #08040e);
+  font-family: 'Kanit', sans-serif;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button, input {
+  font: inherit;
+}
+
+/* แสงพื้นหลัง */
+.ambient {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: .12;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.ambient.one {
+  background: #ff168f;
+  top: 100px;
+  left: -180px;
+}
+
+.ambient.two {
+  background: #773dff;
+  right: -180px;
+  bottom: 0;
+}
+
+/* HEADER */
+header {
+  position: absolute;
+  z-index: 20;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 82px;
+  padding: 0 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  background: linear-gradient(180deg, #090510ee, #09051055);
+  border-bottom: 1px solid #ff168f20;
+}
+
+.brand {
+  flex-shrink: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 27px;
+  font-weight: 900;
+  font-style: italic;
+  color: var(--pink);
+  letter-spacing: 1px;
+  text-shadow: 0 0 20px #ff168f70;
+}
+
+.brand small {
+  display: block;
+  color: var(--gold);
+  font-size: 9px;
+  letter-spacing: 4px;
+  font-style: normal;
+  text-align: center;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 25px;
+}
+
+nav a {
+  white-space: nowrap;
+  color: #d6c8e7;
+  font-size: 13px;
+  transition: .2s;
+}
+
+nav a:hover {
+  color: var(--pink2);
+}
+
+/* ซ่อน radio แต่ยังใช้สลับหน้าได้ */
+.tab-switcher {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* MAIN */
+.wrapper {
+  width: min(1450px, 100%);
+  margin: auto;
+  padding: 112px 35px 25px;
+}
+
+/* SHOWCASE */
+.showcase {
+  position: relative;
+  min-height: 490px;
+  padding: 35px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 275px;
+  gap: 28px;
+  overflow: hidden;
+  border: 1px solid #ff168f48;
+  background:
+    linear-gradient(110deg, #10071bdc, #10071b9c 55%, #10071bdc);
+  box-shadow: 0 0 40px #0008, inset 0 0 35px #ff168f08;
+}
+
+/* ภาพหัวหน้ากิลตรงกลาง */
+.hero-art {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  bottom: 0;
+  left: 25%;
+  width: 52%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-art img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  opacity: .78;
+  filter: drop-shadow(0 0 22px #ff168f28);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 20%, #000 75%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 20%, #000 75%, transparent);
+}
+
+.hero-art:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #0b0418 0%, transparent 28%, transparent 72%, #0b0418 100%);
+}
+
+/* PANEL */
+.panels {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  min-height: 390px;
+}
+
+.panel {
+  display: none;
+  animation: reveal .35s ease;
+}
+
+#tab-1:checked ~ .wrapper #panel-1,
+#tab-2:checked ~ .wrapper #panel-2,
+#tab-3:checked ~ .wrapper #panel-3,
+#tab-4:checked ~ .wrapper #panel-4,
+#tab-5:checked ~ .wrapper #panel-5,
+#tab-6:checked ~ .wrapper #panel-6 {
+  display: block;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+ .info-card {
+  width: fit-content;
+  max-width: 420px;
+  padding: 20px 22px;
+  border-left: 3px solid var(--pink);
+  background: linear-gradient(
+    90deg,
+    rgba(11, 4, 24, 0.72),
+    rgba(11, 4, 24, 0.28),
+    transparent
+  );
+  border-radius: 0 12px 12px 0;
+  text-shadow: 0 2px 18px #000;
+  box-sizing: border-box;
+}
+
+.role {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.role-icon {
+  color: var(--pink);
+  font-size: 24px;
+}
+
+.info-card h1 {
+  margin: 16px 0 12px;
+  font-family: 'Cinzel', serif;
+  font-size: clamp(28px, 2.0vw, 46px);
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+  color: #fff;
+  text-shadow: 0 0 25px #ff168f55;
+  
+}
+
+.info-card p {
+  max-width: 480px;
+  margin: 0;
+  color: #e0d3ec;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 2;
+}
+
+.quote {
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid #ff168f45;
+  color: var(--pink2);
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* POSITION MENU */
+.position-menu {
+  position: relative;
+  z-index: 5;
+  align-self: center;
+  min-width: 0;
+}
+
+.menu-title {
+  margin-bottom: 15px;
+  color: var(--gold);
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.rank-tab {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  margin-bottom: 9px;
+  padding: 12px;
+  cursor: pointer;
+  border: 1px solid #ff168f30;
+  background: #12091de8;
+  transition: .25s ease;
+}
+
+.rank-tab:hover {
+  border-color: var(--pink);
+  background: #ff168f14;
+}
+
+.rank-tab .symbol {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: var(--pink);
+  font-size: 23px;
+  border: 1px solid #ff168f45;
+  background: #ff168f0c;
+}
+
+.rank-tab .detail {
+  flex: 1;
+  min-width: 0;
+}
+
+.rank-tab small {
+  display: block;
+  color: #bdaed5;
+  font-size: 11px;
+}
+
+.rank-tab b {
+  display: block;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.rank-tab .arrow {
+  color: var(--pink);
+  font-size: 22px;
+}
+
+#tab-1:checked ~ .wrapper label[for="tab-1"],
+#tab-2:checked ~ .wrapper label[for="tab-2"],
+#tab-3:checked ~ .wrapper label[for="tab-3"],
+#tab-4:checked ~ .wrapper label[for="tab-4"],
+#tab-5:checked ~ .wrapper label[for="tab-5"],
+#tab-6:checked ~ .wrapper label[for="tab-6"] {
+  border-color: var(--pink);
+  border-right: 4px solid var(--pink);
+  background: linear-gradient(100deg, #ff168f30, #ff168f0c);
+  box-shadow: 0 0 22px #ff168f35, inset 0 0 20px #ff168f12;
+}
+
+/* การ์ดสมาชิกด้านล่าง */
+.roster {
+  margin-top: 22px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+  border: 1px solid #ff168f48;
+  background: rgba(10, 4, 22, .82);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 30px #0008;
+}
+
+.member-card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  border: 1px solid #ff168f55;
+  background: #10081c;
+  transition: .3s ease;
+}
+
+.member-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--pink);
+  box-shadow: 0 0 22px #ff168f45;
+}
+
+.member-picture {
+  position: relative;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(ellipse at center, #52204e 0%, #160b29 65%, #080510 100%);
+}
+
+.member-picture img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  transition: transform .5s;
+}
+
+.member-card:hover .member-picture img {
+  transform: scale(1.08);
+}
+
+.member-picture:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, #10071c 0%, transparent 55%);
+  pointer-events: none;
+}
+
+.member-meta {
+  position: relative;
+  padding: 12px 8px 16px;
+  text-align: center;
+}
+
+.member-meta small {
+  display: block;
+  color: var(--pink2);
+  font-size: 9px;
+  letter-spacing: 1px;
+  font-family: 'Cinzel', serif;
+}
+
+.member-meta b {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+/* FOOTER */
+footer {
+  padding: 30px 10px 15px;
+  text-align: center;
+}
+
+.footer-logo {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 900;
+  font-style: italic;
+  color: var(--pink);
+  text-shadow: 0 0 25px #ff168f88;
+}
+
+.footer-line {
+  color: #e7d6f0;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 5px;
+  margin-top: 8px;
+}
+
+.footer-note {
+  margin-top: 15px;
+  color: #bcaacb;
+  font-size: 12px;
+}
+
+/* TABLET */
+@media (max-width: 1000px) {
+  header {
+    padding: 0 20px;
+    gap: 15px;
+  }
+
+  nav {
+    gap: 12px;
+  }
+
+  nav a {
+    font-size: 11px;
+  }
+
+  .wrapper {
+    padding: 105px 16px 25px;
+  }
+
+  .showcase {
+    padding: 25px;
+    grid-template-columns: minmax(0, 1fr) 245px;
+    gap: 15px;
+  }
+
+  .hero-art {
+    left: 20%;
+    width: 60%;
+  }
+
+  .info-card {
+    padding: 22px;
+  }
+
+  .rank-tab {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .rank-tab b {
+    font-size: 13px;
+  }
+
+  .roster {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* MOBILE */
+@media (max-width: 650px) {
+  header {
+    height: auto;
+    min-height: 75px;
+    padding: 12px 15px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .brand {
+    font-size: 22px;
+  }
+
+  .brand small {
+    font-size: 8px;
+  }
+
+  nav {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    flex-wrap: nowrap;
+  }
+
+  nav a {
+    font-size: 11px;
+  }
+
+  .wrapper {
+    padding: 135px 12px 20px;
+  }
+
+  .showcase {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px;
+    gap: 20px;
+  }
+
+  .hero-art {
+    top: 0;
+    left: 15%;
+    width: 85%;
+    height: 430px;
+    bottom: auto;
+    opacity: .52;
+  }
+
+  .panels {
+    width: 100%;
+    min-height: 290px;
+  }
+
+  .info-card {
+    padding: 23px 18px;
+  }
+
+  .info-card h1 {
+    font-size: 39px;
+  }
+
+  .info-card p {
+    font-size: 13px;
+  }
+
+  .position-menu {
+    width: 100%;
+  }
+
+  .menu-title {
+    text-align: left;
+  }
+
+  .rank-tab {
+    min-height: 65px;
+  }
+
+  .roster {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .member-picture {
+    height: 125px;
+  }
+
+  .member-meta b {
+    font-size: 12px;
+  }
+
+  .footer-line {
+    letter-spacing: 3px;
+  }
+}
+
+/* Calendar and member services — preserves the existing HALF MONKEY look */
+.extra-section{margin-top:22px;padding:24px;border:1px solid #ff168f48;background:rgba(10,4,22,.88);box-shadow:0 0 30px #0008}
+.extra-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;margin-bottom:18px}
+.extra-heading h2{font:700 clamp(22px,3vw,32px) 'Cinzel',serif;margin:0;color:#fff}
+.extra-heading h2 span{color:var(--pink)}
+.extra-btn{border:1px solid #ff168f88;background:#ff168f18;color:#fff;padding:9px 14px;cursor:pointer;transition:.2s}
+.extra-btn:hover{background:#ff168f40;box-shadow:0 0 16px #ff168f35}
+.calendar-top{display:flex;align-items:center;gap:10px;color:var(--gold)}
+.calendar-top button{width:34px;height:34px;background:#160a23;border:1px solid #ff168f60;color:var(--pink);cursor:pointer;font-size:20px}
+.calendar-legend{display:flex;gap:15px;flex-wrap:wrap;color:#cbbbdc;font-size:12px;margin-bottom:12px}
+.calendar-legend i,.event-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.war{background:#ff168f}.activity{background:#e9c98a}.leave{background:#a76aff}
+.guild-calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.guild-calendar .weekday{text-align:center;color:var(--gold);font-size:12px;padding:8px 0}
+.guild-calendar .day{min-height:60px;background:#12091d;border:1px solid #ff168f24;color:#fff;text-align:left;padding:7px;cursor:pointer}
+.guild-calendar .day:hover,.guild-calendar .day.sel{border-color:var(--pink);background:#ff168f20;box-shadow:inset 0 0 12px #ff168f15}
+.guild-calendar .day.out{opacity:.35}.guild-calendar .day.today{outline:1px solid var(--gold)}
+.day-dots{display:flex;gap:4px;margin-top:8px}.day-dots i{width:6px;height:6px;border-radius:50%}
+.calendar-detail{margin-top:12px;padding:13px;border-left:2px solid var(--pink);background:#ff168f0b;color:#d9cbe7;font-size:13px}
+.service-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;color:#cbbbdc;font-size:13px}
+.service-panel{margin-top:16px;padding-top:14px;border-top:1px solid #ff168f35}
+.service-panel input,.modal-box input,.service-panel textarea{width:100%;background:#0d0615;color:#fff;border:1px solid #ff168f50;padding:10px;margin-top:6px;outline:none}
+.service-panel label{display:block;color:#d7c7e6;font-size:12px;margin:8px 0}
+.service-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.leave-entry{padding:12px;margin-top:8px;border:1px solid #ff168f30;background:#160a23;font-size:12px}
+.leave-entry small{display:block;color:#cbbbdc;margin:5px 0}
+.leave-entry button{margin:6px 5px 0 0;padding:5px 9px;background:#ff168f15;border:1px solid #ff168f60;color:#fff;cursor:pointer}
+.modal-shade{position:fixed;inset:0;z-index:100;background:#05020bd9;display:grid;place-items:center;padding:18px}
+.modal-shade.hidden{display:none}
+.modal-box{position:relative;width:min(440px,100%);padding:28px;border:1px solid var(--pink);background:#10071b;box-shadow:0 0 40px #ff168f30}
+.modal-box h2{font:700 26px 'Cinzel',serif;margin:0 0 10px}
+.modal-box p{font-size:12px;color:#cbbbdc;line-height:1.7}
+.modal-box label{display:block;font-size:12px;margin-top:12px}
+.modal-close{position:absolute;right:12px;top:8px;background:none;border:0;color:var(--pink);font-size:26px;cursor:pointer}
+.member-card.selected{border:2px solid var(--pink);box-shadow:0 0 25px #ff168f60,inset 0 0 20px #ff168f18;transform:translateY(-4px)}
+@media(max-width:650px){.service-grid{grid-template-columns:1fr}.guild-calendar .day{min-height:43px;padding:4px}.extra-section{padding:14px}}
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Orbitron:wght@400;600;700;800&display=swap');
+:root{--bg:#090810;--panel:#15111f;--pink:#ff4eb8;--purple:#a855f7;--muted:#a99bb8;--line:#4c345b;--tech:Orbitron,sans-serif}
+*{box-sizing:border-box}body{margin:0;color:#f8f2ff;background:radial-gradient(ellipse at 50% 0,#291139 0,#0b0912 50%,#07070c 100%);font-family:Kanit,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.top{position:sticky;top:0;z-index:5;background:#090810eF;border-bottom:1px solid #ffffff18;display:flex;justify-content:space-between;align-items:center;gap:18px;padding:14px clamp(14px,4vw,54px);backdrop-filter:blur(14px)}.brand{display:flex;align-items:center;gap:10px}.logo{display:grid;place-items:center;width:42px;height:42px;background:linear-gradient(135deg,#8b3cf4,#ff4eb8);font:800 14px var(--tech);clip-path:polygon(15% 0,100% 0,100% 85%,85% 100%,0 100%,0 15%)}.brand b{font:700 13px var(--tech);letter-spacing:1px}.brand small{display:block;color:var(--muted);font:8px var(--tech);margin-top:4px}.nav{display:flex;gap:20px;font-size:12px}.nav a{color:var(--muted);text-decoration:none}.nav a:hover{color:var(--pink)}.btn{border:1px solid #b95cff88;color:#fff;background:#a855f718;padding:9px 13px;border-radius:7px;font-size:12px}.btn.primary{border:0;background:linear-gradient(100deg,#843df1,#f13fa8);font-weight:600}.page{width:min(1280px,calc(100% - 28px));margin:auto}.intro{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:32px 0 22px}.eyebrow{font:9px var(--tech);letter-spacing:2px;color:var(--pink);margin:0 0 7px}.intro h1{font:800 clamp(28px,4vw,45px) var(--tech);margin:0;letter-spacing:2px}.intro h1 span,.heading h2 span{color:var(--pink)}.sub{font:9px var(--tech);letter-spacing:1.5px;color:var(--muted)}.pill{border:1px solid #ff4eb855;border-radius:7px;padding:10px 13px;font-size:11px;background:#ff4eb80c}.pill b{color:var(--pink)}.layout{display:grid;grid-template-columns:minmax(200px,.8fr) minmax(280px,1.35fr) minmax(210px,.8fr);gap:13px}.glass{border:1px solid #c49ae52a;border-radius:10px;background:linear-gradient(145deg,#191425f5,#100d18f5);overflow:hidden;position:relative}.profile,.selector{padding:17px}.label{font:9px var(--tech);letter-spacing:1.3px;color:#e4d3f4;margin-bottom:18px}.person{display:flex;align-items:center;gap:10px}.avatar{display:grid;place-items:center;width:46px;height:46px;background:linear-gradient(135deg,#7039aa,#ed45a8);border-radius:7px;font:700 11px var(--tech)}.person h2{font-size:16px;margin:0;overflow-wrap:anywhere}.person p{color:var(--pink);font-size:11px;margin:2px 0}.rule{height:1px;background:#ffffff16;margin:17px 0}.bio{color:#cbbdd8;font-size:12px;line-height:1.8;min-height:60px}.stat{display:flex;justify-content:space-between;gap:7px;border-top:1px solid #ffffff0c;padding:11px 0;font-size:10px;color:var(--muted)}.stat b{font:9px var(--tech);color:#f0ddff;text-align:right}.online{color:#83efb5!important}.stage{min-height:360px;background:radial-gradient(ellipse at 50% 45%,#622b7540,transparent 60%),linear-gradient(150deg,#1a1428,#0d0b14)}.stage:before{content:"";position:absolute;inset:0;background-image:linear-gradient(#c54aff0b 1px,transparent 1px),linear-gradient(90deg,#c54aff0b 1px,transparent 1px);background-size:34px 34px}.stage-label{position:absolute;z-index:2;top:15px;left:17px;font:8px var(--tech);letter-spacing:1.4px;color:#d7c1e8}.hero-img{position:absolute;inset:35px 10px 0;display:flex;align-items:flex-end;justify-content:center}.hero-img img{max-height:100%;max-width:100%;object-fit:contain;z-index:1}.placeholder{position:absolute;top:36%;text-align:center;font-size:12px;color:#9c86b1;line-height:2}.placeholder b{font:10px var(--tech);color:var(--pink)}.hero-title{position:absolute;bottom:16px;left:19px;z-index:2;text-shadow:0 2px 10px #000}.hero-title small{font:8px var(--tech);letter-spacing:1.4px;color:#d8b6ff}.hero-title h2{font:700 clamp(18px,2vw,26px) var(--tech);margin:4px 0}.hero-title span{font:8px var(--tech);letter-spacing:1.3px;color:var(--pink)}.member-list{display:flex;flex-direction:column;gap:6px}.member-btn{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:#ffffff04;border:1px solid transparent;border-radius:7px;color:#fff;padding:7px}.member-btn:hover,.member-btn.selected{background:#c75aff16;border-color:#ff4eb86e}.thumb{width:38px;height:38px;flex-shrink:0;background:#281631;border-radius:5px;display:grid;place-items:center;overflow:hidden;font:9px var(--tech);color:#e8ceff}.thumb img{width:100%;height:100%;object-fit:cover}.member-name{min-width:0;flex:1}.member-name b{display:block;font-size:11px;overflow-wrap:anywhere}.member-name small{display:block;color:var(--muted);font-size:9px}.arrow{color:var(--pink)}.roster{padding:30px 0 24px}.heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:14px}.heading h2{font:600 18px var(--tech);margin:0}.roster-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}.roster-btn{display:flex;align-items:center;gap:8px;text-align:left;padding:8px;border:1px solid #c49ae52a;border-radius:7px;background:#15111f;color:white;min-width:0}.roster-btn.selected,.roster-btn:hover{border-color:#ff4eb8a6;background:#28162f}.roster-btn .thumb{width:40px;height:45px}.roster-btn b{display:block;font-size:10px;overflow-wrap:anywhere}.roster-btn small{display:block;color:var(--muted);font-size:8px;margin-top:3px}.lower{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(230px,.8fr);gap:13px}.calendar{padding:17px}.month-nav{display:flex;align-items:center;gap:8px}.month-nav button{background:#a855f718;border:1px solid #b95cff77;color:#fff;border-radius:5px;padding:3px 10px;font-size:17px}.month-nav b{font:9px var(--tech);min-width:115px;text-align:center}.legend{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0;font-size:10px;color:#d4c3e1}.legend span{display:flex;align-items:center;gap:5px}.dot{width:7px;height:7px;border-radius:50%;display:inline-block}.war{background:#c45cff}.beauty{background:#ff62b5}.leave{background:#8b8bff}.calgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.weekday{text-align:center;color:#a99ab8;font-size:9px;padding:4px}.day{min-height:43px;border:1px solid #3d2d4b;border-radius:5px;background:#100e18;color:#f4eafa;display:flex;align-items:center;flex-direction:column;gap:3px;padding:5px 2px}.day:hover,.day.sel{border-color:var(--pink);background:#46203f}.day.out{opacity:.25}.day.today{outline:1px solid #fff5}.daynum{font:10px var(--tech)}.dots{display:flex;gap:3px;min-height:5px}.dots i{width:5px;height:5px;border-radius:50%}.details{margin-top:10px;padding:10px;border:1px solid #ffffff12;border-radius:6px;background:#ffffff04;font-size:10px;line-height:1.7;min-height:55px}.details b{font-size:11px}.details p{color:var(--muted);margin:4px 0 0}.calendar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}.calendar-actions small{font-size:9px;color:var(--muted)}.war-card{padding:22px;background:radial-gradient(ellipse at 100% 0,#a03cf51c,transparent 50%),linear-gradient(140deg,#191224,#100c18)}.sword{width:55px;height:55px;display:grid;place-items:center;border:1px solid #ff4eb866;color:var(--pink);border-radius:10px;font-size:25px;margin:10px 0 20px}.war-card h2{font:700 25px/1.4 var(--tech);margin:0 0 10px}.war-card h2 span{color:var(--pink)}.war-card p:not(.eyebrow){font-size:11px;line-height:1.8;color:var(--muted)}.next{border-block:1px solid #ffffff18;padding:12px 0;margin:18px 0;display:flex;flex-direction:column;gap:5px;font-size:18px;color:var(--muted)}.next b{font: 26px var(--tech);color:var(--pink)}.leave-section{margin-top:14px;padding:18px}.leave-content{display:flex;justify-content:space-between;align-items:center;gap:15px;border-top:1px solid #ffffff18;padding-top:14px}.leave-content p{font-size:10px;color:var(--muted);margin:4px 0 0}.status{font-size:10px;color:#d7b7f2;background:#a855f714;border:1px solid #a855f733;border-radius:6px;padding:8px}.leave-panel{border-top:1px solid #ffffff18;margin-top:14px;padding-top:14px}.fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.field{display:flex;flex-direction:column;gap:5px;font-size:11px;color:#d9c7e8}.field input,.field textarea,.modal input{width:100%;background:#0b0911;color:white;border:1px solid #59406a;border-radius:6px;padding:9px;outline:none}.field input:focus,.modal input:focus{border-color:var(--pink)}.leave-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid #ffffff12;padding:10px 0;font-size:11px}.leave-item small{display:block;color:var(--muted);margin-top:3px}.badge{font-size:9px;padding:4px 6px;border-radius:4px;background:#ffffff10}.pending{color:#ffcf7b}.approved{color:#83efb5}.rejected{color:#ff8ba2}.admin-actions{display:flex;gap:5px;margin-top:5px}.admin-actions button{font-size:9px;background:#ffffff10;border:1px solid #ffffff22;color:white;border-radius:4px;padding:4px 6px}footer{display:flex;gap:10px;align-items:center;padding:22px 0 30px;color:#84758f;font:8px var(--tech);letter-spacing:1px}.footlogo{display:grid;place-items:center;width:25px;height:25px;background:linear-gradient(135deg,#8b3cf4,#ff4eb8);font-weight:bold}footer span:last-child{margin-left:auto}.hidden{display:none!important}.backdrop{position:fixed;inset:0;z-index:20;background:#05040bdc;display:grid;place-items:center;padding:16px;backdrop-filter:blur(8px)}.modal{width:min(420px,100%);padding:25px}.modal h2{font-size:22px;margin:0 0 7px}.modal h2 span{color:var(--pink)}.close{float:right;background:none;border:0;color:white;font-size:24px}.modal p{font-size:11px;color:var(--muted);line-height:1.7}.modal form{display:flex;flex-direction:column;gap:8px;margin-top:15px}.modal label{font-size:11px;color:#d9c7e8}.modal input{margin-bottom:5px}.note{font-size:9px!important}.full{width:100%;margin-top:7px}.message{font-size:11px!important;color:#ff91b9!important;min-height:12px}.toast{position:fixed;z-index:40;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;transition:.2s;background:#21132c;border:1px solid #ff4eb866;border-radius:7px;padding:10px 14px;font-size:11px;max-width:90%;text-align:center}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:980px){.layout{grid-template-columns:minmax(190px,.8fr) minmax(270px,1.2fr)}.selector{grid-column:1/-1}.member-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.roster-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.lower{grid-template-columns:1fr}.war-card{min-height:250px}}
+@media(max-width:640px){.top{flex-wrap:wrap;padding:11px 14px}.brand b{font-size:11px}.logo{width:35px;height:35px}.nav{order:3;width:100%;justify-content:space-between;gap:8px;font-size:10px}.top>.btn{font-size:10px;padding:8px}.page{width:calc(100% - 22px)}.intro{align-items:flex-start;flex-direction:column;padding:24px 0 17px}.layout{grid-template-columns:1fr}.stage{grid-row:1;min-height:370px}.profile{grid-row:2}.selector{grid-row:3}.member-list{grid-template-columns:repeat(2,minmax(0,1fr))}.roster-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.heading h2{font-size:14px}.calendar{padding:11px}.calgrid{gap:3px}.day{min-height:37px}.month-nav{gap:4px}.month-nav b{min-width:105px;font-size:8px}.legend{gap:8px;font-size:9px}.leave-content{align-items:flex-start;flex-direction:column}.fields{grid-template-columns:1fr}.leave-item{align-items:flex-start;flex-direction:column}footer{font-size:7px}footer span:last-child{display:none}}
+
+#leaveStart,
+#leaveEnd {
+  width: 100%;
+  min-height: 44px;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
+  color-scheme: dark;
+}
+
+#leaveStart::-webkit-calendar-picker-indicator,
+#leaveEnd::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 1;
+  filter: invert(1);
+}
+
+/* LEAVE HISTORY DESIGN */
+
+.leave-list {
+  margin-top: 20px;
+}
+
+.leave-list-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.leave-list-heading h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.leave-list-heading span {
+  font-size: 12px;
+  opacity: .7;
+}
+
+.leave-scroll {
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.leave-card {
+  background: rgba(255,255,255,.045);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.leave-card summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.leave-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.leave-card-main {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.leave-card-main strong {
+  font-size: 14px;
+}
+
+.leave-card-main small {
+  font-size: 11px;
+  opacity: .7;
+}
+
+.leave-card-detail {
+  padding: 12px 14px;
+  border-top: 1px solid rgba(255,255,255,.1);
+  font-size: 13px;
+}
+
+.leave-card-detail p {
+  margin: 7px 0;
+  overflow-wrap: anywhere;
+}
+
+.clear-leave-btn {
+  width: 100%;
+  padding: 11px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255,100,100,.35);
+  border-radius: 10px;
+  background: rgba(180,45,45,.16);
+  color: #ffaaaa;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.leave-empty {
+  text-align: center;
+  padding: 20px;
+  opacity: .6;
+  font-size: 13px;
+}
+
+.leave-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.leave-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,.2);
+  border-radius: 10px;
+}
+
+@media (max-width: 600px) {
+  .leave-scroll {
+    max-height: 350px;
+  }
+
+  .leave-card summary {
+    padding: 12px 10px;
+  }
+
+  .leave-card-main strong {
+    font-size: 13px;
+  }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="ambient one"></div>
+<div class="ambient two"></div>
+
+<!-- ระบบสลับหน้า ไม่ใช้ JavaScript -->
+<input class="tab-switcher" type="radio" name="guild-tabs" id="tab-1" checked>
+<input class="tab-switcher" type="radio" name="guild-tabs" id="tab-2">
+<input class="tab-switcher" type="radio" name="guild-tabs" id="tab-3">
+<input class="tab-switcher" type="radio" name="guild-tabs" id="tab-4">
+<input class="tab-switcher" type="radio" name="guild-tabs" id="tab-5">
+<input class="tab-switcher" type="radio" name="guild-tabs" id="tab-6">
+
+<header>
+  <a class="brand" href="#">
+    HALF MONKEY
+    <small>— GAME GUILD —</small>
+  </a>
+
+  <nav>
+  <a href="Home.html">หน้าหลัก</a>
+  <a href="#roster">ทำเนียบยอดฝีมือ</a>
+  <a href="#calendar">ปฏิทินกิลด์</a>
+  <a href="#leave">ล็อกอิน / ระบบลา</a>
+  <a href="news.html">ข่าวสารใหม่</a>
+  <a href="mailto:halfmonkey@example.com">ติดต่อเรา</a>
+</nav>
+</header>
+
+<main class="wrapper" id="top">
+
+  <section class="showcase">
+
+    <!-- ภาพหัวหน้ากิลตรงกลาง -->
+    <div class="hero-art">
+      <img id="heroImage" src="images/leader.png.jpg" alt="ตัวละครที่เลือก">
+    </div>
+
+    <!-- ข้อมูลสมาชิก -->
+    <div class="panels">
+
+      <article class="panel" id="panel-1">
+        <div class="info-card">
+          <div class="role"><span class="role-icon">♛</span> GUILD MASTER</div>
+          <h1>銀河 ` Yumeko</h1>
+          <p>🐒 ผู้นำสูงสุดแห่งอาณาจักรลิง ผู้วางรากฐานกิลด์จากความวุ่นวายสู่ความวุ่นวายที่มีระบบ เชี่ยวชาญการวางแผนกลยุทธ์ การปั่นประสาทศัตรู และการสร้างตำนานความป่วนในสนามรบทุกสมรภูมิ ภายนอกดูสุขุมดั่งแม่ทัพผู้เกรียงไกร แต่ภายในคือหัวหน้าแก๊งลิงที่พร้อมก่อเรื่องได้ทุกเมื่อ! 🍌🏆</p>
+          <div class="quote">“ กิลนี้... ไม่ใช่แค่เกม แต่คืออาณาจักรลิง ”</div>
+        </div>
+      </article>
+
+      <article class="panel" id="panel-2">
+        <div class="info-card">
+          <div class="role"><span class="role-icon">⚔</span> VICE GUILD MASTER</div>
+          <h1>銀河 ` Noriko</h1>
+          <p>รองหัวหน้ากิลด์ ผู้ช่วยมือขวาของท่านผู้นำ 🐒⚔️ คอยดูแลเหล่าสมาชิก วางแผนการรบ และรักษาความสงบเรียบร้อยของกิลด์… ยกเว้นตอนสมาชิกเปิดไมค์พร้อมกัน เพราะต่อให้เป็นรองแม่ทัพก็เอาลิงไม่อยู่! 🍌</p>
+          <div class="quote">“ ไม่ตีป้อมแล้วจะให้ไปตีระฆังวัดเหรอ?🍌 ”</div>
+        </div>
+      </article>
+
+      <article class="panel" id="panel-3">
+        <div class="info-card">
+          <div class="role"><span class="role-icon">◎</span> 3RD VICE GUILD MASTER</div>
+          <h1>銀河 ` Kisumi</h1>
+          <p>รองหัวหน้ากิลด์ลำดับที่สาม หมอประจำกิลด์ HALF MONKEY 🐒🩺หน้าที่รักษาชีวิตเหล่าลิงให้กลับไปตีป้อมต่อได้ ส่วนตัวเองจะรอดไหมนั้น… เป็นเรื่องของเวรกรรม! 💉</p>
+          <div class="quote">“ ลิงมีเป็นฝูง หมอมีคนเดียว กรุณาเข้าแถวรอฮีลด้วยค่ะ ”</div>
+        </div>
+      </article>
+
+      <article class="panel" id="panel-4">
+        <div class="info-card">
+          <div class="role"><span class="role-icon">✧</span> 4TH VICE GUILD MASTER</div>
+          <h1>銀河 ` Haruto</h1>
+          <p>ผู้ใช้พลังแห่งแสงนีออน สนับสนุนการต่อสู้ด้วยพลังและกลยุทธ์อันเหนือชั้น ตัวแปรสำคัญที่ช่วยให้ทีมพลิกสถานการณ์กลับมาคว้าชัยชนะได้เสมอ</p>
+          <div class="quote">“ แสงสุดท้ายจะนำพาชัยชนะ ”</div>
+        </div>
+      </article>
+
+      <article class="panel" id="panel-5">
+        <div class="info-card">
+          <div class="role"><span class="role-icon">⬡</span> 5TH VICE GUILD MASTER</div>
+          <h1>銀河 ` Hanmuenli</h1>
+          <p>นักรบสายป้องกันดุจกำแพงเหล็กกล้า พร้อมรับการโจมตีทุกรูปแบบเพื่อปกป้องเพื่อนร่วมทีม ไม่หวั่นแม้ต้องเผชิญหน้ากับศัตรูที่แข็งแกร่ง รักกล้วยยิ่งชีพ!</p>
+          <div class="quote">“ ข้ายังยืนอยู่ พวกเจ้าก็ห้ามล้ม ”</div>
+        </div>
+      </article>
+
+      <article class="panel" id="panel-6">
+        <div class="info-card">
+          <div class="role"><span class="role-icon">ϟ</span> CHIEF STRATEGIST</div>
+          <h1>銀河 ` Miyuki</h1>
+          <p>กุนซือน้องเล็กของทีม ผู้กุมความลับแห่งแผนการรบวางแผนให้พี่ ๆ ไปบวก🎯 ความสามารถพิเศษ:มองเกมอยู่เฉยๆ ก็ชนะ </p>
+          <div class="quote">“ ใครแกล้งน้อง… เตรียมรับแผนแก้แค้นได้เลย! 😈💕 ”</div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- เมนูเลือกตำแหน่ง -->
+    <aside class="position-menu">
+      <div class="menu-title">✧ SELECT POSITION ✧</div>
+
+      <label for="tab-1" class="rank-tab">
+        <span class="symbol">♛</span>
+        <span class="detail"><small>ตำแหน่งสูงสุด</small><b>หัวหน้ากิล</b></span>
+        <span class="arrow">›</span>
+      </label>
+
+      <label for="tab-2" class="rank-tab">
+        <span class="symbol">⚔</span>
+        <span class="detail"><small>ผู้นำลิง</small><b>รองหัวหน้ากิล</b></span>
+        <span class="arrow">›</span>
+      </label>
+
+      <label for="tab-3" class="rank-tab">
+        <span class="symbol">◎</span>
+        <span class="detail"><small>ผู้นำลิง</small><b>รองหัวหน้ากิลด์ลำดับที่สาม</b></span>
+        <span class="arrow">›</span>
+      </label>
+
+      <label for="tab-4" class="rank-tab">
+        <span class="symbol">✧</span>
+        <span class="detail"><small>ผู้นำลิง</small><b>รองหัวหน้ากิลด์ลำดับที่สี่</b></span>
+        <span class="arrow">›</span>
+      </label>
+
+      <label for="tab-5" class="rank-tab">
+        <span class="symbol">⬡</span>
+        <span class="detail"><small>ผู้นำลิง</small><b>รองหัวหน้ากิลด์ลำดับที่ห้า</b></span>
+        <span class="arrow">›</span>
+      </label>
+
+      <label for="tab-6" class="rank-tab">
+        <span class="symbol">ϟ</span>
+        <span class="detail"><small>ลิงจิ๋ว</small><b>กุนซือ</b></span>
+        <span class="arrow">›</span>
+      </label>
+    </aside>
+
+  </section>
+
+  <!-- การ์ดสมาชิกด้านล่าง -->
+  <section class="roster" id="roster">
+
+    <label class="member-card" for="tab-1">
+      <div class="member-picture">
+        <img src="images/leader.png.jpg" alt="หัวหน้ากิล">
+      </div>
+      <div class="member-meta">
+        <small>♛ GUILD MASTER</small>
+        <b>銀河 ` Yumeko</b>
+      </div>
+    </label>
+
+    <label class="member-card" for="tab-2">
+      <div class="member-picture">
+        <img src="images/leader1.png.jpg" alt="หัวหน้ารอง">
+      </div>
+      <div class="member-meta">
+        <small>⚔ VICE MASTER</small>
+        <b>銀河 ` Noriko</b>
+      </div>
+    </label>
+
+    <label class="member-card" for="tab-3">
+      <div class="member-picture">
+        <img src="images/leader2.png.jpg" alt="หัวหน้าคนที่สาม">
+      </div>
+      <div class="member-meta">
+        <small>◎ VICE MASTER</small>
+        <b>銀河 ` Kisumi</b>
+      </div>
+    </label>
+
+    <label class="member-card" for="tab-4">
+      <div class="member-picture">
+        <img src="images/leader3.png.jpg" alt="หัวหน้าคนที่สี่">
+      </div>
+      <div class="member-meta">
+        <small>✧ VICE MASTER</small>
+        <b>銀河 ` Haruto</b>
+      </div>
+    </label>
+
+    <label class="member-card" for="tab-5">
+      <div class="member-picture">
+        <img src="images/leader4.png.jpg" alt="หัวหน้าคนที่ห้า">
+      </div>
+      <div class="member-meta">
+        <small>⬡ VICE MASTER</small>
+        <b>銀河 ` Hanmuenli</b>
+      </div>
+    </label>
+
+    <label class="member-card" for="tab-6">
+      <div class="member-picture">
+        <img src="images/leader5.png.jpg" alt="กุนซือ">
+      </div>
+      <div class="member-meta">
+        <small>ϟ CHIEF STRATEGIST</small>
+        <b>銀河 ` Miyuki</b>
+      </div>
+    </label>
+
+  </section>
+
+  <section class="lower">
+    <section class="glass calendar" id="calendar"><div class="heading"><div><p class="eyebrow">PLAN YOUR BATTLE</p><h2>GUILD <span>CALENDAR</span></h2></div><div class="month-nav"><button id="prevMonth" aria-label="เดือนก่อน">‹</button><b id="monthLabel"></b><button id="nextMonth" aria-label="เดือนถัดไป">›</button></div></div>
+      <div class="legend"><span><i class="dot war"></i>กิลด์วอร์ทุกวันเสาร์</span><span><i class="dot beauty"></i>กิจกรรมสาวงาม</span><span><i class="dot leave"></i>วันลา</span></div>
+      <div class="calgrid" id="calendarGrid"></div><div class="details" id="dayDetails"><b>รายละเอียดวันที่</b><p>เลือกวันที่ในปฏิทินเพื่อดูข้อมูล</p></div>
+      <div class="calendar-actions"><button class="btn primary" id="addBeauty">＋ เพิ่มกิจกรรมสาวงาม</button><small>กำหนดวันสาวงามเองได้จากปุ่มนี้</small></div>
+    </section>
+    <aside class="glass war-card"><div class="label">GUILD WAR NOTICE</div><div class="sword">⚔</div><p class="eyebrow">EVERY SATURDAY</p><h2>เตรียมพร้อม<br><span>วอกิล</span></h2><p>กิลด์วอร์มีทุกวันเสาร์ กิจกรรมสาวงามประจำสัปดาห์</p><div class="next"><span>กิลด์วอร์รอบถัดไป</span><b id="nextWar">—</b></div><a href="#calendar" style="font-size:11px;color:#e6b4ff">ดูปฏิทินทั้งหมด ↗</a></aside>
+  </section>
+  <section class="glass leave-section" id="leave"><div class="heading"><div><p class="eyebrow">MEMBER SERVICES</p><h2>LEAVE <span>REQUEST</span></h2></div><button class="btn" id="leaveLogin">ล็อกอินเพื่อขอลา</button></div><div class="leave-content"><div><b style="font-size:12px">ระบบแจ้งวันลา</b><p>สมาชิกล็อกอินเพื่อส่งคำขอลา หัวกิลด์ตรวจสอบและอนุมัติคำขอได้</p></div><span class="status" id="loginStatus">ยังไม่ได้เข้าสู่ระบบ</span></div><div class="leave-panel hidden" id="leavePanel"></div></section>
+  <footer><span class="footlogo">HM</span><span>HALF MONKEY © 2026</span><span>BUILT FOR THE CREW</span></footer>
+</main>
+<div class="backdrop hidden" id="loginModal"><div class="glass modal"><button class="close" data-close="loginModal">×</button><p class="eyebrow">MEMBER ACCESS</p><h2>เข้าสู่ระบบ <span>สมาชิก</span></h2><p>ใช้รหัสประจำตัวสมาชิก</p><form id="loginForm">
+  <label for="memberId">รหัสสมาชิก</label>
+  <input
+    id="memberId"
+    placeholder="กรอกรหัสสมาชิก"
+    autocomplete="username"
+    required
+  >
+
+  <label for="password">รหัสผ่าน</label>
+  <input
+    id="password"
+    type="password"
+    placeholder="กรอกรหัสผ่าน"
+    autocomplete="current-password"
+    required
+  >
+
+  <button class="btn primary full" type="submit">
+    เข้าสู่ระบบ
+  </button>
+
+  <p class="message" id="loginMessage"></p>
+</form></div></div>
+<div class="backdrop hidden" id="beautyModal"><div class="glass modal"><button class="close" data-close="beautyModal">×</button><p class="eyebrow">SPECIAL EVENT</p><h2>เพิ่มกิจกรรม <span style="color:var(--pink)">สาวงาม</span></h2><form id="beautyForm"><label for="beautyDate">วันที่จัดกิจกรรม</label><input id="beautyDate" type="date" required><label for="beautyTitle">ชื่อกิจกรรม / รายละเอียด</label><input id="beautyTitle" maxlength="100" placeholder="กิจกรรมสาวงามประจำสัปดาห์" required><button class="btn primary full">บันทึกกิจกรรม</button><p class="message" id="beautyMessage"></p></form></div></div>
+<div class="backdrop hidden" id="hmNewsBoard">
+  <div class="glass modal">
+    <button class="close" id="closeNewsBoard" type="button">×</button>
+    <p class="eyebrow">HALF MONKEY NEWS</p>
+    <h2>ข่าวสาร <span>กิลด์</span></h2>
+    <p>ติดตามประกาศและกิจกรรมใหม่ของ HALF MONKEY ได้ที่นี่</p>
+  </div>
+</div>
+</div>
+<!-- หน้าต่างข่าวสาร HALF MONKEY -->
+<div class="backdrop hidden" id="hmNewsBoard">
+  <div class="glass modal hm-news-modal">
+    <button class="close" id="closeNewsBoard" type="button">×</button>
+
+    <p class="eyebrow">HALF MONKEY / GUILD NEWS</p>
+    <h2>ข่าวสาร <span>กิลด์</span></h2>
+    <p>ติดตามประกาศและกิจกรรมใหม่ของ HALF MONKEY</p>
+
+    <div class="hm-news-list">
+      <article class="hm-news-item">
+        <span class="hm-news-tag">ประกาศ</span>
+        <h3>ยินดีต้อนรับสมาชิก HALF MONKEY</h3>
+        <p>ติดตามประกาศสำคัญของกิลด์ได้ที่นี่</p>
+      </article>
+
+      <article class="hm-news-item">
+        <span class="hm-news-tag">กิจกรรม</span>
+        <h3>กิจกรรมกิลด์</h3>
+        <p>รอประกาศกำหนดการจากกิลด์</p>
+      </article>
+
+      <article class="hm-news-item">
+        <span class="hm-news-tag">แจ้งเตือน</span>
+        <h3>ตรวจสอบข้อมูลสมาชิก</h3>
+        <p>กรุณาตรวจสอบข้อมูลก่อนใช้งานระบบสมาชิกและระบบลา</p>
+      </article>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+  
+"use strict";
+
+const members = [
+  {id:"HM001",name:"銀河 ` Yumeko",role:"หัวหน้ากิลด์",position:"GUILD LEADER",tag:"GUILD LEADER",bio:"ผู้นำแห่ง HALF MONKEY พร้อมบัญชาการทุกศึก",image:"images/leader.png.jpg"},
+  {id:"HM002",name:"銀河 ` Noriko",role:"รองหัวหน้ากิลด์",position:"DEPUTY LEADER",tag:"DEPUTY LEADER",bio:"กำลังหลักที่คอยดูแลสมาชิกและวางแผนการรบ",image:"images/leader1.png.jpg"},
+  {id:"HM003",name:"銀河 ` Kisumi",role:"หัวหน้าหน่วย",position:"SQUAD COMMANDER",tag:"SQUAD COMMANDER",bio:"แม่นยำ วางแผนเป็น และพร้อมสนับสนุนทีม",image:"images/leader2.png.jpg"},
+  {id:"HM004",name:"銀河 ` Haruto",role:"ผู้พิทักษ์กิลด์",position:"GUILD GUARD",tag:"GUILD GUARD",bio:"ยืนหยัดเคียงข้างทีมในทุกสถานการณ์",image:"images/leader3.png.jpg"},
+  {id:"HM005",name:"銀河 ` Hanmuenli",role:"ผู้ประสานงาน",position:"COORDINATOR",tag:"COORDINATOR",bio:"ประสานงานกิจกรรมและดูแลความพร้อมของสมาชิก",image:"images/leader4.png.jpg"},
+  {id:"HM006",name:"銀河 ` Miyuki",role:"หัวหน้ากลยุทธ์",position:"CHIEF STRATEGIST",tag:"CHIEF STRATEGIST",bio:"วิเคราะห์สถานการณ์และช่วยทีมเลือกกลยุทธ์",image:"images/leader5.png.jpg"}
+];
+
+const $ = id => document.getElementById(id);
+const months = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+const week = ["อา","จ","อ","พ","พฤ","ศ","ส"];
+
+let month = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+let selected = new Date();
+let user = null;
+let editingBeautyId = null;
+
+const iso = d =>
+  `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+
+const parse = s => {
+  const [y,m,d] = s.split("-").map(Number);
+  return new Date(y,m-1,d);
+};
+
+const read = key => {
+  try {
+    return JSON.parse(localStorage.getItem(key) || "[]");
+  } catch {
+    return [];
+  }
+};
+
+const save = (key, value) =>
+  localStorage.setItem(key, JSON.stringify(value));
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+
+function toast(message) {
+  const el = $("toast");
+  if (!el) return;
+  el.textContent = message;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 2600);
+}
+
+function openModal(id) {
+  $(id)?.classList.remove("hidden");
+}
+
+function closeModal(id) {
+  $(id)?.classList.add("hidden");
+}
+
+function beautyEvents() {
+  const events = read("hmBeautyEvents");
+  let changed = false;
+  const normalized = events.map((event, index) => {
+    if (event.id === undefined || event.id === null || event.id === "") {
+      changed = true;
+      return { ...event, id: `legacy-${index}-${event.date || "date"}` };
+    }
+    return event;
+  });
+  if (changed) save("hmBeautyEvents", normalized);
+  return normalized;
+}
+
+function leaveEvents() {
+  return read("hmLeaveRequests");
+}
+
+/* LOGIN / LOGOUT — persist across pages on the same website */
+const LOGIN_STORAGE_KEY = "hmLoggedInUser";
+
+function updateLoginUI() {
+  const status = $("loginStatus");
+  const button = $("leaveLogin");
+  const panel = $("leavePanel");
+
+  if (user) {
+    if (status) status.textContent = `เข้าสู่ระบบ: ${user.name}${user.role === "leader" ? " · หัวกิลด์" : ""}`;
+    if (button) {
+      button.textContent = "ออกจากระบบ";
+      button.onclick = logout;
+    }
+    if (panel) {
+      panel.classList.remove("hidden");
+      renderLeavePanel();
+    }
+  } else {
+    if (status) status.textContent = "ยังไม่ได้เข้าสู่ระบบ";
+    if (button) {
+      button.textContent = "ล็อกอินเพื่อขอลา";
+      button.onclick = () => openModal("loginModal");
+    }
+    if (panel) {
+      panel.classList.add("hidden");
+      panel.innerHTML = "";
+    }
+  }
+
+  if (typeof renderDayDetails === "function") renderDayDetails();
+}
+
+function logout() {
+  user = null;
+  try { localStorage.removeItem(LOGIN_STORAGE_KEY); } catch (error) {}
+  updateLoginUI();
+  closeModal("loginModal");
+  toast("ออกจากระบบแล้ว");
+}
+
+function login(memberId, password) {
+  const id = String(memberId || "").trim().toUpperCase();
+  const member = members.find(m => m.id === id);
+
+  if (!member || password !== "8888") {
+    $("loginMessage").textContent = "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง";
+    return;
+  }
+
+  user = { ...member, role: id === "HM001" ? "leader" : "member" };
+  try { localStorage.setItem(LOGIN_STORAGE_KEY, JSON.stringify(user)); } catch (error) {
+    toast("บันทึกสถานะล็อกอินไม่ได้ กรุณาตรวจสอบการตั้งค่าเบราว์เซอร์");
+  }
+
+  $("loginMessage").textContent = "";
+  closeModal("loginModal");
+  updateLoginUI();
+  toast("เข้าสู่ระบบสำเร็จ");
+}
+
+function restoreLogin() {
+  user = null;
+  try {
+    const saved = JSON.parse(localStorage.getItem(LOGIN_STORAGE_KEY) || "null");
+    if (saved && saved.id) {
+      const member = members.find(m => m.id === String(saved.id).toUpperCase());
+      if (member) user = { ...member, role: member.id === "HM001" ? "leader" : "member" };
+      else localStorage.removeItem(LOGIN_STORAGE_KEY);
+    }
+  } catch (error) {
+    user = null;
+    try { localStorage.removeItem(LOGIN_STORAGE_KEY); } catch (ignored) {}
+  }
+  updateLoginUI();
+}
+
+$("loginForm").addEventListener("submit", event => {
+  event.preventDefault();
+  login($("memberId").value, $("password").value);
+});
+
+// Keep other tabs in sync when a member logs in or out.
+window.addEventListener("storage", event => {
+  if (event.key === LOGIN_STORAGE_KEY) restoreLogin();
+});
+
+/* MODAL */
+
+$("leaveLogin").onclick = () => openModal("loginModal");
+
+document.querySelectorAll("[data-close]").forEach(button => {
+  button.addEventListener("click", () => closeModal(button.dataset.close));
+});
+
+document.querySelectorAll(".backdrop").forEach(backdrop => {
+  backdrop.addEventListener("click", event => {
+    if (event.target === backdrop) backdrop.classList.add("hidden");
+  });
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    document.querySelectorAll(".backdrop").forEach(el => {
+      el.classList.add("hidden");
+    });
+  }
+});
+
+/* CALENDAR */
+
+function eventsFor(date) {
+  const dateString = iso(date);
+  const events = [];
+
+  if (date.getDay() === 6) {
+    events.push({type:"war",title:"กิลด์วอร์"});
+  }
+
+  beautyEvents()
+    .filter(event => event.date === dateString)
+    .forEach(event => events.push({
+      type:"beauty", title:event.title, id:event.id
+    }));
+
+  leaveEvents()
+    .filter(event =>
+      event.status === "โอเคจ้า" &&
+      dateString >= event.start &&
+      dateString <= event.end
+    )
+    .forEach(event => events.push({
+      type:"leave",title:`วันลา: ${event.name}`
+    }));
+
+  return events;
+}
+
+function renderCalendar() {
+  const label = $("monthLabel");
+  const grid = $("calendarGrid");
+  if (!label || !grid) return;
+
+  label.textContent =
+    `${months[month.getMonth()]} ${month.getFullYear()+543}`;
+
+  const first = new Date(month.getFullYear(), month.getMonth(), 1);
+  const start = new Date(first);
+  start.setDate(1 - first.getDay());
+
+  let html = week.map(day =>
+    `<div class="weekday">${day}</div>`
+  ).join("");
+
+  for (let i = 0; i < 42; i++) {
+    const date = new Date(start);
+    date.setDate(start.getDate() + i);
+
+    const events = eventsFor(date);
+    const dateString = iso(date);
+
+    html += `
+      <button type="button"
+        class="day ${date.getMonth() !== month.getMonth() ? "out" : ""}
+        ${dateString === iso(selected) ? "sel" : ""}
+        ${dateString === iso(new Date()) ? "today" : ""}"
+        data-date="${dateString}">
+        <span class="daynum">${date.getDate()}</span>
+        <span class="dots">
+          ${events.map(e => `<i class="${e.type}"></i>`).join("")}
+        </span>
+      </button>`;
+  }
+
+  grid.innerHTML = html;
+
+  grid.querySelectorAll("[data-date]").forEach(button => {
+    button.addEventListener("click", () => {
+      selected = parse(button.dataset.date);
+      month = new Date(selected.getFullYear(), selected.getMonth(), 1);
+      renderCalendar();
+    });
+  });
+
+  renderDayDetails();
+  updateNextWar();
+}
+
+function renderDayDetails() {
+  const el = $("dayDetails");
+  if (!el) return;
+
+  const events = eventsFor(selected);
+
+  el.innerHTML = `
+    <b>${selected.getDate()} ${months[selected.getMonth()]} ${selected.getFullYear()+543}</b>
+    ${events.length
+      ? events.map(event => `
+          <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:7px">
+            <i class="dot ${event.type}"></i><span>${escapeHtml(event.title)}</span>
+            ${event.type === "beauty" && user && user.role === "leader" ? `
+              <button type="button" class="btn" data-edit-beauty="${escapeHtml(String(event.id))}" style="padding:4px 9px;font-size:11px">แก้ไข</button>
+              <button type="button" class="btn" data-delete-beauty="${escapeHtml(String(event.id))}" style="padding:4px 9px;font-size:11px">ลบ</button>
+            ` : ""}
+          </div>`).join("")
+      : "<p>ไม่มีรายการกิจกรรมในวันนี้</p>"}
+  `;
+
+  el.querySelectorAll("[data-edit-beauty]").forEach(button => {
+    button.addEventListener("click", () => editBeautyEvent(button.dataset.editBeauty));
+  });
+  el.querySelectorAll("[data-delete-beauty]").forEach(button => {
+    button.addEventListener("click", () => deleteBeautyEvent(button.dataset.deleteBeauty));
+  });
+}
+
+function updateNextWar() {
+  const el = $("nextWar");
+  if (!el) return;
+
+  const date = new Date();
+  date.setHours(0,0,0,0);
+
+  while (date.getDay() !== 6) {
+    date.setDate(date.getDate()+1);
+  }
+
+  el.textContent =
+    `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()+543}`;
+}
+
+$("prevMonth").addEventListener("click", () => {
+  month = new Date(month.getFullYear(), month.getMonth()-1, 1);
+  renderCalendar();
+});
+
+$("nextMonth").addEventListener("click", () => {
+  month = new Date(month.getFullYear(), month.getMonth()+1, 1);
+  renderCalendar();
+});
+
+/* BEAUTY EVENT — add, edit and delete selected events */
+function setBeautyModalMode(isEditing) {
+  const heading = $("beautyModal")?.querySelector("h2");
+  const eyebrow = $("beautyModal")?.querySelector(".eyebrow");
+  const submit = $("beautyForm")?.querySelector('button[type="submit"], button:not([type])');
+  if (heading) heading.innerHTML = isEditing
+    ? 'แก้ไขกิจกรรม <span style="color:var(--pink)">สาวงาม</span>'
+    : 'เพิ่มกิจกรรม <span style="color:var(--pink)">สาวงาม</span>';
+  if (eyebrow) eyebrow.textContent = isEditing ? "EDIT SPECIAL EVENT" : "SPECIAL EVENT";
+  if (submit) submit.textContent = isEditing ? "บันทึกการแก้ไข" : "บันทึกกิจกรรม";
+}
+
+function editBeautyEvent(id) {
+  if (!user || user.role !== "leader") {
+    toast("เฉพาะหัวกิลด์ HM001 เท่านั้นที่แก้ไขกิจกรรมได้");
+    return;
+  }
+  const event = beautyEvents().find(item => String(item.id) === String(id));
+  if (!event) {
+    toast("ไม่พบกิจกรรมนี้ อาจถูกลบไปแล้ว");
+    renderCalendar();
+    return;
+  }
+  editingBeautyId = event.id;
+  $("beautyDate").value = event.date || iso(selected);
+  $("beautyTitle").value = event.title || "";
+  $("beautyMessage").textContent = "";
+  setBeautyModalMode(true);
+  openModal("beautyModal");
+}
+
+function deleteBeautyEvent(id) {
+  if (!user || user.role !== "leader") {
+    toast("เฉพาะหัวกิลด์ HM001 เท่านั้นที่ลบกิจกรรมได้");
+    return;
+  }
+  const event = beautyEvents().find(item => String(item.id) === String(id));
+  if (!event) {
+    toast("ไม่พบกิจกรรมนี้");
+    renderCalendar();
+    return;
+  }
+  if (!confirm(`ต้องการลบกิจกรรม “${event.title}” ใช่หรือไม่?`)) return;
+  save("hmBeautyEvents", beautyEvents().filter(item => String(item.id) !== String(id)));
+  renderCalendar();
+  toast("ลบกิจกรรมแล้ว");
+}
+
+$("addBeauty").addEventListener("click", () => {
+  if (!user || user.role !== "leader") {
+    toast("เฉพาะหัวกิลด์ HM001 เท่านั้นที่เพิ่มกิจกรรมได้");
+    return;
+  }
+  editingBeautyId = null;
+  $("beautyDate").value = iso(selected);
+  $("beautyTitle").value = "";
+  $("beautyMessage").textContent = "";
+  setBeautyModalMode(false);
+  openModal("beautyModal");
+});
+
+$("beautyForm").addEventListener("submit", event => {
+  event.preventDefault();
+  if (!user || user.role !== "leader") {
+    toast("ไม่มีสิทธิ์จัดการกิจกรรม");
+    return;
+  }
+  const date = $("beautyDate").value;
+  const title = $("beautyTitle").value.trim();
+  if (!date || !title) return;
+
+  const events = beautyEvents();
+  if (editingBeautyId !== null) {
+    const index = events.findIndex(item => String(item.id) === String(editingBeautyId));
+    if (index < 0) {
+      $("beautyMessage").textContent = "ไม่พบกิจกรรมเดิม กรุณาปิดแล้วลองอีกครั้ง";
+      return;
+    }
+    events[index] = { ...events[index], date, title, updatedBy:user.id, updatedAt:new Date().toISOString() };
+    save("hmBeautyEvents", events);
+    toast("แก้ไขกิจกรรมเรียบร้อยแล้ว");
+  } else {
+    events.push({ id:Date.now(), date, title, by:user.id });
+    save("hmBeautyEvents", events);
+    toast("บันทึกกิจกรรมสาวงามแล้ว");
+  }
+
+  editingBeautyId = null;
+  selected = parse(date);
+  month = new Date(selected.getFullYear(), selected.getMonth(), 1);
+  $("beautyTitle").value = "";
+  closeModal("beautyModal");
+  setBeautyModalMode(false);
+  renderCalendar();
+});
+
+/* LEAVE REQUEST */
+
+function renderLeavePanel() {
+  if (!user) return;
+
+  const panel = $("leavePanel");
+  panel.classList.remove("hidden");
+
+  panel.innerHTML = `
+    <form id="leaveForm">
+
+      <div class="fields">
+
+        <label class="field">
+          <span>📅 วันเริ่มลา</span>
+          <input
+  type="date"
+  id="leaveStart"
+  required
+  onclick="this.showPicker && this.showPicker()"
+>
+        </label>
+
+        <label class="field">
+          <span>📅 วันสิ้นสุด</span>
+          <input
+  type="date"
+  id="leaveEnd"
+  required
+  onclick="this.showPicker && this.showPicker()"
+>
+        </label>
+
+        <label class="field">
+          <span>เหตุผลการลา</span>
+          <input
+            id="leaveReason"
+            maxlength="180"
+            placeholder="ระบุเหตุผลการลา"
+            required
+          >
+        </label>
+
+      </div>
+
+      <p id="leaveDuration"
+         style="font-size:12px;color:var(--muted);margin-top:9px">
+        กรุณาเลือกวันที่ลา
+      </p>
+
+      <button
+        type="submit"
+        class="btn primary"
+        style="margin-top:11px"
+      >
+        ส่งคำขอลา
+      </button>
+
+    </form>
+
+    <div class="leave-list" id="leaveList"></div>
+  `;
+
+  const startInput = $("leaveStart");
+  const endInput = $("leaveEnd");
+  const duration = $("leaveDuration");
+
+  // กำหนดวันเริ่มต้นเป็นวันที่เลือกอยู่ในปฏิทินกิลด์
+  startInput.value = iso(selected);
+  endInput.value = iso(selected);
+
+  // ไม่ให้เลือกวันย้อนหลัง
+  const today = iso(new Date());
+  startInput.min = today;
+  endInput.min = today;
+
+  function updateLeaveDates() {
+    const start = startInput.value;
+    const end = endInput.value;
+
+    // วันสิ้นสุดต้องไม่ก่อนวันเริ่มลา
+    endInput.min = start || today;
+
+    if (end && start && end < start) {
+      endInput.value = start;
+    }
+
+    if (!startInput.value || !endInput.value) {
+      duration.textContent = "กรุณาเลือกวันที่ลา";
+      return;
+    }
+
+    const first = new Date(startInput.value + "T00:00:00");
+    const last = new Date(endInput.value + "T00:00:00");
+
+    const days = Math.round(
+      (last - first) / 86400000
+    ) + 1;
+
+    duration.textContent =
+      "รวมระยะเวลาลา " + days + " วัน";
+  }
+
+  startInput.addEventListener("change", updateLeaveDates);
+  endInput.addEventListener("change", updateLeaveDates);
+
+  updateLeaveDates();
+
+  $("leaveForm").addEventListener("submit", event => {
+    event.preventDefault();
+
+    if (!user) return;
+
+    const start = startInput.value;
+    const end = endInput.value;
+    const reason = $("leaveReason").value.trim();
+
+    if (!start || !end || !reason) {
+      toast("กรุณากรอกข้อมูลให้ครบ");
+      return;
+    }
+
+    if (start < today) {
+      toast("ไม่สามารถเลือกวันย้อนหลังได้");
+      return;
+    }
+
+    if (end < start) {
+      toast("วันสิ้นสุดต้องไม่ก่อนวันเริ่มลา");
+      return;
+    }
+
+    const requests = leaveEvents();
+
+    requests.push({
+      id: Date.now(),
+      memberId: user.id,
+      name: user.name,
+      start,
+      end,
+      reason,
+      status: "แจ้งลา"
+    });
+
+    save("hmLeaveRequests", requests);
+
+    renderCalendar();
+    renderLeavePanel();
+
+    toast("ส่งคำขอลาแล้ว");
+  });
+
+  renderLeaveList();
+}
+
+/* =================================
+   LEAVE HISTORY - HALF MONKEY
+   เก็บประวัติ 30 วัน
+   ================================= */
+
+
+/* ลบประวัติที่จัดการแล้วเกิน 30 วัน */
+
+function cleanupLeaveHistory() {
+  const requests = leaveEvents();
+  const now = Date.now();
+  const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+
+  const kept = requests.filter(request => {
+
+    // รายการที่ยังแจ้งลา ห้ามลบ
+    if (request.status === "แจ้งลา") return true;
+
+    // เก็บสถานะอื่นที่ไม่ใช่สถานะจัดการแล้วไว้
+    if (
+      request.status !== "โอเคจ้า" &&
+      request.status !== "เสียใจว่ะ"
+    ) return true;
+
+    // ใช้เวลาส่งคำขอ หรือ ID เดิม
+    const created = Number(
+      request.createdAt || request.id || 0
+    );
+
+    // ถ้าไม่ทราบวันที่ ให้เก็บไว้ก่อน
+    if (!created) return true;
+
+    // เก็บไว้ไม่เกิน 30 วัน
+    return now - created <= thirtyDays;
+  });
+
+  if (kept.length !== requests.length) {
+    save("hmLeaveRequests", kept);
+  }
+}
+
+
+/* ปุ่มแอดมินล้างประวัติที่จัดการแล้ว */
+
+function clearProcessedLeaveHistory() {
+  if (!user || user.role !== "leader") {
+    toast("ไม่มีสิทธิ์ล้างประวัติ");
+    return;
+  }
+
+  const confirmed = confirm(
+    "ต้องการล้างประวัติที่อนุมัติหรือปฏิเสธแล้วทั้งหมดใช่ไหม?\n\nคำขอที่ยังแจ้งลาจะไม่ถูกลบ"
+  );
+
+  if (!confirmed) return;
+
+  const requests = leaveEvents();
+
+  const kept = requests.filter(request =>
+    request.status !== "โอเคจ้า" &&
+    request.status !== "เสียใจว่ะ"
+  );
+
+  const deleted = requests.length - kept.length;
+
+  save("hmLeaveRequests", kept);
+
+  renderLeavePanel();
+  renderCalendar();
+
+  toast("ล้างประวัติแล้ว " + deleted + " รายการ");
+}
+
+
+/* แสดงรายการวันลา */
+
+function renderLeaveList() {
+  const list = $("leaveList");
+  if (!list || !user) return;
+
+  // ตรวจสอบประวัติเกิน 30 วัน
+  cleanupLeaveHistory();
+
+  const requests = leaveEvents()
+    .filter(request =>
+      user.role === "leader" ||
+      request.memberId === user.id
+    )
+    .sort((a, b) =>
+      Number(b.createdAt || b.id || 0) -
+      Number(a.createdAt || a.id || 0)
+    );
+
+  const adminButton = user.role === "leader"
+    ? `
+      <button
+        type="button"
+        class="clear-leave-btn"
+        id="clearLeaveHistory"
+      >
+        🗑 ล้างประวัติที่จัดการแล้ว
+      </button>
+    `
+    : "";
+
+  list.innerHTML = `
+    <div class="leave-list-heading">
+      <h3>📋 ประวัติการลา</h3>
+      <span>${requests.length} รายการ</span>
+    </div>
+
+    ${adminButton}
+
+    <div class="leave-scroll">
+
+      ${
+        requests.length
+        ? requests.map(request => {
+
+          const statusClass =
+            request.status === "โอเคจ้า"
+              ? "approved"
+              : request.status === "เสียใจว่ะ"
+                ? "rejected"
+                : "pending";
+
+          const isPending =
+            request.status === "แจ้งลา";
+
+          return `
+            <details class="leave-card">
+
+              <summary>
+                <div class="leave-card-main">
+
+                  <strong>
+                    ${escapeHtml(request.name)}
+                  </strong>
+
+                  <small>
+                    ${escapeHtml(request.start)}
+                    ถึง
+                    ${escapeHtml(request.end)}
+                  </small>
+
+                </div>
+
+                <span class="badge ${statusClass}">
+                  ${escapeHtml(request.status)}
+                </span>
+
+              </summary>
+
+              <div class="leave-card-detail">
+
+                <p>
+                  <b>สมาชิก:</b>
+                  ${escapeHtml(request.name)}
+                </p>
+
+                <p>
+                  <b>วันเริ่มลา:</b>
+                  ${escapeHtml(request.start)}
+                </p>
+
+                <p>
+                  <b>วันสิ้นสุด:</b>
+                  ${escapeHtml(request.end)}
+                </p>
+
+                <p>
+                  <b>เหตุผล:</b>
+                  ${escapeHtml(request.reason)}
+                </p>
+
+                <p>
+                  <b>สถานะ:</b>
+                  ${escapeHtml(request.status)}
+                </p>
+
+                ${
+                  user.role === "leader" && isPending
+                  ? `
+                    <div class="admin-actions">
+
+                      <button
+                        type="button"
+                        data-approve="${request.id}"
+                      >
+                        ✓ โอเคจ้า
+                      </button>
+
+                      <button
+                        type="button"
+                        data-reject="${request.id}"
+                      >
+                        ✕ เสียใจว่ะ
+                      </button>
+
+                    </div>
+                  `
+                  : ""
+                }
+
+              </div>
+
+            </details>
+          `;
+
+        }).join("")
+        : `
+          <p class="leave-empty">
+            ยังไม่มีประวัติการลา
+          </p>
+        `
+      }
+
+    </div>
+  `;
+
+
+  // ปุ่มล้างประวัติสำหรับแอดมิน
+  const clearButton = $("clearLeaveHistory");
+
+  if (clearButton) {
+    clearButton.addEventListener(
+      "click",
+      clearProcessedLeaveHistory
+    );
+  }
+
+
+  // ปุ่มอนุมัติ
+  list.querySelectorAll("[data-approve]").forEach(button => {
+    button.addEventListener("click", () => {
+      setLeaveStatus(
+        Number(button.dataset.approve),
+        "โอเคจ้า"
+      );
+    });
+  });
+
+
+  // ปุ่มปฏิเสธ
+  list.querySelectorAll("[data-reject]").forEach(button => {
+    button.addEventListener("click", () => {
+      setLeaveStatus(
+        Number(button.dataset.reject),
+        "เสียใจว่ะ"
+      );
+    });
+  });
+
+}
+
+
+/* เปลี่ยนสถานะคำขอลา */
+
+function setLeaveStatus(id, status) {
+
+  if (!user || user.role !== "leader") {
+    toast("ไม่มีสิทธิ์จัดการคำขอลา");
+    return;
+  }
+
+  const requests = leaveEvents().map(request =>
+    request.id === id
+      ? {
+          ...request,
+          status,
+          processedAt: Date.now()
+        }
+      : request
+  );
+
+  save("hmLeaveRequests", requests);
+
+  renderLeavePanel();
+  renderCalendar();
+
+  toast("อัปเดตสถานะคำขอแล้ว");
+}
+
+
+
+/* สลับรูปตรงกลางตามสมาชิกที่เลือก */
+function selectMember(index) {
+  const member = members[index];
+  if (!member) return;
+
+  const heroImage = $("heroImage");
+  if (heroImage) {
+    heroImage.src = member.image;
+    heroImage.alt = member.name;
+  }
+
+  // เปลี่ยนการ์ดสมาชิกให้แสดงสถานะที่เลือก
+  document.querySelectorAll(".member-card").forEach((card, i) => {
+    card.classList.toggle("selected", i === index);
+  });
+
+  // เปลี่ยนเมนูตำแหน่งให้ตรงกับสมาชิก
+  const tab = $("tab-" + (index + 1));
+  if (tab) tab.checked = true;
+}
+
+// กดรูปสมาชิกด้านล่างแล้วเปลี่ยนรูปตรงกลาง
+document.querySelectorAll(".member-card").forEach((card, index) => {
+  card.addEventListener("click", () => {
+    selectMember(index);
+  });
+});
+
+// เปลี่ยนรูปเมื่อเลือกตำแหน่งจากเมนูด้านขวา
+document.querySelectorAll('input[name="guild-tabs"]').forEach((tab, index) => {
+  tab.addEventListener("change", () => {
+    if (tab.checked) selectMember(index);
+  });
+});
+
+// เริ่มต้นด้วยรูปหัวหน้ากิล โดยไม่กระทบระบบสลับรูป
+selectMember(0);
+
+// คืนสถานะสมาชิกจาก localStorage ก่อนวาดปฏิทิน
+restoreLogin();
+renderCalendar();
+
+// ให้ปุ่ม “เข้าสู่ระบบ” จากหน้าข่าวเปิดหน้าต่างล็อกอินได้โดยตรง
+if (new URLSearchParams(window.location.search).get("login") === "1" && !user) {
+  openModal("loginModal");
+}
+
+const newsButton = document.getElementById("openNewsBoard");
+const newsBoard = document.getElementById("hmNewsBoard");
+const closeNewsButton = document.getElementById("closeNewsBoard");
+
+if (newsButton && newsBoard) {
+  newsButton.addEventListener("click", function (event) {
+    event.preventDefault();
+    newsBoard.classList.remove("hidden");
+  });
+}
+
+if (closeNewsButton && newsBoard) {
+  closeNewsButton.addEventListener("click", function () {
+    newsBoard.classList.add("hidden");
+  });
+}
+
+if (newsBoard) {
+  newsBoard.addEventListener("click", function (event) {
+    if (event.target === newsBoard) {
+      newsBoard.classList.add("hidden");
+    }
+  });
+}
+
+</script>
+</body></html>

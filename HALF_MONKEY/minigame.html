@@ -1,0 +1,949 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HALF MONKEY RUN</title>
+
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#080d18;--panel:#111a2b;--gold:#f6c453;
+  --gold2:#ffe6a0;--text:#f3f6ff;--muted:#9eacc5;
+  --line:#2b3a55
+}
+body{
+  margin:0;padding:24px 14px 40px;min-height:100vh;
+  color:var(--text);
+  background:radial-gradient(ellipse at top,#1a2d4a,transparent 48%),var(--bg);
+  font-family:Arial,Tahoma,sans-serif
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.container{width:min(100%,1050px);margin:auto}
+.header{text-align:center;margin-bottom:24px}
+.logo{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:64px;height:64px;border-radius:20px;font-size:36px;
+  background:linear-gradient(145deg,#ffdf83,#d99420)
+}
+.header h1{color:var(--gold);font-size:clamp(26px,5vw,40px);margin:12px 0 6px;letter-spacing:2px}
+.header p{color:var(--muted);font-size:14px;margin:0}
+.member-session{display:flex;justify-content:center;align-items:center;gap:9px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--muted)}
+.member-session button,.member-session a{display:inline-block;padding:7px 11px;border:1px solid #66552b;border-radius:8px;background:#111a2b;color:var(--gold2);text-decoration:none;font:inherit;cursor:pointer}
+.panel{
+  border:1px solid var(--line);border-radius:18px;overflow:hidden;
+  background:linear-gradient(150deg,#142036,#0e1626);
+  box-shadow:0 14px 40px #0004
+}
+.game-panel{padding:16px}
+.section-title{margin:0 0 14px;font-size:18px}
+.section-title span{color:var(--gold)}
+.hud{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.hud-card{padding:12px 8px;border:1px solid var(--line);border-radius:12px;text-align:center;background:#0b1321;min-width:0}
+.hud-label{color:var(--muted);font-size:12px;margin-bottom:6px}
+.hud-value{color:var(--gold2);font-size:22px;font-weight:bold;overflow-wrap:anywhere}
+.game-wrap{position:relative;overflow:hidden;border:1px solid #314563;border-radius:14px;background:#b9d8e8}
+#gameCanvas{display:block;width:100%;height:auto;touch-action:manipulation}
+.overlay{
+  position:absolute;inset:0;display:flex;justify-content:center;
+  align-items:center;padding:16px;background:#07101bd9;backdrop-filter:blur(5px)
+}
+.overlay.hidden{display:none}
+.overlay-card{
+  width:min(100%,360px);padding:22px;border:1px solid #536581;
+  border-radius:18px;background:#111c2e;text-align:center
+}
+.overlay-card h2{color:var(--gold);margin:0 0 10px;font-size:25px}
+.overlay-card p{color:var(--muted);line-height:1.6;font-size:13px;margin:0 0 14px}
+.name-input{
+  width:100%;padding:12px;margin-bottom:12px;color:white;
+  background:#080f1c;border:1px solid #40516e;border-radius:10px;outline:none
+}
+.name-input:focus{border-color:var(--gold)}
+.btn{padding:12px 18px;border:0;border-radius:10px;font-weight:bold}
+.btn-primary{width:100%;color:#201705;background:linear-gradient(135deg,#ffe49b,#edb73f)}
+.btn-secondary{color:var(--text);background:#263651;border:1px solid #3b4e6d}
+.btn:hover{filter:brightness(1.1)}
+.controls{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:12px}
+.controls button{min-width:130px}
+.help{color:var(--muted);text-align:center;font-size:12px;line-height:1.8;margin:14px 0 0}
+.leaderboard-panel{margin-top:20px;padding:18px}
+.leaderboard-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.leaderboard-head h2{margin:0;font-size:20px}
+.local-tag{padding:6px 10px;border:1px solid #66552b;border-radius:20px;color:var(--gold2);background:#3b3018;font-size:11px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:390px}
+thead{background:#0b1321}
+th,td{padding:13px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}
+th{color:var(--muted);font-weight:normal}
+td.score-cell,.rank{color:var(--gold2);font-weight:bold}
+.rank{color:var(--gold)}
+.empty-row{text-align:center;color:var(--muted);padding:26px 12px}
+.footer{margin-top:22px;color:#71819d;font-size:12px;text-align:center;line-height:1.8}
+.admin-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:12px}
+#adminPanel{display:none}
+
+/* แท่นรางวัล 3 อันดับ */
+.podium-section{
+  margin:18px 0 24px;padding:20px 12px 12px;
+  border:1px solid #344663;border-radius:16px;
+  background:radial-gradient(ellipse at 50% 100%,#263958 0%,#101a2b 70%);
+}
+.podium-title{text-align:center;color:var(--gold);margin:0 0 18px;font-size:20px}
+.podium{
+  display:grid;grid-template-columns:1fr 1.1fr 1fr;
+  gap:8px;align-items:end;max-width:650px;margin:auto;
+}
+.podium-place{text-align:center;min-width:0}
+.podium-name{
+  font-size:13px;font-weight:bold;overflow-wrap:anywhere;
+  margin:7px auto 4px;max-width:100%;color:#fff
+}
+.podium-score{font-size:12px;color:var(--gold2);margin-bottom:8px}
+.podium-cup{font-size:clamp(28px,7vw,48px);line-height:1.3}
+.podium-number{font-size:12px;color:#d8e2f5;margin-bottom:6px}
+.podium-block{
+  display:flex;align-items:center;justify-content:center;
+  font-size:clamp(24px,6vw,38px);font-weight:bold;
+  color:#111827;border-radius:10px 10px 0 0;
+  border:1px solid #ffffff22;border-bottom:0;
+}
+.podium-place.first .podium-block{
+  height:115px;background:linear-gradient(#ffe9a0,#d9a32d);
+}
+.podium-place.second .podium-block{
+  height:78px;background:linear-gradient(#e0e8f4,#8295b1);
+}
+.podium-place.third .podium-block{
+  height:60px;background:linear-gradient(#e9b78a,#9b603d);
+}
+.podium-empty{font-size:12px;color:#d6deeb;margin-bottom:8px}
+.podium-place.first .podium-name{color:#ffe49b}
+.podium-place.second .podium-name{color:#dce7fa}
+.podium-place.third .podium-name{color:#e9b78a}
+.podium-note{text-align:center;color:var(--muted);font-size:11px;margin:14px 0 0}
+#adminPanel{display:none}
+
+@media(max-width:600px){
+  body{padding:10px 8px 24px}
+  .container{width:100%}
+  .header{margin-bottom:14px}
+  .game-panel{padding:8px}
+  .hud{gap:5px;margin-bottom:8px}
+  .hud-card{padding:8px 3px}
+  .hud-value{font-size:17px}
+  .game-wrap{width:100%;border-radius:10px}
+  #gameCanvas{width:100%;height:auto}
+  .overlay{padding:8px}
+  .overlay-card{width:100%;max-width:320px;max-height:95%;overflow-y:auto;padding:14px;border-radius:14px}
+  .overlay-card h2{font-size:21px;margin-bottom:8px}
+  .overlay-card p{font-size:12px;margin-bottom:10px}
+  .name-input{padding:12px;margin-bottom:10px;font-size:16px}
+  .controls{flex-wrap:nowrap;gap:8px;margin-top:12px;padding:0 4px}
+  .controls button{flex:1;min-width:0;min-height:44px;padding:8px 6px;font-size:14px}
+  .help{margin-top:10px;font-size:12px}
+  .leaderboard-panel{padding:12px;margin-top:14px}
+  .podium-section{padding:16px 6px 10px}
+  .podium{gap:4px}
+  .podium-name{font-size:11px}
+  .podium-score{font-size:10px}
+  .podium-place.first .podium-block{height:90px}
+  .podium-place.second .podium-block{height:65px}
+  .podium-place.third .podium-block{height:50px}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+<header class="header">
+  <div class="logo">🐵</div>
+  <h1>HALF MONKEY RUN</h1>
+  <p>วิ่งให้ไกล เก็บกล้วย ทำคะแนนให้สูงที่สุด!</p>
+  <div class="member-session">
+    <span id="gameMemberStatus">กำลังตรวจสอบบัญชี...</span>
+    <button type="button" id="gameMemberButton">กำลังโหลด...</button>
+    <a href="./HALF_MONKEY_calendar_page_added.html">กลับหน้าเว็บกิลด์</a>
+  </div>
+</header>
+
+<main>
+<section class="panel game-panel">
+  <h2 class="section-title"><span>🎮</span> สนามวิ่งของกิลด์</h2>
+
+  <div class="hud">
+    <div class="hud-card"><div class="hud-label">คะแนนรอบนี้</div><div class="hud-value" id="score">0</div></div>
+    <div class="hud-card"><div class="hud-label">🍌 กล้วย</div><div class="hud-value" id="bananaCount">0</div></div>
+    <div class="hud-card"><div class="hud-label">🏆 สถิติสูงสุด</div><div class="hud-value" id="bestScore">0</div></div>
+  </div>
+
+  <div class="game-wrap">
+    <canvas id="gameCanvas" width="900" height="360"></canvas>
+    <div class="overlay" id="overlay">
+      <div class="overlay-card">
+        <h2 id="overlayTitle">🐵 HALF MONKEY</h2>
+        <p id="overlayText">กรอกชื่อผู้เล่นก่อนเริ่มเกม<br>กระโดดข้ามสิ่งกีดขวางและเก็บกล้วย!</p>
+        <input id="playerName" class="name-input" maxlength="20" placeholder="กรอกชื่อผู้เล่น / ชื่อตัวละคร" autocomplete="nickname">
+        <button class="btn btn-primary" id="startBtn">เริ่มเล่นเกม</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-secondary" id="jumpBtn">⬆ กระโดด</button>
+    <button class="btn btn-secondary" id="restartBtn">↻ เริ่มใหม่</button>
+  </div>
+
+  <p class="help">
+    คอมพิวเตอร์: กด Space หรือ ↑ เพื่อกระโดด<br>
+    มือถือ: แตะปุ่มกระโดด หรือแตะพื้นที่เกม<br>
+    เก็บกล้วยทองคำเพื่อรับคะแนนโบนัส
+  </p>
+</section>
+
+<section class="panel leaderboard-panel">
+  <div class="leaderboard-head">
+    <h2>🏆 ตารางคะแนน HALF MONKEY</h2>
+    <span class="local-tag">บันทึกในเบราว์เซอร์นี้</span>
+  </div>
+
+  <div class="podium-section">
+    <h3 class="podium-title">👑 HALL OF FAME 👑</h3>
+    <div class="podium" id="podium">
+      <div class="podium-place second">
+        <div class="podium-cup">🥈</div>
+        <div class="podium-name">ยังไม่มีผู้เล่น</div>
+        <div class="podium-score">0 คะแนน</div>
+        <div class="podium-block">2</div>
+      </div>
+      <div class="podium-place first">
+        <div class="podium-cup">🏆</div>
+        <div class="podium-name">ยังไม่มีผู้เล่น</div>
+        <div class="podium-score">0 คะแนน</div>
+        <div class="podium-block">1</div>
+      </div>
+      <div class="podium-place third">
+        <div class="podium-cup">🥉</div>
+        <div class="podium-name">ยังไม่มีผู้เล่น</div>
+        <div class="podium-score">0 คะแนน</div>
+        <div class="podium-block">3</div>
+      </div>
+    </div>
+    <p class="podium-note">อันดับอัปเดตอัตโนมัติเมื่อมีสถิติใหม่ที่ดีกว่าเดิม</p>
+  </div>
+
+  <h3>📊 ตารางคะแนนทั้งหมด</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>อันดับ</th><th>ชื่อผู้เล่น</th><th>คะแนนสูงสุด</th><th>กล้วย</th></tr></thead>
+      <tbody id="leaderboardRows"></tbody>
+    </table>
+  </div>
+
+  <div id="adminPanel" class="admin-actions">
+    <button class="btn btn-secondary" id="clearBtn">🗑️ แอดมิน: ล้างคะแนนทั้งหมด</button>
+    <button class="btn btn-secondary" id="logoutBtn">ออกจากระบบแอดมิน</button>
+  </div>
+  <div class="admin-actions" id="adminLoginWrap">
+    <button class="btn btn-secondary" id="adminLoginBtn">🔐 เข้าสู่ระบบแอดมิน</button>
+  </div>
+</section>
+</main>
+
+<footer class="footer">
+  HALF MONKEY GUILD · MINI GAME<br>
+  สร้างมาเพื่อความสนุกของสมาชิกกิลด์
+</footer>
+</div>
+
+<script>
+"use strict";
+
+// ใช้สถานะสมาชิกเดียวกับหน้าเว็บกิลด์และกระดานข่าว
+(function setupMemberSessionControl() {
+  const key = "hmLoggedInUser";
+  const status = document.getElementById("gameMemberStatus");
+  const button = document.getElementById("gameMemberButton");
+  function refresh() {
+    let member = null;
+    try { member = JSON.parse(localStorage.getItem(key) || "null"); } catch (error) {}
+    const name = member && typeof member.name === "string" ? member.name.trim() : "";
+    status.textContent = name ? `เข้าสู่ระบบ: ${name}` : "ยังไม่ได้เข้าสู่ระบบ";
+    button.textContent = name ? "ออกจากระบบ" : "เข้าสู่ระบบ";
+  }
+  button.addEventListener("click", function () {
+    let member = null;
+    try { member = JSON.parse(localStorage.getItem(key) || "null"); } catch (error) {}
+    if (member && member.name) {
+      localStorage.removeItem(key);
+      refresh();
+    } else {
+      window.location.href = "./HALF_MONKEY_calendar_page_added.html?login=1";
+    }
+  });
+  window.addEventListener("storage", function (event) {
+    if (event.key === key) refresh();
+  });
+  window.addEventListener("focus", refresh);
+  refresh();
+})();
+
+/* ตั้งค่าระบบ */
+const ADMIN_PASSWORD = "HMAdmin168";
+const BEST_KEY = "halfMonkeyRunBest";
+const LEADERBOARD_KEY = "halfMonkeyLeaderboard";
+
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const scoreEl = document.getElementById("score");
+const bananaCountEl = document.getElementById("bananaCount");
+const bestScoreEl = document.getElementById("bestScore");
+const overlay = document.getElementById("overlay");
+const overlayTitle = document.getElementById("overlayTitle");
+const overlayText = document.getElementById("overlayText");
+const playerNameInput = document.getElementById("playerName");
+const startBtn = document.getElementById("startBtn");
+const jumpBtn = document.getElementById("jumpBtn");
+const restartBtn = document.getElementById("restartBtn");
+const leaderboardRows = document.getElementById("leaderboardRows");
+const podium = document.getElementById("podium");
+const adminPanel = document.getElementById("adminPanel");
+const adminLoginWrap = document.getElementById("adminLoginWrap");
+const adminLoginBtn = document.getElementById("adminLoginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const clearBtn = document.getElementById("clearBtn");
+
+const WIDTH = canvas.width;
+const HEIGHT = canvas.height;
+const GROUND = 292;
+
+let running = false;
+let animationId = null;
+let lastTime = 0;
+let score = 0;
+let bananas = 0;
+let distance = 0;
+let speed = 5;
+let obstacleTimer = 0;
+let bananaTimer = 0;
+let obstacles = [];
+let bananaItems = [];
+let clouds = [];
+let isAdmin = false;
+let bestScore = Number(safeGet(BEST_KEY, "0")) || 0;
+
+const player = {
+  x:105, y:GROUND-48, w:42, h:48, vy:0, onGround:true
+};
+
+/* ที่เก็บข้อมูลอย่างปลอดภัย */
+function safeGet(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value === null ? fallback : value;
+  } catch(error) {
+    return fallback;
+  }
+}
+
+function safeSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch(error) {
+    return false;
+  }
+}
+
+/* ชื่อเดียวกันจะถือเป็นผู้เล่นคนเดียวกัน */
+function normalizeName(name) {
+  return String(name || "").trim().toLocaleLowerCase();
+}
+
+/* รวมคะแนนเก่าที่มีชื่อซ้ำ ให้เหลือสถิติที่ดีที่สุดต่อคน */
+function loadLeaderboard() {
+  try {
+    const raw = JSON.parse(safeGet(LEADERBOARD_KEY, "[]"));
+    if (!Array.isArray(raw)) return [];
+
+    const bestByPlayer = new Map();
+
+    raw.forEach(record => {
+      if (!record || typeof record !== "object") return;
+
+      const name = String(record.name || "").trim().slice(0, 20);
+      if (!name) return;
+
+      const key = normalizeName(name);
+      const candidate = {
+        name,
+        score: Math.max(0, Math.floor(Number(record.score) || 0)),
+        bananas: Math.max(0, Math.floor(Number(record.bananas) || 0)),
+        date: record.date || ""
+      };
+
+      const old = bestByPlayer.get(key);
+
+      if (
+        !old ||
+        candidate.score > old.score ||
+        (candidate.score === old.score && candidate.bananas > old.bananas)
+      ) {
+        bestByPlayer.set(key, candidate);
+      }
+    });
+
+    return sortRecords(Array.from(bestByPlayer.values()));
+  } catch(error) {
+    return [];
+  }
+}
+
+function sortRecords(records) {
+  return records.sort((a, b) =>
+    (Number(b.score) || 0) - (Number(a.score) || 0) ||
+    (Number(b.bananas) || 0) - (Number(a.bananas) || 0) ||
+    String(a.name).localeCompare(String(b.name), "th")
+  );
+}
+
+function saveLeaderboard(records) {
+  if (!safeSet(LEADERBOARD_KEY, JSON.stringify(records))) {
+    alert("บันทึกคะแนนไม่สำเร็จ พื้นที่จัดเก็บอาจเต็ม");
+    return false;
+  }
+  return true;
+}
+
+/* บันทึกเฉพาะสถิติใหม่ที่ดีกว่าเดิม */
+function savePlayerScore() {
+  const name = playerNameInput.value.trim().slice(0, 20);
+  if (!name) return;
+
+  const records = loadLeaderboard();
+  const key = normalizeName(name);
+  const currentScore = Math.floor(score);
+  const currentBananas = Math.floor(bananas);
+  const index = records.findIndex(r => normalizeName(r.name) === key);
+
+  if (index >= 0) {
+    const old = records[index];
+
+    const isBetter =
+      currentScore > old.score ||
+      (currentScore === old.score && currentBananas > old.bananas);
+
+    if (isBetter) {
+      records[index] = {
+        name: old.name,
+        score: currentScore,
+        bananas: currentBananas,
+        date: new Date().toISOString()
+      };
+    }
+    // ถ้าคะแนนรอบใหม่ต่ำกว่าเดิม จะไม่แก้สถิติ
+  } else {
+    records.push({
+      name,
+      score: currentScore,
+      bananas: currentBananas,
+      date: new Date().toISOString()
+    });
+  }
+
+  sortRecords(records);
+  records.splice(100);
+
+  if (!saveLeaderboard(records)) return;
+
+  const personalBest = records.find(r => normalizeName(r.name) === key);
+  bestScore = personalBest ? personalBest.score : 0;
+  safeSet(BEST_KEY, String(bestScore));
+  bestScoreEl.textContent = String(bestScore);
+
+  renderLeaderboard();
+}
+
+/* แสดงแท่นรางวัล */
+function renderPodium(records) {
+  podium.replaceChildren();
+
+  const places = [
+    {rank:2, className:"second", medal:"🥈"},
+    {rank:1, className:"first", medal:"🏆"},
+    {rank:3, className:"third", medal:"🥉"}
+  ];
+
+  places.forEach(place => {
+    const record = records[place.rank - 1];
+    const box = document.createElement("div");
+    box.className = "podium-place " + place.className;
+
+    const cup = document.createElement("div");
+    cup.className = "podium-cup";
+    cup.textContent = place.medal;
+
+    const name = document.createElement("div");
+    name.className = "podium-name";
+    name.textContent = record ? record.name : "ยังไม่มีผู้เล่น";
+
+    const points = document.createElement("div");
+    points.className = "podium-score";
+    points.textContent = record ? record.score.toLocaleString("th-TH") + " คะแนน" : "0 คะแนน";
+
+    const block = document.createElement("div");
+    block.className = "podium-block";
+    block.textContent = String(place.rank);
+
+    box.append(cup, name, points, block);
+    podium.appendChild(box);
+  });
+}
+
+/* แสดงตารางคะแนน */
+function renderLeaderboard() {
+  const records = loadLeaderboard();
+  renderPodium(records);
+  leaderboardRows.replaceChildren();
+
+  if (records.length === 0) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 4;
+    td.className = "empty-row";
+    td.textContent = "ยังไม่มีคะแนน เริ่มเล่นเพื่อขึ้นแท่นรางวัล!";
+    tr.appendChild(td);
+    leaderboardRows.appendChild(tr);
+    return;
+  }
+
+  records.slice(0, 20).forEach((record, index) => {
+    const tr = document.createElement("tr");
+    const rank = document.createElement("td");
+    rank.className = "rank";
+    rank.textContent =
+      index === 0 ? "🥇 1" :
+      index === 1 ? "🥈 2" :
+      index === 2 ? "🥉 3" : String(index + 1);
+
+    const name = document.createElement("td");
+    name.textContent = record.name;
+
+    const points = document.createElement("td");
+    points.className = "score-cell";
+    points.textContent = record.score.toLocaleString("th-TH");
+
+    const banana = document.createElement("td");
+    banana.textContent = "🍌 " + record.bananas;
+
+    tr.append(rank, name, points, banana);
+    leaderboardRows.appendChild(tr);
+  });
+}
+
+/* ฉากหลัง */
+function initClouds() {
+  clouds = [
+    {x:100,y:58,s:1},
+    {x:380,y:90,s:.8},
+    {x:670,y:48,s:1.1},
+    {x:820,y:115,s:.7}
+  ];
+}
+
+function drawCloud(x,y,s) {
+  ctx.save();
+  ctx.translate(x,y);
+  ctx.scale(s,s);
+  ctx.fillStyle = "rgba(255,255,255,.78)";
+  ctx.beginPath();
+  ctx.arc(0,8,18,0,Math.PI*2);
+  ctx.arc(20,0,23,0,Math.PI*2);
+  ctx.arc(43,9,17,0,Math.PI*2);
+  ctx.arc(22,13,22,0,Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawBackground() {
+  const sky = ctx.createLinearGradient(0,0,0,HEIGHT);
+  sky.addColorStop(0,"#8ec8e5");
+  sky.addColorStop(.68,"#d7e9d9");
+  sky.addColorStop(1,"#f0d6a2");
+  ctx.fillStyle = sky;
+  ctx.fillRect(0,0,WIDTH,HEIGHT);
+
+  ctx.fillStyle = "#ffe8a3";
+  ctx.beginPath();
+  ctx.arc(735,78,30,0,Math.PI*2);
+  ctx.fill();
+
+  ctx.fillStyle = "#8baeb1";
+  ctx.beginPath();
+  ctx.moveTo(0,245);ctx.lineTo(120,130);ctx.lineTo(240,225);
+  ctx.lineTo(380,115);ctx.lineTo(535,240);ctx.lineTo(690,145);
+  ctx.lineTo(850,230);ctx.lineTo(900,195);ctx.lineTo(900,300);
+  ctx.lineTo(0,300);ctx.closePath();ctx.fill();
+
+  ctx.fillStyle = "#6d9690";
+  ctx.beginPath();
+  ctx.moveTo(0,270);ctx.lineTo(160,205);ctx.lineTo(310,268);
+  ctx.lineTo(470,198);ctx.lineTo(640,266);ctx.lineTo(790,210);
+  ctx.lineTo(900,260);ctx.lineTo(900,310);ctx.lineTo(0,310);
+  ctx.closePath();ctx.fill();
+
+  clouds.forEach(c => drawCloud(c.x,c.y,c.s));
+
+  // ศาลาจีน
+  ctx.fillStyle = "#79513a";ctx.fillRect(630,220,92,43);
+  ctx.fillStyle = "#b64f36";ctx.fillRect(644,232,64,31);
+  ctx.fillStyle = "#403d43";
+  ctx.beginPath();
+  ctx.moveTo(610,225);ctx.lineTo(675,190);ctx.lineTo(742,225);
+  ctx.lineTo(725,221);ctx.lineTo(675,204);ctx.lineTo(628,226);
+  ctx.closePath();ctx.fill();
+  ctx.fillStyle = "#f5ce74";
+  ctx.fillRect(657,238,10,15);ctx.fillRect(686,238,10,15);
+
+  ctx.fillStyle = "#c9a36b";
+  ctx.fillRect(0,GROUND,WIDTH,HEIGHT-GROUND);
+  ctx.fillStyle = "#79985b";
+  ctx.fillRect(0,GROUND,WIDTH,9);
+  ctx.strokeStyle = "#b18a56";ctx.lineWidth = 2;
+
+  for(let i=0;i<16;i++){
+    const x=((i*80-distance*1.5)%(WIDTH+80)+WIDTH+80)%(WIDTH+80);
+    ctx.beginPath();ctx.moveTo(x,GROUND+24);ctx.lineTo(x-25,GROUND+34);ctx.stroke();
+  }
+}
+
+/* ตัวละครลิง */
+function drawMonkey() {
+  const x=player.x,y=player.y;
+  ctx.save();
+
+  ctx.fillStyle="rgba(0,0,0,.16)";
+  ctx.beginPath();ctx.ellipse(x+23,GROUND+2,27,6,0,0,Math.PI*2);ctx.fill();
+
+  ctx.strokeStyle="#75442c";ctx.lineWidth=7;ctx.lineCap="round";
+  ctx.beginPath();ctx.moveTo(x+9,y+30);ctx.quadraticCurveTo(x-15,y+17,x-7,y+7);ctx.stroke();
+
+  ctx.strokeStyle="#75442c";ctx.lineWidth=8;
+  ctx.beginPath();ctx.moveTo(x+14,y+36);ctx.lineTo(x+11,y+46);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x+29,y+36);ctx.lineTo(x+33,y+46);ctx.stroke();
+
+  ctx.fillStyle="#96603b";
+  ctx.beginPath();ctx.ellipse(x+22,y+29,17,19,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#d9a46e";
+  ctx.beginPath();ctx.ellipse(x+24,y+32,9,12,0,0,Math.PI*2);ctx.fill();
+
+  ctx.strokeStyle="#96603b";ctx.lineWidth=7;
+  ctx.beginPath();ctx.moveTo(x+12,y+25);ctx.lineTo(x+3,y+33);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x+33,y+24);ctx.lineTo(x+40,y+30);ctx.stroke();
+
+  ctx.fillStyle="#75442c";
+  ctx.beginPath();ctx.arc(x+7,y+9,9,0,Math.PI*2);ctx.arc(x+35,y+9,9,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#e7b18c";
+  ctx.beginPath();ctx.arc(x+7,y+9,4,0,Math.PI*2);ctx.arc(x+35,y+9,4,0,Math.PI*2);ctx.fill();
+
+  ctx.fillStyle="#a96d43";
+  ctx.beginPath();ctx.arc(x+22,y+12,19,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle="#f0c89d";
+  ctx.beginPath();ctx.ellipse(x+22,y+17,13,11,0,0,Math.PI*2);ctx.fill();
+
+  ctx.fillStyle="#241a16";
+  ctx.beginPath();ctx.arc(x+17,y+13,2,0,Math.PI*2);ctx.arc(x+27,y+13,2,0,Math.PI*2);ctx.fill();
+
+  ctx.strokeStyle="#75442c";ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(x+22,y+19,4,.15,Math.PI-.15);ctx.stroke();
+  ctx.restore();
+}
+
+/* สิ่งกีดขวางและกล้วย */
+function spawnObstacle() {
+  if(Math.random()<.5){
+    obstacles.push({x:WIDTH+20,y:GROUND-28,w:30,h:28,type:"rock"});
+  }else{
+    obstacles.push({x:WIDTH+20,y:GROUND-39,w:48,h:39,type:"log"});
+  }
+}
+
+function spawnBanana() {
+  bananaItems.push({
+    x:WIDTH+20,
+    y:Math.random()<.45?GROUND-105-Math.random()*35:GROUND-55,
+    w:22,h:25,collected:false
+  });
+}
+
+function drawObstacle(o) {
+  if(o.type==="rock"){
+    ctx.fillStyle="#66727c";ctx.beginPath();
+    ctx.moveTo(o.x,o.y+o.h);ctx.lineTo(o.x+4,o.y+10);
+    ctx.lineTo(o.x+15,o.y);ctx.lineTo(o.x+27,o.y+8);
+    ctx.lineTo(o.x+o.w,o.y+o.h);ctx.closePath();ctx.fill();
+  }else{
+    ctx.fillStyle="#8a542e";ctx.fillRect(o.x,o.y+6,o.w,o.h-8);
+    ctx.fillStyle="#b77b48";ctx.fillRect(o.x,o.y+6,o.w,8);
+    ctx.strokeStyle="#5e3925";ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(o.x+8,o.y+22,6,0,Math.PI*2);ctx.stroke();
+    ctx.beginPath();ctx.arc(o.x+o.w-8,o.y+22,6,0,Math.PI*2);ctx.stroke();
+  }
+}
+
+function drawBanana(b) {
+  if(b.collected)return;
+  ctx.save();ctx.translate(b.x,b.y);ctx.rotate(-.45);
+  ctx.strokeStyle="#ffd54d";ctx.lineWidth=10;ctx.lineCap="round";
+  ctx.beginPath();ctx.arc(0,0,12,.25,Math.PI*1.1);ctx.stroke();
+  ctx.strokeStyle="#b77a22";ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(0,0,12,.25,Math.PI*1.1);ctx.stroke();
+  ctx.restore();
+}
+
+/* ระบบกระโดด 2 ครั้ง */
+let jumpCount = 0;
+const MAX_JUMPS = 2;
+
+function jump() {
+  if (!running || jumpCount >= MAX_JUMPS) return;
+
+  player.vy = jumpCount === 0 ? -12.5 : -11;
+  player.onGround = false;
+  jumpCount++;
+}
+
+function overlaps(a,b) {
+  const p=7;
+  return a.x+p<b.x+b.w&&a.x+a.w-p>b.x&&a.y+p<b.y+b.h&&a.y+a.h-p>b.y;
+}
+
+function updateGame(delta) {
+  const factor=Math.min(delta/16.67,2.5);
+  distance+=speed*factor;
+  speed=Math.min(5+distance/2500,11);
+  score+=.12*factor;
+
+  player.vy+=.58*factor;
+  player.y+=player.vy*factor;
+
+  if(player.y+player.h>=GROUND){
+  player.y=GROUND-player.h;
+  player.vy=0;
+  player.onGround=true;
+  jumpCount=0;
+}
+
+  clouds.forEach(c=>{
+    c.x-=.25*factor;
+    if(c.x<-80)c.x=WIDTH+30;
+  });
+
+  obstacleTimer+=delta;
+  if(obstacleTimer>Math.max(720,1300-speed*45)){
+    spawnObstacle();obstacleTimer=0;
+  }
+
+  bananaTimer+=delta;
+  if(bananaTimer>1000+Math.random()*700){
+    spawnBanana();bananaTimer=0;
+  }
+
+  for(const o of obstacles){
+    o.x-=speed*factor;
+    if(overlaps(player,o)){endGame();return;}
+  }
+  obstacles=obstacles.filter(o=>o.x+o.w>-20);
+
+  for(const b of bananaItems){
+    b.x-=speed*factor;
+    if(!b.collected&&overlaps(player,b)){
+      b.collected=true;bananas++;score+=25;
+    }
+  }
+  bananaItems=bananaItems.filter(b=>b.x+b.w>-20&&!b.collected);
+
+  scoreEl.textContent=String(Math.floor(score));
+  bananaCountEl.textContent=String(bananas);
+}
+
+function drawGame() {
+  ctx.clearRect(0,0,WIDTH,HEIGHT);
+  drawBackground();
+  bananaItems.forEach(drawBanana);
+  obstacles.forEach(drawObstacle);
+  drawMonkey();
+
+  if(running){
+    ctx.fillStyle="#15273c";ctx.font="bold 13px Arial";ctx.textAlign="left";
+    ctx.fillText(playerNameInput.value.trim()||"ผู้เล่น",player.x-5,player.y-12);
+  }
+}
+
+function gameLoop(timestamp) {
+  if(!running)return;
+  const delta=lastTime?timestamp-lastTime:16.67;
+  lastTime=timestamp;
+  updateGame(delta);
+  drawGame();
+  if(running)animationId=requestAnimationFrame(gameLoop);
+}
+
+function startGame() {
+  if(running)return;
+  if(!playerNameInput.value.trim()){
+    overlayText.textContent="กรุณากรอกชื่อผู้เล่นก่อนเริ่มเกม";
+    playerNameInput.focus();return;
+  }
+
+  // แสดงสถิติสูงสุดเดิมของผู้เล่นคนนี้
+  const oldRecord=loadLeaderboard().find(
+    r=>normalizeName(r.name)===normalizeName(playerNameInput.value)
+  );
+  bestScore=oldRecord?oldRecord.score:0;
+  bestScoreEl.textContent=String(bestScore);
+
+  score=0;bananas=0;distance=0;speed=5;
+  obstacleTimer=0;bananaTimer=0;
+  obstacles=[];bananaItems=[];
+  player.x=105;player.y=GROUND-player.h;player.vy=0;player.onGround=true;
+
+  scoreEl.textContent="0";bananaCountEl.textContent="0";
+  running=true;lastTime=0;
+  overlay.classList.add("hidden");
+
+  if(animationId!==null)cancelAnimationFrame(animationId);
+  animationId=requestAnimationFrame(gameLoop);
+}
+
+function endGame() {
+  if(!running)return;
+  running=false;
+
+  if(animationId!==null){
+    cancelAnimationFrame(animationId);animationId=null;
+  }
+
+  score=Math.floor(score);
+  scoreEl.textContent=String(score);
+  savePlayerScore();
+
+  const savedRecord=loadLeaderboard().find(
+    r=>normalizeName(r.name)===normalizeName(playerNameInput.value)
+  );
+  const personalBest=savedRecord?savedRecord.score:score;
+  const newRecord=score>=personalBest;
+
+  overlayTitle.textContent="💥 จบเกมแล้ว!";
+  overlayText.textContent=
+    "คะแนนรอบนี้ "+score+
+    " | สถิติสูงสุด "+personalBest+
+    " | เก็บกล้วย "+bananas+
+    (newRecord?" | 🏆 ทำสถิติใหม่หรือเทียบเท่า!":" | สถิติเดิมยังดีที่สุด");
+
+  startBtn.textContent="เล่นอีกครั้ง";
+  overlay.classList.remove("hidden");
+  drawGame();
+}
+
+function resetToStart() {
+  running=false;
+  if(animationId!==null){
+    cancelAnimationFrame(animationId);animationId=null;
+  }
+
+  overlayTitle.textContent="🐵 HALF MONKEY";
+  overlayText.textContent="กรอกชื่อผู้เล่นก่อนเริ่มเกม กระโดดข้ามสิ่งกีดขวางและเก็บกล้วย!";
+  startBtn.textContent="เริ่มเล่นเกม";
+  overlay.classList.remove("hidden");
+
+  score=0;bananas=0;distance=0;speed=5;
+  obstacleTimer=0;bananaTimer=0;
+  obstacles=[];bananaItems=[];
+  player.y=GROUND-player.h;player.vy=0;player.onGround=true;
+  scoreEl.textContent="0";bananaCountEl.textContent="0";
+
+  const record=loadLeaderboard().find(
+    r=>normalizeName(r.name)===normalizeName(playerNameInput.value)
+  );
+  bestScore=record?record.score:0;
+  bestScoreEl.textContent=String(bestScore);
+  drawGame();
+}
+
+/* ปุ่มเกม */
+startBtn.addEventListener("click",startGame);
+playerNameInput.addEventListener("keydown",event=>{
+  if(event.key==="Enter")startGame();
+});
+playerNameInput.addEventListener("change",()=>{
+  const record=loadLeaderboard().find(
+    r=>normalizeName(r.name)===normalizeName(playerNameInput.value)
+  );
+  bestScore=record?record.score:0;
+  bestScoreEl.textContent=String(bestScore);
+});
+jumpBtn.addEventListener("click",jump);
+restartBtn.addEventListener("click",resetToStart);
+
+canvas.addEventListener("pointerdown",()=>{
+  if(running)jump();
+});
+
+document.addEventListener("keydown",event=>{
+  if(event.code==="Space"||event.code==="ArrowUp"){
+    if(running){
+      event.preventDefault();jump();
+    }
+  }
+});
+
+/* ระบบแอดมิน */
+adminLoginBtn.addEventListener("click",()=>{
+  const password=prompt("กรุณากรอกรหัสผ่านแอดมิน");
+  if(password===null)return;
+
+  if(password===ADMIN_PASSWORD){
+    isAdmin=true;
+    adminPanel.style.display="flex";
+    adminLoginWrap.style.display="none";
+    alert("เข้าสู่ระบบแอดมินสำเร็จ");
+  }else{
+    alert("รหัสผ่านไม่ถูกต้อง");
+  }
+});
+
+logoutBtn.addEventListener("click",()=>{
+  isAdmin=false;
+  adminPanel.style.display="none";
+  adminLoginWrap.style.display="flex";
+  alert("ออกจากระบบแอดมินแล้ว");
+});
+
+clearBtn.addEventListener("click",()=>{
+  if(!isAdmin){
+    alert("เฉพาะแอดมินเท่านั้นที่ล้างคะแนนได้");return;
+  }
+  if(!confirm("ยืนยันล้างคะแนนทั้งหมดใช่หรือไม่?"))return;
+
+  try{
+    localStorage.removeItem(LEADERBOARD_KEY);
+    localStorage.removeItem(BEST_KEY);
+    bestScore=0;
+    bestScoreEl.textContent="0";
+    renderLeaderboard();
+    alert("ล้างคะแนนเรียบร้อยแล้ว");
+  }catch(error){
+    alert("ไม่สามารถล้างข้อมูลได้");
+  }
+});
+
+/* เริ่มต้น */
+initClouds();
+renderLeaderboard();
+drawGame();
+</script>
+</body>
+</html>
