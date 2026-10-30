@@ -1,7 +1,22 @@
 const admin = require("firebase-admin");
 const crypto = require("node:crypto");
 
-const ALLOWED_ORIGIN = "https://halfmonkeygg.netlify.app";
+const PRODUCTION_ORIGIN = "https://halfmonkeygg.netlify.app";
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+  try {
+    const url = new URL(origin);
+    return url.protocol === "https:"
+      && (
+        url.hostname === "halfmonkeygg.netlify.app"
+        || /^deploy-preview-\\d+--halfmonkeygg\\.netlify\\.app$/.test(url.hostname)
+        || /^[a-z0-9-]+--halfmonkeygg\\.netlify\\.app$/.test(url.hostname)
+      );
+  } catch {
+    return false;
+  }
+}
 const MEMBERS = {
   HM001: { name: "銀河 ` Yumeko", role: "leader" },
   HM002: { name: "銀河 ` Noriko", role: "member" },
@@ -34,10 +49,10 @@ function safeEqual(a, b) {
 }
 
 exports.handler = async (event) => {
-  const headers = {
+  const origin = event.headers.origin || event.headers.Origin || "";\n  const headers = {
     "Content-Type": "application/json",
     "Cache-Control": "no-store",
-    "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+    "Access-Control-Allow-Origin": isAllowedOrigin(origin) && origin ? origin : PRODUCTION_ORIGIN,
     "Access-Control-Allow-Headers": "Content-Type",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Vary": "Origin"
@@ -49,7 +64,7 @@ exports.handler = async (event) => {
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, headers, body: JSON.stringify({ error: "Method not allowed" }) };
   }
-  if (event.headers.origin && event.headers.origin !== ALLOWED_ORIGIN) {
+  if (!isAllowedOrigin(origin)) {
     return { statusCode: 403, headers, body: JSON.stringify({ error: "Origin not allowed" }) };
   }
 
