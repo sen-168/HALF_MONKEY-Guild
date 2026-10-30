@@ -771,10 +771,14 @@ function gameLoop(timestamp) {
 
 function startGame() {
   if(running)return;
-  if(!playerNameInput.value.trim()){
-    overlayText.textContent="กรุณากรอกชื่อผู้เล่นก่อนเริ่มเกม";
-    playerNameInput.focus();return;
+  const member = window.hmGameMember;
+  if (!member) {
+    overlayText.textContent="กรุณาเข้าสู่ระบบสมาชิก HALF MONKEY จากหน้าเว็บกิลด์ก่อนเล่น";
+    window.location.href = "./HALF_MONKEY_calendar_page_added.html?login=1";
+    return;
   }
+  playerNameInput.value = member.name;
+  playerNameInput.readOnly = true;
 
   // แสดงสถิติสูงสุดเดิมของผู้เล่นคนนี้
   const oldRecord=loadLeaderboard().find(
