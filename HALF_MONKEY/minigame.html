@@ -206,7 +206,7 @@ td.score-cell,.rank{color:var(--gold2);font-weight:bold}
 <section class="panel leaderboard-panel">
   <div class="leaderboard-head">
     <h2>🏆 ตารางคะแนน HALF MONKEY</h2>
-    <span class="local-tag">บันทึกในเบราว์เซอร์นี้</span>
+    <span class="local-tag" id="leaderboardStatus">กำลังเชื่อมต่อคะแนนออนไลน์...</span>
   </div>
 
   <div class="podium-section">
@@ -277,6 +277,7 @@ td.score-cell,.rank{color:var(--gold2);font-weight:bold}
     let member = null;
     try { member = JSON.parse(localStorage.getItem(key) || "null"); } catch (error) {}
     if (member && member.name) {
+      if (window.hmFirebaseLogout) window.hmFirebaseLogout().catch(console.error);
       localStorage.removeItem(key);
       refresh();
     } else {
@@ -294,6 +295,9 @@ td.score-cell,.rank{color:var(--gold2);font-weight:bold}
 const ADMIN_PASSWORD = "HMAdmin168";
 const BEST_KEY = "halfMonkeyRunBest";
 const LEADERBOARD_KEY = "halfMonkeyLeaderboard";
+let cloudLeaderboard = [];
+let cloudLeaderboardReady = false;
+let gameMember = null;
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -364,6 +368,7 @@ function normalizeName(name) {
 
 /* รวมคะแนนเก่าที่มีชื่อซ้ำ ให้เหลือสถิติที่ดีที่สุดต่อคน */
 function loadLeaderboard() {
+  if (cloudLeaderboardReady) return sortRecords([...cloudLeaderboard]);
   try {
     const raw = JSON.parse(safeGet(LEADERBOARD_KEY, "[]"));
     if (!Array.isArray(raw)) return [];
@@ -418,53 +423,26 @@ function saveLeaderboard(records) {
 }
 
 /* บันทึกเฉพาะสถิติใหม่ที่ดีกว่าเดิม */
-function savePlayerScore() {
-  const name = playerNameInput.value.trim().slice(0, 20);
-  if (!name) return;
-
-  const records = loadLeaderboard();
-  const key = normalizeName(name);
-  const currentScore = Math.floor(score);
-  const currentBananas = Math.floor(bananas);
-  const index = records.findIndex(r => normalizeName(r.name) === key);
-
-  if (index >= 0) {
-    const old = records[index];
-
-    const isBetter =
-      currentScore > old.score ||
-      (currentScore === old.score && currentBananas > old.bananas);
-
-    if (isBetter) {
-      records[index] = {
-        name: old.name,
-        score: currentScore,
-        bananas: currentBananas,
-        date: new Date().toISOString()
-      };
-    }
-    // ถ้าคะแนนรอบใหม่ต่ำกว่าเดิม จะไม่แก้สถิติ
-  } else {
-    records.push({
-      name,
-      score: currentScore,
-      bananas: currentBananas,
-      date: new Date().toISOString()
+async function savePlayerScore() {
+  const member = window.hmGameMember;
+  if (!member || !window.hmGameSubmitScore) {
+    alert("กรุณาเข้าสู่ระบบสมาชิกจากหน้าเว็บกิลด์ก่อนส่งคะแนน");
+    return false;
+  }
+  try {
+    const result = await window.hmGameSubmitScore({
+      score: Math.floor(score),
+      bananas: Math.floor(bananas)
     });
+    bestScore = Number(result.bestScore) || 0;
+    bestScoreEl.textContent = String(bestScore);
+    return true;
+  } catch (error) {
+    console.error("ส่งคะแนนออนไลน์ไม่สำเร็จ:", error);
+    alert(error.message || "ส่งคะแนนไม่สำเร็จ กรุณาลองใหม่");
+    return false;
   }
 
-  sortRecords(records);
-  records.splice(100);
-
-  if (!saveLeaderboard(records)) return;
-
-  const personalBest = records.find(r => normalizeName(r.name) === key);
-  bestScore = personalBest ? personalBest.score : 0;
-  safeSet(BEST_KEY, String(bestScore));
-  bestScoreEl.textContent = String(bestScore);
-
-  renderLeaderboard();
-}
 
 /* แสดงแท่นรางวัล */
 function renderPodium(records) {
@@ -800,7 +778,7 @@ function startGame() {
 
   // แสดงสถิติสูงสุดเดิมของผู้เล่นคนนี้
   const oldRecord=loadLeaderboard().find(
-    r=>normalizeName(r.name)===normalizeName(playerNameInput.value)
+    r=>r.memberId === (window.hmGameMember && window.hmGameMember.id)
   );
   bestScore=oldRecord?oldRecord.score:0;
   bestScoreEl.textContent=String(bestScore);
@@ -831,7 +809,7 @@ function endGame() {
   savePlayerScore();
 
   const savedRecord=loadLeaderboard().find(
-    r=>normalizeName(r.name)===normalizeName(playerNameInput.value)
+    r=>r.memberId === (window.hmGameMember && window.hmGameMember.id)
   );
   const personalBest=savedRecord?savedRecord.score:score;
   const newRecord=score>=personalBest;
@@ -866,7 +844,7 @@ function resetToStart() {
   scoreEl.textContent="0";bananaCountEl.textContent="0";
 
   const record=loadLeaderboard().find(
-    r=>normalizeName(r.name)===normalizeName(playerNameInput.value)
+    r=>r.memberId === (window.hmGameMember && window.hmGameMember.id)
   );
   bestScore=record?record.score:0;
   bestScoreEl.textContent=String(bestScore);
@@ -880,7 +858,7 @@ playerNameInput.addEventListener("keydown",event=>{
 });
 playerNameInput.addEventListener("change",()=>{
   const record=loadLeaderboard().find(
-    r=>normalizeName(r.name)===normalizeName(playerNameInput.value)
+    r=>r.memberId === (window.hmGameMember && window.hmGameMember.id)
   );
   bestScore=record?record.score:0;
   bestScoreEl.textContent=String(bestScore);
@@ -929,6 +907,8 @@ clearBtn.addEventListener("click",()=>{
   if(!confirm("ยืนยันล้างคะแนนทั้งหมดใช่หรือไม่?"))return;
 
   try{
+    alert("คะแนนออนไลน์ต้องจัดการผ่าน Firebase ไม่สามารถล้างจากเบราว์เซอร์เครื่องเดียวได้");
+    return;
     localStorage.removeItem(LEADERBOARD_KEY);
     localStorage.removeItem(BEST_KEY);
     bestScore=0;
@@ -940,10 +920,102 @@ clearBtn.addEventListener("click",()=>{
   }
 });
 
+window.hmGameSetLeaderboard = records => {
+  cloudLeaderboard = Array.isArray(records) ? records : [];
+  cloudLeaderboardReady = true;
+  renderLeaderboard();
+  const mine = cloudLeaderboard.find(r => window.hmGameMember && r.memberId === window.hmGameMember.id);
+  if (mine) { bestScore = mine.score; bestScoreEl.textContent = String(bestScore); }
+};
+
 /* เริ่มต้น */
 initClouds();
 renderLeaderboard();
 drawGame();
 </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { getFirestore, collection, doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSySyAIkUlUhiEBdt4hG_zFS2Eg9IwKsnxvIHw",
+  authDomain: "sen-k168.firebaseapp.com",
+  projectId: "sen-k168",
+  storageBucket: "sen-k168.firebasestorage.app",
+  messagingSenderId: "857989205427",
+  appId: "1:857989205427:web:437c809c8ce741547b4fc6"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const status = document.getElementById("leaderboardStatus");
+let stopScores = null;
+
+onAuthStateChanged(auth, async firebaseUser => {
+  window.hmGameMember = null;
+  if (stopScores) { stopScores(); stopScores = null; }
+  if (!firebaseUser) {
+    status.textContent = "เข้าสู่ระบบเพื่อส่งคะแนน · ดูอันดับได้ทุกคน";
+    window.hmGameSubmitScore = null;
+    return;
+  }
+  try {
+    const token = await firebaseUser.getIdTokenResult();
+    const claims = token.claims;
+    if (!claims.memberId || !claims.displayName) {
+      status.textContent = "บัญชีสมาชิกไม่ถูกต้อง";
+      return;
+    }
+    const member = { id: claims.memberId, name: claims.displayName, role: claims.role || "member" };
+    window.hmGameMember = member;
+    const input = document.getElementById("playerName");
+    input.value = member.name;
+    input.readOnly = true;
+    document.getElementById("gameMemberStatus").textContent = "เข้าสู่ระบบ: " + member.name;
+    document.getElementById("gameMemberButton").textContent = "ออกจากระบบ";
+
+    window.hmGameSubmitScore = async ({score, bananas}) => {
+      const ref = doc(db, "miniGameScores", member.id);
+      const snap = await getDoc(ref);
+      const old = snap.exists() ? snap.data() : {};
+      const isBetter = score > (Number(old.score) || 0)
+        || (score === (Number(old.score) || 0) && bananas > (Number(old.bananas) || 0));
+      if (isBetter || !snap.exists()) {
+        await setDoc(ref, {
+          memberId: member.id,
+          name: member.name,
+          score: Math.max(0, Math.floor(score)),
+          bananas: Math.max(0, Math.floor(bananas)),
+          updatedAt: serverTimestamp()
+        }, {merge: true});
+      }
+      return {bestScore: Math.max(Number(old.score) || 0, Math.floor(score))};
+    };
+
+    stopScores = onSnapshot(collection(db, "miniGameScores"), snapshot => {
+      const records = snapshot.docs.map(item => {
+        const data = item.data();
+        return {
+          memberId: data.memberId || item.id,
+          name: data.name || "สมาชิก",
+          score: Number(data.score) || 0,
+          bananas: Number(data.bananas) || 0
+        };
+      }).sort((a,b) => b.score-a.score || b.bananas-a.bananas || a.name.localeCompare(b.name,"th"));
+      window.hmGameSetLeaderboard(records);
+      status.textContent = "🌐 ตารางคะแนนออนไลน์ · อัปเดตเรียลไทม์";
+    }, error => {
+      console.error("Leaderboard listener:", error);
+      status.textContent = "เชื่อมต่อตารางคะแนนไม่สำเร็จ";
+    });
+  } catch (error) {
+    console.error("Game Firebase setup:", error);
+    status.textContent = "ตรวจสอบบัญชีสมาชิกไม่สำเร็จ";
+  }
+});
+</script>
+
 </body>
 </html>
