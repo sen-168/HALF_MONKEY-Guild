@@ -951,13 +951,28 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const status = document.getElementById("leaderboardStatus");
-let stopScores = null;
+// ตารางคะแนนเป็นข้อมูลสาธารณะ ทุกคนดูได้แม้ยังไม่ได้เข้าสู่ระบบ
+onSnapshot(collection(db, "miniGameScores"), snapshot => {
+  const records = snapshot.docs.map(item => {
+    const data = item.data();
+    return {
+      memberId: data.memberId || item.id,
+      name: data.name || "สมาชิก",
+      score: Number(data.score) || 0,
+      bananas: Number(data.bananas) || 0
+    };
+  }).sort((a,b) => b.score-a.score || b.bananas-a.bananas || a.name.localeCompare(b.name,"th"));
+  window.hmGameSetLeaderboard(records);
+  if (!window.hmGameMember) status.textContent = "🌐 ตารางคะแนนออนไลน์ · ดูได้ทุกคน";
+}, error => {
+  console.error("Leaderboard listener:", error);
+  status.textContent = "เชื่อมต่อตารางคะแนนไม่สำเร็จ";
+});
 
 onAuthStateChanged(auth, async firebaseUser => {
   window.hmGameMember = null;
-  if (stopScores) { stopScores(); stopScores = null; }
   if (!firebaseUser) {
-    status.textContent = "เข้าสู่ระบบเพื่อส่งคะแนน · ดูอันดับได้ทุกคน";
+    status.textContent = "🌐 ตารางคะแนนออนไลน์ · เข้าสู่ระบบเพื่อส่งคะแนน";
     window.hmGameSubmitScore = null;
     return;
   }
@@ -994,22 +1009,7 @@ onAuthStateChanged(auth, async firebaseUser => {
       return {bestScore: Math.max(Number(old.score) || 0, Math.floor(score))};
     };
 
-    stopScores = onSnapshot(collection(db, "miniGameScores"), snapshot => {
-      const records = snapshot.docs.map(item => {
-        const data = item.data();
-        return {
-          memberId: data.memberId || item.id,
-          name: data.name || "สมาชิก",
-          score: Number(data.score) || 0,
-          bananas: Number(data.bananas) || 0
-        };
-      }).sort((a,b) => b.score-a.score || b.bananas-a.bananas || a.name.localeCompare(b.name,"th"));
-      window.hmGameSetLeaderboard(records);
-      status.textContent = "🌐 ตารางคะแนนออนไลน์ · อัปเดตเรียลไทม์";
-    }, error => {
-      console.error("Leaderboard listener:", error);
-      status.textContent = "เชื่อมต่อตารางคะแนนไม่สำเร็จ";
-    });
+    status.textContent = "🌐 ตารางคะแนนออนไลน์ · อัปเดตเรียลไทม์";
   } catch (error) {
     console.error("Game Firebase setup:", error);
     status.textContent = "ตรวจสอบบัญชีสมาชิกไม่สำเร็จ";
