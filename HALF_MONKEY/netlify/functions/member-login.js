@@ -10,8 +10,8 @@ function isAllowedOrigin(origin) {
     return url.protocol === "https:"
       && (
         url.hostname === "halfmonkeygg.netlify.app"
-        || /^deploy-preview-\\d+--halfmonkeygg\\.netlify\\.app$/.test(url.hostname)
-        || /^[a-z0-9-]+--halfmonkeygg\\.netlify\\.app$/.test(url.hostname)
+        || /^deploy-preview-\d+--halfmonkeygg\.netlify\.app$/.test(url.hostname)
+        || /^[a-z0-9-]+--halfmonkeygg\.netlify\.app$/.test(url.hostname)
       );
   } catch {
     return false;
