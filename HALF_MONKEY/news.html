@@ -564,9 +564,8 @@ function renderPost(id, post) {
   emojiBefore.type = "submit";
   emojiBefore.className = "comment-submit";
   emojiBefore.disabled = !currentMember;
-  commentForm.append(nameInput, commentInput);
+  commentForm.append(nameInput, commentInput, emojiBefore);
   addEmojiBar(commentInput, emojiBefore);
-  commentForm.append(emojiBefore);
   commentForm.addEventListener("submit", async event => {
     event.preventDefault();
     const message = commentInput.value.trim();
