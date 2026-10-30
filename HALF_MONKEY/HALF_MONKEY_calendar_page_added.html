@@ -1211,7 +1211,12 @@ function updateLoginUI() {
   if (typeof renderDayDetails === "function") renderDayDetails();
 }
 
-function logout() {
+async function logout() {
+  try {
+    if (window.hmFirebaseLogout) await window.hmFirebaseLogout();
+  } catch (error) {
+    console.error("Firebase sign out failed:", error);
+  }
   user = null;
   try { localStorage.removeItem(LOGIN_STORAGE_KEY); } catch (error) {}
   updateLoginUI();
@@ -1219,24 +1224,31 @@ function logout() {
   toast("ออกจากระบบแล้ว");
 }
 
-function login(memberId, password) {
+async function login(memberId, password) {
   const id = String(memberId || "").trim().toUpperCase();
-  const member = members.find(m => m.id === id);
-
-  if (!member || password !== "8888") {
+  if (!members.some(member => member.id === id)) {
     $("loginMessage").textContent = "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง";
     return;
   }
-
-  user = { ...member, role: id === "HM001" ? "leader" : "member" };
-  try { localStorage.setItem(LOGIN_STORAGE_KEY, JSON.stringify(user)); } catch (error) {
-    toast("บันทึกสถานะล็อกอินไม่ได้ กรุณาตรวจสอบการตั้งค่าเบราว์เซอร์");
+  if (!window.hmFirebaseLogin) {
+    $("loginMessage").textContent = "ระบบกำลังโหลด กรุณาลองใหม่อีกครั้ง";
+    return;
   }
-
-  $("loginMessage").textContent = "";
-  closeModal("loginModal");
-  updateLoginUI();
-  toast("เข้าสู่ระบบสำเร็จ");
+  $("loginMessage").textContent = "กำลังตรวจสอบบัญชี...";
+  try {
+    const authenticatedMember = await window.hmFirebaseLogin(id, password);
+    const member = members.find(item => item.id === authenticatedMember.id);
+    if (!member) throw new Error("ไม่พบข้อมูลสมาชิก");
+    user = { ...member, role: authenticatedMember.role };
+    try { localStorage.setItem(LOGIN_STORAGE_KEY, JSON.stringify(user)); } catch (error) {}
+    $("loginMessage").textContent = "";
+    closeModal("loginModal");
+    updateLoginUI();
+    toast("เข้าสู่ระบบสำเร็จ");
+  } catch (error) {
+    console.error("Member login failed:", error);
+    $("loginMessage").textContent = error.message || "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง";
+  }
 }
 
 function restoreLogin() {
@@ -1255,9 +1267,9 @@ function restoreLogin() {
   updateLoginUI();
 }
 
-$("loginForm").addEventListener("submit", event => {
+$("loginForm").addEventListener("submit", async event => {
   event.preventDefault();
-  login($("memberId").value, $("password").value);
+  await login($("memberId").value, $("password").value);
 });
 
 // Keep other tabs in sync when a member logs in or out.
@@ -2027,5 +2039,73 @@ if (newsBoard) {
   });
 }
 
+window.hmApplyFirebaseMember = function(member) {
+  if (!member) {
+    user = null;
+  } else {
+    const rosterMember = members.find(item => item.id === member.id);
+    user = rosterMember ? { ...rosterMember, role: member.role || "member" } : null;
+  }
+  if (typeof updateLoginUI === "function") updateLoginUI();
+};
+
 </script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getAuth, signInWithCustomToken, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAIkUlUhiEBdt4hG_zFS2Eg9IwKsnxvIHw",
+  authDomain: "sen-k168.firebaseapp.com",
+  projectId: "sen-k168",
+  storageBucket: "sen-k168.firebasestorage.app",
+  messagingSenderId: "857989205427",
+  appId: "1:857989205427:web:437c809c8ce741547b4fc6",
+  measurementId: "G-JXKM11VK14"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.hmFirebaseLogin = async (memberId, password) => {
+  const response = await fetch("/.netlify/functions/member-login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ memberId, password })
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || !result.token || !result.member) {
+    throw new Error(result.error || "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง");
+  }
+  await signInWithCustomToken(auth, result.token);
+  return result.member;
+};
+window.hmFirebaseLogout = () => signOut(auth);
+
+onAuthStateChanged(auth, async firebaseUser => {
+  if (!firebaseUser) {
+    try { localStorage.removeItem("hmLoggedInUser"); } catch (error) {}
+    if (window.hmApplyFirebaseMember) window.hmApplyFirebaseMember(null);
+    return;
+  }
+  try {
+    const token = await firebaseUser.getIdTokenResult();
+    const claims = token.claims;
+    if (!claims.memberId || !claims.displayName) {
+      await signOut(auth);
+      return;
+    }
+    const member = {
+      id: claims.memberId,
+      name: claims.displayName,
+      role: claims.role || "member"
+    };
+    try { localStorage.setItem("hmLoggedInUser", JSON.stringify(member)); } catch (error) {}
+    if (window.hmApplyFirebaseMember) window.hmApplyFirebaseMember(member);
+  } catch (error) {
+    console.error("Could not restore Firebase member session:", error);
+    await signOut(auth);
+  }
+});
+</script>
+
 </body></html>
