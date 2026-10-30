@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isLeader() {
+      return signedIn() && request.auth.token.role == "leader";
+    }
+
+    function isMember() {
+      return signedIn()
+        && request.auth.token.memberId is string
+        && request.auth.uid == "hm-" + request.auth.token.memberId;
+    }
+
+    match /posts/{postId} {
+      allow read: if true;
+
+      allow create: if isMember()
+        && request.resource.data.memberId == request.auth.token.memberId
+        && request.resource.data.author == request.auth.token.displayName
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 100
+        && request.resource.data.text is string
+        && request.resource.data.text.size() <= 3000
+        && request.resource.data.imageUrl is string
+        && request.resource.data.imageUrl.size() <= 2048
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if false;
+      allow delete: if isMember()
+        && (resource.data.memberId == request.auth.token.memberId || isLeader());
+
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if isMember()
+          && request.resource.data.memberId == request.auth.token.memberId
+          && request.resource.data.author == request.auth.token.displayName
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 1000
+          && request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if isMember()
+          && (resource.data.memberId == request.auth.token.memberId || isLeader());
+      }
+    }
+  }
+}
