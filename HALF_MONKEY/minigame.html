@@ -281,7 +281,7 @@ td.score-cell,.rank{color:var(--gold2);font-weight:bold}
       localStorage.removeItem(key);
       refresh();
     } else {
-      window.location.href = "./HALF_MONKEY_calendar_page_added.html?login=1";
+      window.location.href = "./HALF_MONKEY_calendar_page_added.html?login=1&returnTo=minigame";
     }
   });
   window.addEventListener("storage", function (event) {
@@ -774,7 +774,7 @@ function startGame() {
   const member = window.hmGameMember;
   if (!member) {
     overlayText.textContent="กรุณาเข้าสู่ระบบสมาชิก HALF MONKEY จากหน้าเว็บกิลด์ก่อนเล่น";
-    window.location.href = "./HALF_MONKEY_calendar_page_added.html?login=1";
+    window.location.href = "./HALF_MONKEY_calendar_page_added.html?login=1&returnTo=minigame";
     return;
   }
   playerNameInput.value = member.name;
