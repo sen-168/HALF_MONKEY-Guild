@@ -49,7 +49,8 @@ function safeEqual(a, b) {
 }
 
 exports.handler = async (event) => {
-  const origin = event.headers.origin || event.headers.Origin || "";\n  const headers = {
+  const origin = event.headers.origin || event.headers.Origin || "";
+  const headers = {
     "Content-Type": "application/json",
     "Cache-Control": "no-store",
     "Access-Control-Allow-Origin": isAllowedOrigin(origin) && origin ? origin : PRODUCTION_ORIGIN,
