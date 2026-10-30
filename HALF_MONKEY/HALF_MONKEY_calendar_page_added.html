@@ -1245,6 +1245,13 @@ async function login(memberId, password) {
     closeModal("loginModal");
     updateLoginUI();
     toast("เข้าสู่ระบบสำเร็จ");
+
+    // Return to the minigame when login was requested there.
+    const returnTo = new URLSearchParams(window.location.search).get("returnTo");
+    if (returnTo === "minigame") {
+      window.location.href = "./minigame.html";
+      return;
+    }
   } catch (error) {
     console.error("Member login failed:", error);
     $("loginMessage").textContent = error.message || "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง";
