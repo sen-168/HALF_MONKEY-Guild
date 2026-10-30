@@ -2039,6 +2039,16 @@ if (newsBoard) {
   });
 }
 
+window.hmApplyFirebaseMember = function(member) {
+  if (!member) {
+    user = null;
+  } else {
+    const rosterMember = members.find(item => item.id === member.id);
+    user = rosterMember ? { ...rosterMember, role: member.role || "member" } : null;
+  }
+  if (typeof updateLoginUI === "function") updateLoginUI();
+};
+
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
@@ -2074,10 +2084,7 @@ window.hmFirebaseLogout = () => signOut(auth);
 onAuthStateChanged(auth, async firebaseUser => {
   if (!firebaseUser) {
     try { localStorage.removeItem("hmLoggedInUser"); } catch (error) {}
-    if (typeof user !== "undefined" && user) {
-      user = null;
-      if (typeof updateLoginUI === "function") updateLoginUI();
-    }
+    if (window.hmApplyFirebaseMember) window.hmApplyFirebaseMember(null);
     return;
   }
   try {
@@ -2093,13 +2100,7 @@ onAuthStateChanged(auth, async firebaseUser => {
       role: claims.role || "member"
     };
     try { localStorage.setItem("hmLoggedInUser", JSON.stringify(member)); } catch (error) {}
-    if (typeof user !== "undefined") {
-      const rosterMember = members.find(item => item.id === member.id);
-      if (rosterMember) {
-        user = { ...rosterMember, role: member.role };
-        if (typeof updateLoginUI === "function") updateLoginUI();
-      }
-    }
+    if (window.hmApplyFirebaseMember) window.hmApplyFirebaseMember(member);
   } catch (error) {
     console.error("Could not restore Firebase member session:", error);
     await signOut(auth);
