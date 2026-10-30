@@ -47,22 +47,22 @@ service cloud.firestore {
         allow delete: if isMember()
           && (resource.data.memberId == request.auth.token.memberId || isLeader());
       }
+    }
 
-      match /miniGameScores/{memberId} {
-        allow read: if true;
-        allow create, update: if isMember()
-          && memberId == request.auth.token.memberId
-          && request.resource.data.memberId == request.auth.token.memberId
-          && request.resource.data.name == request.auth.token.displayName
-          && request.resource.data.score is int
-          && request.resource.data.score >= 0
-          && request.resource.data.score <= 100000000
-          && request.resource.data.bananas is int
-          && request.resource.data.bananas >= 0
-          && request.resource.data.bananas <= 10000000
-          && request.resource.data.updatedAt == request.time;
-        allow delete: if isLeader();
-      }
+    match /miniGameScores/{memberId} {
+      allow read: if true;
+      allow create, update: if isMember()
+        && memberId == request.auth.token.memberId
+        && request.resource.data.memberId == request.auth.token.memberId
+        && request.resource.data.name == request.auth.token.displayName
+        && request.resource.data.score is int
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= 100000000
+        && request.resource.data.bananas is int
+        && request.resource.data.bananas >= 0
+        && request.resource.data.bananas <= 10000000
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if isLeader();
     }
   }
 }
