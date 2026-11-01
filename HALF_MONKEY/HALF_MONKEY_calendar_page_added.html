@@ -2074,7 +2074,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 window.hmFirebaseLogin = async (memberId, password) => {
-  const response = await fetch("/.netlify/functions/member-login", {
+  const response = await fetch("/api/member-login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ memberId, password })
