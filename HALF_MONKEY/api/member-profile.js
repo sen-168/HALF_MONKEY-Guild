@@ -12,7 +12,7 @@ async function requireUser(req) {
   if (!match) { const e = new Error("กรุณาเข้าสู่ระบบก่อน"); e.status = 401; throw e; }
   return getAdminApp().auth().verifyIdToken(match[1]);
 }
-const CLASSES = ["Ironclad", "Sylph", "Nightwaker", "Bloodstorm", "Dragonsvelte", "Celestune", "Mystique"];
+const CLASSES = ["Nightwaker", "Ironclad", "Bloodstorm", "Bloodstrom", "Celestune", "Sylph", "Numina", "Dragonsvelte", "Xuanji", "Mystech", "Changling"];
 const clean = (v, n) => String(v || "").trim().slice(0, n);
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
