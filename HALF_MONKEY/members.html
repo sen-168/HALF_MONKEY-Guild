@@ -27,7 +27,7 @@
 <label class="field">ชื่อในเกม<input name="gameName" maxlength="40" required></label>
 <label class="field">ชื่อเล่น<input name="nickname" maxlength="30" required></label>
 <label class="field">ชื่อตัวละคร SOJ<input name="characterName" maxlength="40" required></label>
-<label class="field">คลาส SOJ<select name="gameClass" required><option>Ironclad</option><option>Sylph</option><option>Nightwaker</option><option>Bloodstorm</option><option>Dragonsvelte</option><option>Celestune</option><option>Mystique</option></select></label>
+<label class="field">คลาส SOJ<select name="gameClass" required><option value="">เลือกคลาส</option><option>Ironclad</option><option>Sylph</option><option>Nightwaker</option><option>Bloodstorm</option><option>Dragonsvelte</option><option>Celestune</option><option>Mystique</option></select></label>
 <label class="field">แนะนำตัวเอง<textarea name="bio" maxlength="500"></textarea></label>
 <button class="btn primary">บันทึกโปรไฟล์</button><p id="profileMessage" class="message"></p>
 </form></div></section>
@@ -58,11 +58,11 @@ onAuthStateChanged(auth,async firebaseUser=>{
  $("profileHint").textContent="กำลังโหลดข้อมูลโปรไฟล์...";
  const list=await fetch("/api/members",{headers:{Authorization:"Bearer "+await token()}}).then(r=>r.json());
  const mine=(list.members||[]).find(m=>m.id===claims.memberId);
- if(mine && !["HM001","HM002","HM003","HM004","HM005","HM006"].includes(mine.id)){
+ if(mine){
   const f=$("profileForm"); f.hidden=false;
   ["gameName","nickname","characterName","gameClass","bio"].forEach(k=>f.elements[k].value=mine[k]||"");
   $("profileHint").textContent="แก้ไขข้อมูลส่วนตัวของคุณได้ที่นี่";
- } else $("profileHint").textContent="บัญชีสมาชิกเดิม HM001–HM006 ยังคงใช้งานได้ตามปกติ";
+ } else $("profileHint").textContent="ยังไม่พบข้อมูลโปรไฟล์ของบัญชีนี้";
  await loadMembers();
  if(claims.memberId==="HM001"&&claims.role==="leader")$("approvalPanel").hidden=false;
 });
