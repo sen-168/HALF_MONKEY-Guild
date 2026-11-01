@@ -40,7 +40,11 @@ module.exports = async (req, res) => {
 
     if (member) {
       const expected = memberId === "HM001" ? process.env.HM_LEADER_PASSWORD : process.env.HM_MEMBER_PASSWORD;
-      if (!expected || !safeEqual(password, expected)) return res.status(401).json({ error: "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง" });
+      if (!expected) {
+        console.error("Missing legacy password environment variable:", memberId === "HM001" ? "HM_LEADER_PASSWORD" : "HM_MEMBER_PASSWORD");
+        return res.status(500).json({ error: "ระบบยังไม่ได้ตั้งค่ารหัสผ่านบัญชีเดิม กรุณาแจ้งผู้ดูแลระบบ" });
+      }
+      if (!safeEqual(password, expected)) return res.status(401).json({ error: "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง" });
     } else {
       if (!/^HM\d{3,}$/.test(memberId)) return res.status(401).json({ error: "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง" });
       const snap = await app.firestore().collection("members").doc(memberId).get();
