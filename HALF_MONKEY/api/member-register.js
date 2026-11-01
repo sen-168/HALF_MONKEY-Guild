@@ -1,4 +1,4 @@
-const { getAdminApp } = require("./_firebase");
+const { getAdminApp } = require("../lib/firebase-admin");
 const admin = require("firebase-admin");
 const CLASSES = ["Ironclad", "Sylph", "Nightwaker", "Bloodstorm", "Dragonsvelte", "Celestune", "Mystique"];
 const clean = (v, n) => String(v || "").trim().slice(0, n);
