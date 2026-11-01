@@ -57,14 +57,24 @@ const classLabel=value=>["Mystech","Xuanji","Mystique","玄机","เสวีย
 const classMarkup=value=>{const label=classLabel(value);const key=["Bloodstrom","Bloodstorm"].includes(value)?"Bloodstorm":(["Mystech","Mystique","玄机","เสวียนจี"].includes(value)?"Xuanji":value);const src=CLASS_IMAGES[key]||CLASS_IMAGES[label]||"";return src?'<span class="class-line"><img class="class-icon" src="'+src+'" alt="'+esc(label)+'" loading="lazy"><b class="class-name">'+esc(label)+'</b></span>':'<b>'+esc(label)+'</b>';};
 const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 async function token(){return current?current.getIdToken():null}
+// โหลดรายชื่อทันที ไม่ต้องรอ Firebase ตรวจสอบสถานะล็อกอิน
+loadMembers();
 async function loadMembers(){
- const headers={}; const t=await token(); if(t)headers.Authorization="Bearer "+t;
- const r=await fetch("/api/members",{headers}); const d=await r.json();
- $("memberList").innerHTML=(d.members||[]).map(m=>`<article class="card"><h3>${esc(m.gameName||m.name)}</h3><p>ชื่อเล่น: ${esc(m.nickname||"-")}</p><p>ตัวละคร: ${esc(m.characterName||"-")}</p><p>คลาส: ${classMarkup(m.gameClass)}</p><p>${esc(m.bio||"")}</p></article>`).join("")||"<p>ยังไม่มีสมาชิก</p>";
- if(d.pending && d.pending.length){
-  $("approvalPanel").hidden=false;
-  $("pendingList").innerHTML=d.pending.map(m=>`<article class="card pending"><b>${esc(m.gameName)}</b><p>ชื่อเล่น: ${esc(m.nickname)} · ตัวละคร: ${esc(m.characterName)}</p><p>คลาส: ${classMarkup(m.gameClass)}</p><div class="actions"><button class="btn" data-action="approve" data-id="${esc(m.id)}">อนุมัติ</button><button class="btn" data-action="reject" data-id="${esc(m.id)}">ปฏิเสธ</button></div></article>`).join("");
- } else { $("approvalPanel").hidden=true; }
+ const list=$("memberList");
+ try {
+  const headers={}; const t=await token(); if(t)headers.Authorization="Bearer "+t;
+  const response=await fetch("/api/members",{headers,cache:"no-store"});
+  const d=await response.json();
+  if(!response.ok) throw new Error(d.error||"โหลดรายชื่อสมาชิกไม่สำเร็จ (HTTP "+response.status+")");
+  list.innerHTML=(d.members||[]).map(m=>`<article class="card"><h3>${esc(m.gameName||m.name)}</h3><p>ชื่อเล่น: ${esc(m.nickname||"-")}</p><p>ตัวละคร: ${esc(m.characterName||"-")}</p><p>คลาส: ${classMarkup(m.gameClass)}</p><p>${esc(m.bio||"")}</p></article>`).join("")||"<p>ยังไม่มีสมาชิก</p>";
+  if(d.pending && d.pending.length){
+   $("approvalPanel").hidden=false;
+   $("pendingList").innerHTML=d.pending.map(m=>`<article class="card pending"><b>${esc(m.gameName)}</b><p>ชื่อเล่น: ${esc(m.nickname)} · ตัวละคร: ${esc(m.characterName)}</p><p>คลาส: ${classMarkup(m.gameClass)}</p><div class="actions"><button class="btn" data-action="approve" data-id="${esc(m.id)}">อนุมัติ</button><button class="btn" data-action="reject" data-id="${esc(m.id)}">ปฏิเสธ</button></div></article>`).join("");
+  } else { $("approvalPanel").hidden=true; }
+ } catch(error) {
+  console.error("loadMembers:",error);
+  list.innerHTML='<p class="message">โหลดรายชื่อสมาชิกไม่สำเร็จ: '+esc(error.message)+' · กรุณารีเฟรชหน้าเว็บ</p>';
+ }
 }
 onAuthStateChanged(auth,async firebaseUser=>{
  current=firebaseUser;
