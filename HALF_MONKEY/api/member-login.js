@@ -13,7 +13,6 @@ async function requireUser(req) {
   if (!match) { const e = new Error("กรุณาเข้าสู่ระบบก่อน"); e.status = 401; throw e; }
   return getAdminApp().auth().verifyIdToken(match[1]);
 }
-module.exports = { getAdminApp, requireUser };
 const LEGACY = {
   HM001: { name: "銀河 ` Yumeko", role: "leader" },
   HM002: { name: "銀河 ` Noriko", role: "member" },
@@ -49,12 +48,14 @@ module.exports = async (req, res) => {
         return res.status(403).json({ error: snap.exists && snap.data().status === "pending" ? "บัญชียังรอหัวหน้ากิลด์อนุมัติ" : "ไม่พบบัญชีที่อนุมัติแล้ว" });
       }
       profile = snap.data();
-      const apiKey = "AIzaSyAIkUlUhiEBdt4hG_zFS2Eg9IwKsnxvIHw";
-      const verify = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + apiKey, {
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({ email:memberId.toLowerCase()+"@members.halfmonkey.invalid", password, returnSecureToken:true })
-      });
-      if (!verify.ok) return res.status(401).json({ error: "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง" });
+      if (!profile.passwordSalt || !profile.passwordHash) {
+        return res.status(401).json({ error: "บัญชีนี้ยังไม่มีข้อมูลรหัสผ่าน กรุณาติดต่อหัวหน้ากิลด์" });
+      }
+      const actual = crypto.scryptSync(password, profile.passwordSalt, 64);
+      const expected = Buffer.from(profile.passwordHash, "hex");
+      if (actual.length !== expected.length || !crypto.timingSafeEqual(actual, expected)) {
+        return res.status(401).json({ error: "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง" });
+      }
       member = { name:profile.gameName, role:"member" };
     }
 
