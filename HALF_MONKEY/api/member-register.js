@@ -13,7 +13,6 @@ async function requireUser(req) {
   return getAdminApp().auth().verifyIdToken(match[1]);
 }
 module.exports = { getAdminApp, requireUser };
-const admin = require("firebase-admin");
 const CLASSES = ["Ironclad", "Sylph", "Nightwaker", "Bloodstorm", "Dragonsvelte", "Celestune", "Mystique"];
 const clean = (v, n) => String(v || "").trim().slice(0, n);
 module.exports = async (req, res) => {
