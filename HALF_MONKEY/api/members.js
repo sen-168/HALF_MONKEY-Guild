@@ -12,7 +12,6 @@ async function requireUser(req) {
   if (!match) { const e = new Error("กรุณาเข้าสู่ระบบก่อน"); e.status = 401; throw e; }
   return getAdminApp().auth().verifyIdToken(match[1]);
 }
-module.exports = { getAdminApp, requireUser };
 const LEGACY = [
   { id:"HM001", gameName:"銀河 ` Yumeko", nickname:"Yumeko", characterName:"", gameClass:"", bio:"ผู้นำแห่ง HALF MONKEY พร้อมบัญชาการทุกศึก", role:"leader", status:"approved" },
   { id:"HM002", gameName:"銀河 ` Noriko", nickname:"Noriko", characterName:"", gameClass:"", bio:"กำลังหลักที่คอยดูแลสมาชิกและวางแผนการรบ", role:"member", status:"approved" },
