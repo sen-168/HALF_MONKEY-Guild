@@ -1,4 +1,5 @@
 const { getAdminApp } = require("./_firebase");
+const admin = require("firebase-admin");
 const CLASSES = ["Ironclad", "Sylph", "Nightwaker", "Bloodstorm", "Dragonsvelte", "Celestune", "Mystique"];
 const clean = (v, n) => String(v || "").trim().slice(0, n);
 module.exports = async (req, res) => {
