@@ -1,3 +1,4 @@
+// Firebase Admin is imported once for this API route.
 const admin = require("firebase-admin");
 const crypto = require("node:crypto");
 function getAdminApp() {
