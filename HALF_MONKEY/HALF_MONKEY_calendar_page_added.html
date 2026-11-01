@@ -1054,7 +1054,7 @@ footer {
     เข้าสู่ระบบ
   </button>
 
-  <p class="message" id="loginMessage"></p>
+  <p class="message" id="loginMessage"></p>\n  <p class="note">สมาชิกใหม่? <a href="./members.html" style="color:#ff70c0;text-decoration:underline">สมัครสมาชิก / ดูโปรไฟล์สมาชิก</a></p>
 </form></div></div>
 <div class="backdrop hidden" id="beautyModal"><div class="glass modal"><button class="close" data-close="beautyModal">×</button><p class="eyebrow">SPECIAL EVENT</p><h2>เพิ่มกิจกรรม <span style="color:var(--pink)">สาวงาม</span></h2><form id="beautyForm"><label for="beautyDate">วันที่จัดกิจกรรม</label><input id="beautyDate" type="date" required><label for="beautyTitle">ชื่อกิจกรรม / รายละเอียด</label><input id="beautyTitle" maxlength="100" placeholder="กิจกรรมสาวงามประจำสัปดาห์" required><button class="btn primary full">บันทึกกิจกรรม</button><p class="message" id="beautyMessage"></p></form></div></div>
 <div class="backdrop hidden" id="hmNewsBoard">
@@ -1226,8 +1226,8 @@ async function logout() {
 
 async function login(memberId, password) {
   const id = String(memberId || "").trim().toUpperCase();
-  if (!members.some(member => member.id === id)) {
-    $("loginMessage").textContent = "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง";
+  if (!/^HM\\d{3,}$/.test(id)) {
+    $("loginMessage").textContent = "กรุณากรอกรหัสสมาชิกให้ถูกต้อง";
     return;
   }
   if (!window.hmFirebaseLogin) {
@@ -1238,8 +1238,20 @@ async function login(memberId, password) {
   try {
     const authenticatedMember = await window.hmFirebaseLogin(id, password);
     const member = members.find(item => item.id === authenticatedMember.id);
-    if (!member) throw new Error("ไม่พบข้อมูลสมาชิก");
-    user = { ...member, role: authenticatedMember.role };
+    user = member
+      ? { ...member, role: authenticatedMember.role }
+      : {
+          id: authenticatedMember.id,
+          name: authenticatedMember.name,
+          role: authenticatedMember.role || "member",
+          nickname: authenticatedMember.nickname || "",
+          characterName: authenticatedMember.characterName || "",
+          gameClass: authenticatedMember.gameClass || "",
+          bio: authenticatedMember.bio || "",
+          position: "GUILD MEMBER",
+          tag: "GUILD MEMBER",
+          image: ""
+        };
     try { localStorage.setItem(LOGIN_STORAGE_KEY, JSON.stringify(user)); } catch (error) {}
     $("loginMessage").textContent = "";
     closeModal("loginModal");
@@ -1265,6 +1277,7 @@ function restoreLogin() {
     if (saved && saved.id) {
       const member = members.find(m => m.id === String(saved.id).toUpperCase());
       if (member) user = { ...member, role: member.id === "HM001" ? "leader" : "member" };
+      else if (/^HM\\d{3,}$/.test(String(saved.id))) user = saved;
       else localStorage.removeItem(LOGIN_STORAGE_KEY);
     }
   } catch (error) {
@@ -2051,7 +2064,9 @@ window.hmApplyFirebaseMember = function(member) {
     user = null;
   } else {
     const rosterMember = members.find(item => item.id === member.id);
-    user = rosterMember ? { ...rosterMember, role: member.role || "member" } : null;
+    user = rosterMember
+      ? { ...rosterMember, role: member.role || "member" }
+      : { id:member.id, name:member.name, role:member.role || "member", position:"GUILD MEMBER", tag:"GUILD MEMBER", image:"" };
   }
   if (typeof updateLoginUI === "function") updateLoginUI();
 };
