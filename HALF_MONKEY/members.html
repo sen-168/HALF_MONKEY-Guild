@@ -37,7 +37,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
-const app=initializeApp({apiKey:"AIzaSySyAIkUlUhiEBdt4hG_zFS2Eg9IwKsnxvIHw",authDomain:"sen-k168.firebaseapp.com",projectId:"sen-k168",storageBucket:"sen-k168.firebasestorage.app",messagingSenderId:"857989205427",appId:"1:857989205427:web:437c809c8ce741547b4fc6"});
+const app=initializeApp({apiKey:"AIzaSyAIkUlUhiEBdt4hG_zFS2Eg9IwKsnxvIHw",authDomain:"sen-k168.firebaseapp.com",projectId:"sen-k168",storageBucket:"sen-k168.firebasestorage.app",messagingSenderId:"857989205427",appId:"1:857989205427:web:437c809c8ce741547b4fc6"});
 const auth=getAuth(app); let current=null; const $=id=>document.getElementById(id);
 const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 async function token(){return current?current.getIdToken():null}
