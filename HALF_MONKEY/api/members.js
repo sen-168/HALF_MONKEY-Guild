@@ -1,4 +1,4 @@
-const { getAdminApp, requireUser } = require("./_firebase");
+const { getAdminApp, requireUser } = require("../lib/firebase-admin");
 const admin = require("firebase-admin");
 const LEGACY = [
   { id:"HM001", gameName:"銀河 ` Yumeko", nickname:"Yumeko", characterName:"", gameClass:"", bio:"ผู้นำแห่ง HALF MONKEY พร้อมบัญชาการทุกศึก", role:"leader", status:"approved" },
