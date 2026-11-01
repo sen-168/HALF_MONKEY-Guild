@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HALF MONKEY | Member Profiles</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--pink:#ff4eb8;--purple:#a855f7;--muted:#b9a9c9}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0,#291139,#0b0912 58%,#07070c);color:#fff;font-family:Kanit,sans-serif}.wrap{width:min(1100px,calc(100% - 28px));margin:auto;padding:25px 0 60px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid #ff4eb844;padding-bottom:16px}.brand{font:700 18px Orbitron,sans-serif;letter-spacing:1px}.brand span,h1 span{color:var(--pink)}a,.btn{color:#fff;text-decoration:none;border:1px solid #ff4eb877;background:#ff4eb814;padding:9px 13px;border-radius:7px}.intro{margin:28px 0}.intro h1{font:700 clamp(24px,5vw,38px) Orbitron,sans-serif;margin:0}.intro p{color:var(--muted);font-size:13px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}.card,.panel{border:1px solid #c49ae533;background:#171221eF;border-radius:10px;padding:17px}.card h3{margin:0 0 4px;font-size:16px;overflow-wrap:anywhere}.card p{margin:5px 0;color:#c7b6d6;font-size:12px;line-height:1.7}.tag{display:inline-block;color:#ff9bd5;border:1px solid #ff4eb855;padding:3px 8px;border-radius:20px;font-size:10px}.layout{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}.panel h2{font-size:18px;margin:0 0 12px}.field{display:block;font-size:12px;color:#d9c7e8;margin:10px 0}.field input,.field select,.field textarea{display:block;width:100%;margin-top:5px;background:#0b0911;border:1px solid #59406a;border-radius:6px;color:white;padding:10px;font:inherit}.field textarea{min-height:75px;resize:vertical}.btn{cursor:pointer;font:inherit}.primary{background:linear-gradient(100deg,#843df1,#f13fa8);border:0;width:100%;margin-top:8px}.muted{color:var(--muted);font-size:12px}.message{color:#ff9bd5;font-size:12px;min-height:18px;white-space:pre-wrap}.pending{border-color:#d7a94a}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{flex:1}@media(max-width:700px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main class="wrap">
+<header class="top"><div class="brand">HALF <span>MONKEY</span> / MEMBERS</div><a href="./HALF_MONKEY_calendar_page_added.html">← กลับหน้ากิลด์</a></header>
+<section class="intro"><h1>MEMBER <span>PROFILES</span></h1><p>พื้นที่แนะนำตัวและทำความรู้จักสมาชิก HALF MONKEY</p><div id="session" class="muted">กำลังตรวจสอบสถานะสมาชิก...</div></section>
+<section class="layout">
+<div class="panel"><h2>สมัครเข้าร่วมกิลด์</h2><p class="muted">กรอกข้อมูลและรอหัวหน้ากิลด์อนุมัติ เมื่ออนุมัติแล้วจึงเข้าสู่ระบบได้</p>
+<form id="registerForm">
+<label class="field">ชื่อในเกม<input name="gameName" maxlength="40" required placeholder="銀河 ` ชื่อของคุณ"></label>
+<label class="field">ชื่อเล่น<input name="nickname" maxlength="30" required placeholder="ชื่อเล่น"></label>
+<label class="field">ชื่อตัวละคร SOJ<input name="characterName" maxlength="40" required placeholder="ชื่อตัวละคร"></label>
+<label class="field">คลาส SOJ<select name="gameClass" required><option value="">เลือกคลาส</option><option>Ironclad</option><option>Sylph</option><option>Nightwaker</option><option>Bloodstorm</option><option>Dragonsvelte</option><option>Celestune</option><option>Mystique</option></select></label>
+<label class="field">แนะนำตัวเอง<textarea name="bio" maxlength="500" placeholder="เล่าเกี่ยวกับตัวคุณสั้น ๆ"></textarea></label>
+<label class="field">ตั้งรหัสผ่าน (อย่างน้อย 8 ตัวอักษร)<input name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required></label>
+<button class="btn primary" type="submit">ส่งใบสมัครสมาชิก</button><p id="registerMessage" class="message"></p>
+</form></div>
+<div class="panel"><h2>โปรไฟล์ของฉัน</h2><p class="muted" id="profileHint">เข้าสู่ระบบจากหน้ากิลด์ก่อน เพื่อแก้ไขโปรไฟล์</p>
+<form id="profileForm" hidden>
+<label class="field">ชื่อในเกม<input name="gameName" maxlength="40" required></label>
+<label class="field">ชื่อเล่น<input name="nickname" maxlength="30" required></label>
+<label class="field">ชื่อตัวละคร SOJ<input name="characterName" maxlength="40" required></label>
+<label class="field">คลาส SOJ<select name="gameClass" required><option>Ironclad</option><option>Sylph</option><option>Nightwaker</option><option>Bloodstorm</option><option>Dragonsvelte</option><option>Celestune</option><option>Mystique</option></select></label>
+<label class="field">แนะนำตัวเอง<textarea name="bio" maxlength="500"></textarea></label>
+<button class="btn primary">บันทึกโปรไฟล์</button><p id="profileMessage" class="message"></p>
+</form></div></section>
+<section id="approvalPanel" class="panel" hidden><h2>ใบสมัครรออนุมัติ (หัวหน้ากิลด์)</h2><div id="pendingList"></div></section>
+<section style="margin-top:22px"><h2>สมาชิก HALF MONKEY</h2><div id="memberList" class="grid"><p class="muted">กำลังโหลดสมาชิก...</p></div></section>
+</main>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+const app=initializeApp({apiKey:"AIzaSySyAIkUlUhiEBdt4hG_zFS2Eg9IwKsnxvIHw",authDomain:"sen-k168.firebaseapp.com",projectId:"sen-k168",storageBucket:"sen-k168.firebasestorage.app",messagingSenderId:"857989205427",appId:"1:857989205427:web:437c809c8ce741547b4fc6"});
+const auth=getAuth(app); let current=null; const $=id=>document.getElementById(id);
+const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+async function token(){return current?current.getIdToken():null}
+async function loadMembers(){
+ const headers={}; const t=await token(); if(t)headers.Authorization="Bearer "+t;
+ const r=await fetch("/api/members",{headers}); const d=await r.json();
+ $("memberList").innerHTML=(d.members||[]).map(m=>`<article class="card"><span class="tag">${esc(m.id)}</span><h3>${esc(m.gameName||m.name)}</h3><p>ชื่อเล่น: ${esc(m.nickname||"-")}</p><p>ตัวละคร: ${esc(m.characterName||"-")}</p><p>คลาส: <b>${esc(m.gameClass||"ยังไม่ระบุ")}</b></p><p>${esc(m.bio||"")}</p></article>`).join("")||"<p>ยังไม่มีสมาชิก</p>";
+ if(d.pending && d.pending.length){
+  $("approvalPanel").hidden=false;
+  $("pendingList").innerHTML=d.pending.map(m=>`<article class="card pending"><b>${esc(m.id)} · ${esc(m.gameName)}</b><p>ชื่อเล่น: ${esc(m.nickname)} · ตัวละคร: ${esc(m.characterName)}</p><p>คลาส: ${esc(m.gameClass)}</p><div class="actions"><button class="btn" data-action="approve" data-id="${esc(m.id)}">อนุมัติ</button><button class="btn" data-action="reject" data-id="${esc(m.id)}">ปฏิเสธ</button></div></article>`).join("");
+ } else { $("approvalPanel").hidden=true; }
+}
+onAuthStateChanged(auth,async firebaseUser=>{
+ current=firebaseUser;
+ if(!firebaseUser){$("session").textContent="ยังไม่ได้เข้าสู่ระบบ · สามารถสมัครสมาชิกหรือดูโปรไฟล์ได้";$("profileHint").textContent="เข้าสู่ระบบจากหน้ากิลด์ก่อน เพื่อแก้ไขโปรไฟล์";$("profileForm").hidden=true;return loadMembers();}
+ const result=await firebaseUser.getIdTokenResult(); const claims=result.claims;
+ $("session").textContent="เข้าสู่ระบบ: "+(claims.displayName||claims.memberId||"สมาชิก")+" ("+(claims.memberId||"")+")";
+ $("profileHint").textContent="กำลังโหลดข้อมูลโปรไฟล์...";
+ const list=await fetch("/api/members",{headers:{Authorization:"Bearer "+await token()}}).then(r=>r.json());
+ const mine=(list.members||[]).find(m=>m.id===claims.memberId);
+ if(mine && !["HM001","HM002","HM003","HM004","HM005","HM006"].includes(mine.id)){
+  const f=$("profileForm"); f.hidden=false;
+  ["gameName","nickname","characterName","gameClass","bio"].forEach(k=>f.elements[k].value=mine[k]||"");
+  $("profileHint").textContent="แก้ไขข้อมูลส่วนตัวของคุณได้ที่นี่";
+ } else $("profileHint").textContent="บัญชีสมาชิกเดิม HM001–HM006 ยังคงใช้งานได้ตามปกติ";
+ await loadMembers();
+ if(claims.memberId==="HM001"&&claims.role==="leader")$("approvalPanel").hidden=false;
+});
+$("registerForm").addEventListener("submit",async e=>{
+ e.preventDefault(); const f=e.currentTarget; const b=Object.fromEntries(new FormData(f).entries());
+ $("registerMessage").textContent="กำลังส่งใบสมัคร...";
+ try{const r=await fetch("/api/member-register",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)});const d=await r.json();if(!r.ok)throw new Error(d.error||"สมัครไม่สำเร็จ");$("registerMessage").textContent="สมัครสำเร็จ! รหัสสมาชิกของคุณคือ "+d.id+" · "+d.message;f.reset();}
+ catch(err){$("registerMessage").textContent=err.message;}
+});
+$("profileForm").addEventListener("submit",async e=>{
+ e.preventDefault();const f=e.currentTarget;const b=Object.fromEntries(new FormData(f).entries());$("profileMessage").textContent="กำลังบันทึก...";
+ try{const r=await fetch("/api/member-profile",{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+await token()},body:JSON.stringify(b)});const d=await r.json();if(!r.ok)throw new Error(d.error||"บันทึกไม่สำเร็จ");$("profileMessage").textContent="บันทึกโปรไฟล์แล้ว";await loadMembers();}
+ catch(err){$("profileMessage").textContent=err.message;}
+});
+$("pendingList").addEventListener("click",async e=>{
+ const b=e.target.closest("button[data-action]");if(!b)return;
+ b.disabled=true;
+ try{const r=await fetch("/api/members",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+await token()},body:JSON.stringify({id:b.dataset.id,action:b.dataset.action})});const d=await r.json();if(!r.ok)throw new Error(d.error||"ดำเนินการไม่สำเร็จ");await loadMembers();}
+ catch(err){alert(err.message);b.disabled=false;}
+});
+</script></body></html>
