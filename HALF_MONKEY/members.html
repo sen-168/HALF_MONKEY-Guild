@@ -17,7 +17,7 @@
 <label class="field">ชื่อในเกม<input name="gameName" maxlength="40" required placeholder="銀河 ` ชื่อของคุณ"></label>
 <label class="field">ชื่อเล่น<input name="nickname" maxlength="30" required placeholder="ชื่อเล่น"></label>
 <label class="field">ชื่อตัวละคร SOJ<input name="characterName" maxlength="40" required placeholder="ชื่อตัวละคร"></label>
-<label class="field">คลาส SOJ<select name="gameClass" required><option value="">เลือกคลาส</option><option>Nightwaker</option><option>Ironclad</option><option>Bloodstrom</option><option>Celestune</option><option>Sylph</option><option>Numina</option><option>Dragonsvelte</option><option value="Mystech">Mystech (玄机 / Xuanji)</option></select></label>
+<label class="field">คลาส SOJ<select name="gameClass" required><option value="">เลือกคลาส</option><option>Nightwaker</option><option>Ironclad</option><option>Bloodstorm</option><option>Celestune</option><option>Sylph</option><option>Numina</option><option>Dragonsvelte</option><option value="Xuanji">玄机 (เสวียนจี)</option><option value="Changling">ชางหลาน (Changling)</option></select></label>
 <label class="field">แนะนำตัวเอง<textarea name="bio" maxlength="500" placeholder="เล่าเกี่ยวกับตัวคุณสั้น ๆ"></textarea></label>
 <label class="field">ตั้งรหัสผ่าน (อย่างน้อย 8 ตัวอักษร)<input name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" required></label>
 <button class="btn primary" type="submit">ส่งใบสมัครสมาชิก</button><p id="registerMessage" class="message"></p>
@@ -27,7 +27,7 @@
 <label class="field">ชื่อในเกม<input name="gameName" maxlength="40" required></label>
 <label class="field">ชื่อเล่น<input name="nickname" maxlength="30" required></label>
 <label class="field">ชื่อตัวละคร SOJ<input name="characterName" maxlength="40" required></label>
-<label class="field">คลาส SOJ<select name="gameClass" required><option value="">เลือกคลาส</option><option>Nightwaker</option><option>Ironclad</option><option>Bloodstrom</option><option>Celestune</option><option>Sylph</option><option>Numina</option><option>Dragonsvelte</option><option value="Mystech">Mystech (玄机 / Xuanji)</option></select></label>
+<label class="field">คลาส SOJ<select name="gameClass" required><option value="">เลือกคลาส</option><option>Nightwaker</option><option>Ironclad</option><option>Bloodstorm</option><option>Celestune</option><option>Sylph</option><option>Numina</option><option>Dragonsvelte</option><option value="Xuanji">玄机 (เสวียนจี)</option><option value="Changling">ชางหลาน (Changling)</option></select></label>
 <label class="field">แนะนำตัวเอง<textarea name="bio" maxlength="500"></textarea></label>
 <button class="btn primary">บันทึกโปรไฟล์</button><p id="profileMessage" class="message"></p>
 </form></div></section>
@@ -42,7 +42,7 @@ const auth=getAuth(app); let current=null; const $=id=>document.getElementById(i
 const CLASS_IMAGES={
  Nightwaker:"https://cdn.gamerwk.com/2025/11/Sword-of-Justice-Class-1.jpg",
  Ironclad:"https://prod.assets.earlygamecdn.com/images/Desktop-Screenshot-2025.11.05-20.57.29.28.jpg?transform=Article+Webp",
- Bloodstrom:"https://images.squarespace-cdn.com/content/v1/5e9dcdfdeed291246bf96c27/1763123605579-N51MNOD3QQRV1ITDV96T/20251113115912_1.jpg?format=1500w",
+ Bloodstorm:"https://images.squarespace-cdn.com/content/v1/5e9dcdfdeed291246bf96c27/1763123605579-N51MNOD3QQRV1ITDV96T/20251113115912_1.jpg?format=1500w",\n Bloodstrom:"https://images.squarespace-cdn.com/content/v1/5e9dcdfdeed291246bf96c27/1763123605579-N51MNOD3QQRV1ITDV96T/20251113115912_1.jpg?format=1500w",
  Bloodstorm:"https://images.squarespace-cdn.com/content/v1/5e9dcdfdeed291246bf96c27/1763123605579-N51MNOD3QQRV1ITDV96T/20251113115912_1.jpg?format=1500w",
  Celestune:"https://images.squarespace-cdn.com/content/v1/5e9dcdfdeed291246bf96c27/1763123606854-P1VPJBTB3P4E45TTDAA8/20251113115934_1.jpg?format=1000w",
  Sylph:"https://images.squarespace-cdn.com/content/v1/5e9dcdfdeed291246bf96c27/1763123607465-AK5EZISNRAZ5PVBRUMXY/20251113115959_1.jpg?format=1500w",
@@ -52,8 +52,8 @@ const CLASS_IMAGES={
  Xuanji:"https://media.9game.cn/gamebase/ieu-gdc-pre-process/images/20240711/1/17/233ab4f07fc7400baf71759c6bd9a7d7.jpg",
  Mystique:"https://media.9game.cn/gamebase/ieu-gdc-pre-process/images/20240711/1/17/233ab4f07fc7400baf71759c6bd9a7d7.jpg"
 };
-const classLabel=value=>value==="Mystech"||value==="Xuanji"||value==="Mystique"?"Mystech (玄机)":(value==="Bloodstorm"?"Bloodstrom":(value||"ยังไม่ระบุ"));
-const classMarkup=value=>{const label=classLabel(value);const src=CLASS_IMAGES[value]||CLASS_IMAGES[label]||"";return src?'<span class="class-line"><img class="class-icon" src="'+src+'" alt="'+esc(label)+'" loading="lazy"><b class="class-name">'+esc(label)+'</b></span>':'<b>'+esc(label)+'</b>';};
+const classLabel=value=>["Mystech","Xuanji","Mystique","玄机","เสวียนจี"].includes(value)?"玄机 (เสวียนจี)":(["Bloodstrom","Bloodstorm"].includes(value)?"Bloodstorm":(value==="Changling"||value==="ชางหลาน"?"ชางหลาน (Changling)":(value||"ยังไม่ระบุ")));
+const classMarkup=value=>{const label=classLabel(value);const key=["Bloodstrom","Bloodstorm"].includes(value)?"Bloodstorm":(["Mystech","Mystique","玄机","เสวียนจี"].includes(value)?"Xuanji":value);const src=CLASS_IMAGES[key]||CLASS_IMAGES[label]||"";return src?'<span class="class-line"><img class="class-icon" src="'+src+'" alt="'+esc(label)+'" loading="lazy"><b class="class-name">'+esc(label)+'</b></span>':'<b>'+esc(label)+'</b>';};
 const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 async function token(){return current?current.getIdToken():null}
 async function loadMembers(){
