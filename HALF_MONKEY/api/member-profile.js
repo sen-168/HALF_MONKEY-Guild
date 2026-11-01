@@ -12,7 +12,6 @@ async function requireUser(req) {
   if (!match) { const e = new Error("กรุณาเข้าสู่ระบบก่อน"); e.status = 401; throw e; }
   return getAdminApp().auth().verifyIdToken(match[1]);
 }
-module.exports = { getAdminApp, requireUser };
 const CLASSES = ["Ironclad", "Sylph", "Nightwaker", "Bloodstorm", "Dragonsvelte", "Celestune", "Mystique"];
 const clean = (v, n) => String(v || "").trim().slice(0, n);
 module.exports = async (req, res) => {
