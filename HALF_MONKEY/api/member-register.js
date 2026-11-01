@@ -12,7 +12,6 @@ async function requireUser(req) {
   if (!match) { const e = new Error("กรุณาเข้าสู่ระบบก่อน"); e.status = 401; throw e; }
   return getAdminApp().auth().verifyIdToken(match[1]);
 }
-module.exports = { getAdminApp, requireUser };
 const CLASSES = ["Ironclad", "Sylph", "Nightwaker", "Bloodstorm", "Dragonsvelte", "Celestune", "Mystique"];
 const clean = (v, n) => String(v || "").trim().slice(0, n);
 module.exports = async (req, res) => {
@@ -39,11 +38,12 @@ module.exports = async (req, res) => {
       tx.set(counter, { lastNumber: next }, { merge: true });
       return "HM" + String(next).padStart(3, "0");
     });
-    const email = id.toLowerCase() + "@members.halfmonkey.invalid";
-    const account = await app.auth().createUser({ uid: "hm-" + id, email, password, displayName: gameName });
+    const salt = require("node:crypto").randomBytes(16).toString("hex");
+    const passwordHash = require("node:crypto").scryptSync(password, salt, 64).toString("hex");
+    const account = await app.auth().createUser({ uid: "hm-" + id, displayName: gameName, disabled: true });
     createdUid = account.uid;
     await db.collection("members").doc(id).set({
-      id, gameName, nickname, characterName, gameClass, bio,
+      id, gameName, nickname, characterName, gameClass, bio, passwordSalt:salt, passwordHash,
       role: "member", status: "pending",
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
