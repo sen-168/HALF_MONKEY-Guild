@@ -26,16 +26,26 @@ module.exports = async (req, res) => {
     const app = getAdminApp();
     const db = app.firestore();
     if (req.method === "GET") {
+      const publicProfile = (data, id) => ({
+        id,
+        gameName: data.gameName || data.name || "",
+        nickname: data.nickname || "",
+        characterName: data.characterName || "",
+        gameClass: data.gameClass || "",
+        bio: data.bio || "",
+        role: data.role || "member",
+        status: data.status || "approved"
+      });
       const snap = await db.collection("members").where("status", "==", "approved").get();
-      const all = new Map(LEGACY.map(m => [m.id, m]));
-      snap.docs.forEach(d => all.set(d.id, d.data()));
+      const all = new Map(LEGACY.map(m => [m.id, publicProfile(m, m.id)]));
+      snap.docs.forEach(d => all.set(d.id, publicProfile(d.data(), d.id)));
       let pending = [];
       const bearer = String(req.headers.authorization || "");
       if (bearer) {
         const actor = await requireUser(req);
         if (actor.memberId === "HM001" && actor.role === "leader") {
           const waiting = await db.collection("members").where("status", "==", "pending").get();
-          pending = waiting.docs.map(d => d.data());
+          pending = waiting.docs.map(d => publicProfile(d.data(), d.id));
         }
       }
       return res.status(200).json({
