@@ -17,7 +17,19 @@ module.exports = async (req, res) => {
       const snap = await db.collection("members").where("status", "==", "approved").get();
       const all = new Map(LEGACY.map(m => [m.id, m]));
       snap.docs.forEach(d => all.set(d.id, d.data()));
-      return res.status(200).json({ members: [...all.values()].sort((a,b) => a.id.localeCompare(b.id, "en", {numeric:true})) });
+      let pending = [];
+      const bearer = String(req.headers.authorization || "");
+      if (bearer) {
+        const actor = await requireUser(req);
+        if (actor.memberId === "HM001" && actor.role === "leader") {
+          const waiting = await db.collection("members").where("status", "==", "pending").get();
+          pending = waiting.docs.map(d => d.data());
+        }
+      }
+      return res.status(200).json({
+        members: [...all.values()].sort((a,b) => a.id.localeCompare(b.id, "en", {numeric:true})),
+        pending
+      });
     }
     if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
     const actor = await requireUser(req);
