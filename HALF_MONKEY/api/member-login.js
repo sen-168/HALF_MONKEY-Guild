@@ -1,7 +1,7 @@
 const admin = require("firebase-admin");
 const crypto = require("node:crypto");
-
-const MEMBERS = {
+const { getAdminApp } = require("./_firebase");
+const LEGACY = {
   HM001: { name: "銀河 ` Yumeko", role: "leader" },
   HM002: { name: "銀河 ` Noriko", role: "member" },
   HM003: { name: "銀河 ` Kisumi", role: "member" },
@@ -9,72 +9,51 @@ const MEMBERS = {
   HM005: { name: "銀河 ` Hanmuenli", role: "member" },
   HM006: { name: "銀河 ` Miyuki", role: "member" }
 };
-
-function getAdminApp() {
-  if (admin.apps.length) return admin.app();
-
-  const privateKey = (process.env.FIREBASE_PRIVATE_KEY || "").replace(/\\n/g, "\n");
-  const projectId = process.env.FIREBASE_PROJECT_ID || "sen-k168";
-  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
-
-  if (!privateKey || !clientEmail) {
-    throw new Error("Firebase Admin credentials are not configured");
-  }
-
-  return admin.initializeApp({
-    credential: admin.credential.cert({ projectId, clientEmail, privateKey })
-  });
-}
-
 function safeEqual(a, b) {
   const left = Buffer.from(String(a || ""));
   const right = Buffer.from(String(b || ""));
   return left.length === right.length && crypto.timingSafeEqual(left, right);
 }
-
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
-
-  if (req.method === "OPTIONS") {
-    res.setHeader("Allow", "POST, OPTIONS");
-    return res.status(204).end();
-  }
-
-  if (req.method !== "POST") {
-    res.setHeader("Allow", "POST, OPTIONS");
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
+  if (req.method === "OPTIONS") { res.setHeader("Allow", "POST, OPTIONS"); return res.status(204).end(); }
+  if (req.method !== "POST") { res.setHeader("Allow", "POST, OPTIONS"); return res.status(405).json({ error: "Method not allowed" }); }
   try {
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
     const memberId = String(body.memberId || "").trim().toUpperCase();
     const password = String(body.password || "");
-    const member = MEMBERS[memberId];
+    const app = getAdminApp();
+    let member = LEGACY[memberId];
 
-    const expectedPassword = memberId === "HM001"
-      ? process.env.HM_LEADER_PASSWORD
-      : process.env.HM_MEMBER_PASSWORD;
-
-    if (!member || !expectedPassword || !safeEqual(password, expectedPassword)) {
-      return res.status(401).json({ error: "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง" });
+    if (member) {
+      const expected = memberId === "HM001" ? process.env.HM_LEADER_PASSWORD : process.env.HM_MEMBER_PASSWORD;
+      if (!expected || !safeEqual(password, expected)) return res.status(401).json({ error: "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง" });
+    } else {
+      if (!/^HM\d{3,}$/.test(memberId)) return res.status(401).json({ error: "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง" });
+      const snap = await app.firestore().collection("members").doc(memberId).get();
+      if (!snap.exists || snap.data().status !== "approved") {
+        return res.status(403).json({ error: snap.exists && snap.data().status === "pending" ? "บัญชียังรอหัวหน้ากิลด์อนุมัติ" : "ไม่พบบัญชีที่อนุมัติแล้ว" });
+      }
+      const profile = snap.data();
+      const apiKey = "AIzaSyAIkUlUhiEBdt4hG_zFS2Eg9IwKsnxvIHw";
+      const verify = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + apiKey, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({ email:memberId.toLowerCase()+"@members.halfmonkey.invalid", password, returnSecureToken:true })
+      });
+      if (!verify.ok) return res.status(401).json({ error: "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง" });
+      member = { name:profile.gameName, role:"member" };
     }
 
-    const app = getAdminApp();
     const uid = "hm-" + memberId;
     const customToken = await app.auth().createCustomToken(uid, {
-      memberId,
-      role: member.role,
-      displayName: member.name
+      memberId, role:member.role, displayName:member.name
     });
-
     return res.status(200).json({
-      token: customToken,
-      member: { id: memberId, name: member.name, role: member.role }
+      token:customToken,
+      member:{ id:memberId, name:member.name, role:member.role }
     });
   } catch (error) {
     console.error("member-login error:", error.message);
-    return res.status(500).json({
-      error: "ระบบเข้าสู่ระบบขัดข้อง กรุณาลองใหม่ภายหลัง"
-    });
+    return res.status(500).json({ error:"ระบบเข้าสู่ระบบขัดข้อง กรุณาลองใหม่ภายหลัง" });
   }
 };
