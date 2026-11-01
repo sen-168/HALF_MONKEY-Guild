@@ -1,6 +1,6 @@
 const admin = require("firebase-admin");
 const crypto = require("node:crypto");
-const { getAdminApp } = require("./_firebase");
+const { getAdminApp } = require("../lib/firebase-admin");
 const LEGACY = {
   HM001: { name: "銀河 ` Yumeko", role: "leader" },
   HM002: { name: "銀河 ` Noriko", role: "member" },
