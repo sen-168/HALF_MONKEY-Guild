@@ -24,6 +24,7 @@ module.exports = async (req, res) => {
     const password = String(body.password || "");
     const app = getAdminApp();
     let member = LEGACY[memberId];
+    let profile = null;
 
     if (member) {
       const expected = memberId === "HM001" ? process.env.HM_LEADER_PASSWORD : process.env.HM_MEMBER_PASSWORD;
@@ -34,7 +35,7 @@ module.exports = async (req, res) => {
       if (!snap.exists || snap.data().status !== "approved") {
         return res.status(403).json({ error: snap.exists && snap.data().status === "pending" ? "บัญชียังรอหัวหน้ากิลด์อนุมัติ" : "ไม่พบบัญชีที่อนุมัติแล้ว" });
       }
-      const profile = snap.data();
+      profile = snap.data();
       const apiKey = "AIzaSyAIkUlUhiEBdt4hG_zFS2Eg9IwKsnxvIHw";
       const verify = await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + apiKey, {
         method:"POST", headers:{"Content-Type":"application/json"},
@@ -50,7 +51,7 @@ module.exports = async (req, res) => {
     });
     return res.status(200).json({
       token:customToken,
-      member:{ id:memberId, name:member.name, role:member.role }
+      member:{ id:memberId, name:member.name, role:member.role, ...(profile ? { nickname:profile.nickname, characterName:profile.characterName, gameClass:profile.gameClass, bio:profile.bio, gameName:profile.gameName } : {}) }
     });
   } catch (error) {
     console.error("member-login error:", error.message);
