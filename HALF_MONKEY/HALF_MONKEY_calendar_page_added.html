@@ -1226,7 +1226,7 @@ async function logout() {
 
 async function login(memberId, password) {
   const id = String(memberId || "").trim().toUpperCase();
-  if (!/^HM\\d{3,}$/.test(id)) {
+  if (!/^HM[0-9]{3,}$/.test(id)) {
     $("loginMessage").textContent = "กรุณากรอกรหัสสมาชิกให้ถูกต้อง";
     return;
   }
@@ -1277,7 +1277,7 @@ function restoreLogin() {
     if (saved && saved.id) {
       const member = members.find(m => m.id === String(saved.id).toUpperCase());
       if (member) user = { ...member, role: member.id === "HM001" ? "leader" : "member" };
-      else if (/^HM\\d{3,}$/.test(String(saved.id))) user = saved;
+      else if (/^HM[0-9]{3,}$/.test(String(saved.id))) user = saved;
       else localStorage.removeItem(LOGIN_STORAGE_KEY);
     }
   } catch (error) {
