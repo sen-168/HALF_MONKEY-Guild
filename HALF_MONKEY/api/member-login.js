@@ -1,6 +1,20 @@
 const admin = require("firebase-admin");
 const crypto = require("node:crypto");
-const { getAdminApp } = require("../lib/firebase-admin");
+const admin = require("firebase-admin");
+function getAdminApp() {
+  if (admin.apps.length) return admin.app();
+  const privateKey = (process.env.FIREBASE_PRIVATE_KEY || "").replace(/\\n/g, "\n");
+  const projectId = process.env.FIREBASE_PROJECT_ID || "sen-k168";
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+  if (!privateKey || !clientEmail) throw new Error("Firebase Admin credentials are not configured");
+  return admin.initializeApp({ credential: admin.credential.cert({ projectId, clientEmail, privateKey }) });
+}
+async function requireUser(req) {
+  const match = String(req.headers.authorization || "").match(/^Bearer\\s+(.+)$/i);
+  if (!match) { const e = new Error("กรุณาเข้าสู่ระบบก่อน"); e.status = 401; throw e; }
+  return getAdminApp().auth().verifyIdToken(match[1]);
+}
+module.exports = { getAdminApp, requireUser };
 const LEGACY = {
   HM001: { name: "銀河 ` Yumeko", role: "leader" },
   HM002: { name: "銀河 ` Noriko", role: "member" },
