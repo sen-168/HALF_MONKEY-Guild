@@ -9,7 +9,7 @@ function getAdminApp() {
   return admin.initializeApp({ credential: admin.credential.cert({ projectId, clientEmail, privateKey }) });
 }
 async function verifyMember(req) {
-  const match = String(req.headers.authorization || "").match(/^Bearer\\s+(.+)$/i);
+  const match = String(req.headers.authorization || "").match(/^Bearer\s+(.+)$/i);
   if (!match) { const e = new Error("กรุณาเข้าสู่ระบบก่อน"); e.status = 401; throw e; }
   const decoded = await getAdminApp().auth().verifyIdToken(match[1]);
   if (!decoded.memberId || !["leader", "member"].includes(decoded.role) || decoded.uid !== "hm-" + decoded.memberId) {
@@ -33,7 +33,7 @@ module.exports = async (req, res) => {
     const collection = db.collection("weeklyHallOfFame");
     if (req.method === "GET") {
       const weekKey = String(req.query.weekKey || "");
-      if (weekKey && !/^\\d{4}-W\\d{2}$/.test(weekKey)) return res.status(400).json({ error: "รูปแบบสัปดาห์ไม่ถูกต้อง" });
+      if (weekKey && !/^\d{4}-W\d{2}$/.test(weekKey)) return res.status(400).json({ error: "รูปแบบสัปดาห์ไม่ถูกต้อง" });
       if (weekKey) {
         const snap = await collection.doc(weekKey).get();
         return res.status(200).json({ weekKey, rows: snap.exists ? (snap.data().rows || []) : [] });
@@ -45,7 +45,7 @@ module.exports = async (req, res) => {
       if (!isLeader(user)) return res.status(403).json({ error: "เฉพาะหัวหน้ากิลด์ HM001 เท่านั้นที่แก้ไขทำเนียบได้" });
       const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
       const weekKey = String(body.weekKey || "");
-      if (!/^\\d{4}-W\\d{2}$/.test(weekKey)) return res.status(400).json({ error: "กรุณาเลือกสัปดาห์ให้ถูกต้อง" });
+      if (!/^\d{4}-W\d{2}$/.test(weekKey)) return res.status(400).json({ error: "กรุณาเลือกสัปดาห์ให้ถูกต้อง" });
       if (!Array.isArray(body.rows) || body.rows.length !== 7) return res.status(400).json({ error: "ต้องมีข้อมูลครบ 7 อันดับ" });
       const rows = body.rows.map((row, index) => ({
         rank: index + 1,
