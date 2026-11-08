@@ -5,6 +5,15 @@
 <meta name="google-site-verification" content="1WskYr07wwPVmtk3T0LnJJR-xaXDsXmFPcE0GnaemFw" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#160b24">
+<meta name="description" content="พื้นที่สมาชิกกิลด์ HALF MONKEY">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HALF MONKEY">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/assets/half-monkey-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/half-monkey-icon.svg">
+
 
 <title>HALF MONKEY | Guild Command</title>
 
@@ -1084,6 +1093,22 @@ document.addEventListener("keydown", function(event) {
     }
   }, { passive: true });
 })();
+</script>
+
+
+<script>
+/* HALF MONKEY PWA: ติดตั้ง Service Worker สำหรับ Android และ iPhone */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js", { scope: "/" })
+      .then(registration => {
+        console.log("HALF MONKEY PWA พร้อมใช้งาน", registration.scope);
+      })
+      .catch(error => {
+        console.error("ติดตั้งระบบ PWA ไม่สำเร็จ:", error);
+      });
+  });
+}
 </script>
 
 </body>
