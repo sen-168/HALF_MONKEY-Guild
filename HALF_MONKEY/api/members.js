@@ -38,7 +38,10 @@ module.exports = async (req, res) => {
       });
       const snap = await db.collection("members").where("status", "==", "approved").get();
       const all = new Map(LEGACY.map(m => [m.id, publicProfile(m, m.id)]));
-      snap.docs.forEach(d => all.set(d.id, publicProfile(d.data(), d.id)));
+      snap.docs.forEach(d => {
+        const previous = all.get(d.id) || {};
+        all.set(d.id, publicProfile({ ...previous, ...d.data() }, d.id));
+      });
       let pending = [];
       const bearer = String(req.headers.authorization || "");
       if (bearer) {
