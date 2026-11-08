@@ -40,12 +40,24 @@ module.exports = async (req, res) => {
     let profile = null;
 
     if (member) {
-      const expected = memberId === "HM001" ? process.env.HM_LEADER_PASSWORD : process.env.HM_MEMBER_PASSWORD;
-      if (!expected) {
-        console.error("Missing legacy password environment variable:", memberId === "HM001" ? "HM_LEADER_PASSWORD" : "HM_MEMBER_PASSWORD");
-        return res.status(500).json({ error: "ระบบยังไม่ได้ตั้งค่ารหัสผ่านบัญชีเดิม กรุณาแจ้งผู้ดูแลระบบ" });
+      // HM002-HM006 may have an individual password override after a leader reset.
+      // HM001 remains on the protected leader password environment variable.
+      const legacyPasswordDoc = memberId === "HM001" ? null : await app.firestore().collection("members").doc(memberId).get();
+      const legacyProfile = legacyPasswordDoc && legacyPasswordDoc.exists ? legacyPasswordDoc.data() : null;
+      if (legacyProfile && legacyProfile.passwordSalt && legacyProfile.passwordHash) {
+        const actual = crypto.scryptSync(password, legacyProfile.passwordSalt, 64);
+        const expectedHash = Buffer.from(legacyProfile.passwordHash, "hex");
+        if (actual.length !== expectedHash.length || !crypto.timingSafeEqual(actual, expectedHash)) {
+          return res.status(401).json({ error: "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง" });
+        }
+      } else {
+        const expected = memberId === "HM001" ? process.env.HM_LEADER_PASSWORD : process.env.HM_MEMBER_PASSWORD;
+        if (!expected) {
+          console.error("Missing legacy password environment variable:", memberId === "HM001" ? "HM_LEADER_PASSWORD" : "HM_MEMBER_PASSWORD");
+          return res.status(500).json({ error: "ระบบยังไม่ได้ตั้งค่ารหัสผ่านบัญชีเดิม กรุณาแจ้งผู้ดูแลระบบ" });
+        }
+        if (!safeEqual(password, expected)) return res.status(401).json({ error: "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง" });
       }
-      if (!safeEqual(password, expected)) return res.status(401).json({ error: "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง" });
     } else {
       if (!/^HM\d{3,}$/.test(memberId)) return res.status(401).json({ error: "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง" });
       const snap = await app.firestore().collection("members").doc(memberId).get();
