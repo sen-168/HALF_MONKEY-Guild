@@ -195,7 +195,43 @@ async function loadWeek(key){weekKey=key;$("editWeek").value=key;try{const data=
 $("weekSelect").addEventListener("change",()=>loadWeek($("weekSelect").value));
 $("editRank").addEventListener("change",()=>loadEntry(Number($("editRank").value)));
 $("saveEntry").addEventListener("click",applyEntry);
-$("uploadImage").addEventListener("click",async()=>{const file=$("editImageFile").files[0];if(!file){$("saveStatus").textContent="กรุณาเลือกรูปก่อนอัปโหลด";return}if(file.size>10*1024*1024){$("saveStatus").textContent="รูปต้องมีขนาดไม่เกิน 10 MB";return}const button=$("uploadImage");button.disabled=true;button.textContent="กำลังอัปโหลด...";try{const form=new FormData();form.append("file",file);form.append("upload_preset",CLOUDINARY_UPLOAD_PRESET);const response=await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD_NAME+"/image/upload",{method:"POST",body:form});const result=await response.json();if(!response.ok||!result.secure_url)throw new Error(result.error?.message||"อัปโหลดรูปไม่สำเร็จ");$("editImage").value=result.secure_url;$("saveStatus").textContent="อัปโหลดรูปสำเร็จแล้ว กดบันทึกตำแหน่งนี้ต่อได้เลย"}catch(error){$("saveStatus").textContent=error.message}finally{button.disabled=false;button.textContent="อัปโหลดรูปตัวละคร"}});
+async function compressHallImage(file){
+  if(!file.type.startsWith("image/"))throw new Error("กรุณาเลือกไฟล์รูปภาพ");
+  if(file.size>10*1024*1024)throw new Error("รูปต้นฉบับต้องมีขนาดไม่เกิน 10 MB");
+  try{
+    const bitmap=await createImageBitmap(file);
+    const maxSide=1200,scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
+    const canvas=document.createElement("canvas");
+    canvas.width=Math.max(1,Math.round(bitmap.width*scale));
+    canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+    const ctx=canvas.getContext("2d");
+    if(!ctx)throw new Error("เบราว์เซอร์ไม่รองรับการย่อรูป");
+    ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+    bitmap.close?.();
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,"image/webp",0.82));
+    if(!blob)throw new Error("แปลงรูปไม่สำเร็จ");
+    return new File([blob],"half-monkey-"+Date.now()+".webp",{type:"image/webp"});
+  }catch(error){
+    if(error.message==="แปลงรูปไม่สำเร็จ"||error.message==="เบราว์เซอร์ไม่รองรับการย่อรูป")throw error;
+    return file;
+  }
+}
+$("uploadImage").addEventListener("click",async()=>{
+  const file=$("editImageFile").files[0];
+  if(!file){$("saveStatus").textContent="กรุณาเลือกรูปก่อนอัปโหลด";return}
+  const button=$("uploadImage");button.disabled=true;button.textContent="กำลังเตรียมรูป...";
+  try{
+    const optimized=await compressHallImage(file);
+    const form=new FormData();form.append("file",optimized);form.append("upload_preset",CLOUDINARY_UPLOAD_PRESET);
+    button.textContent="กำลังอัปโหลด...";
+    const response=await fetch("https://api.cloudinary.com/v1_1/"+CLOUDINARY_CLOUD_NAME+"/image/upload",{method:"POST",body:form});
+    const result=await response.json();
+    if(!response.ok||!result.secure_url)throw new Error(result.error?.message||"อัปโหลดรูปไม่สำเร็จ");
+    $("editImage").value=result.secure_url;
+    $("saveStatus").textContent="อัปโหลดรูปที่ปรับขนาดแล้วสำเร็จ ("+Math.max(1,Math.round(optimized.size/1024))+" KB) กดบันทึกตำแหน่งนี้ต่อได้เลย";
+  }catch(error){$("saveStatus").textContent=error.message}
+  finally{button.disabled=false;button.textContent="อัปโหลดรูปตัวละคร"}
+});
 $("saveWeek").addEventListener("click",async()=>{if(!member||member.role!=="leader"){ $("saveStatus").textContent="เฉพาะหัวหน้ากิลด์ HM001 เท่านั้น";return}if(!applyEntry())return;const selected=$("editWeek").value;if(!/^\d{4}-W\d{2}$/.test(selected)){ $("saveStatus").textContent="กรุณาเลือกสัปดาห์ให้ถูกต้อง";return}weekKey=selected;try{await api("/api/weekly-hall-of-fame",{method:"POST",body:JSON.stringify({weekKey,rows})});await loadWeeks();$("weekSelect").value=weekKey;render();$("saveStatus").textContent="บันทึกทำเนียบสัปดาห์นี้เรียบร้อยแล้ว";}catch(e){$("saveStatus").textContent=e.message}});
 onAuthStateChanged(auth,async user=>{if(!user){member=null;render();return}try{const result=await user.getIdTokenResult();const c=result.claims;if(!c.memberId||!c.displayName){member=null;render();return}member={id:c.memberId,name:c.displayName,role:c.role||"member"};render();weekKey=currentWeek();await loadWeeks();await loadWeek(weekKey);}catch(e){member=null;render();$("saveStatus").textContent=e.message}});
 weekKey=currentWeek();$("editWeek").value=weekKey;render();
