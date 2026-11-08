@@ -1278,6 +1278,10 @@ async function login(memberId, password) {
       window.location.href = "./minigame.html";
       return;
     }
+    if (returnTo === "weekly-hall-of-fame") {
+      window.location.href = "./weekly-hall-of-fame.html";
+      return;
+    }
   } catch (error) {
     console.error("Member login failed:", error);
     $("loginMessage").textContent = error.message || "รหัสสมาชิกหรือรหัสผ่านไม่ถูกต้อง";
