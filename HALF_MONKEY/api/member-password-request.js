@@ -10,13 +10,13 @@ function getAdminApp() {
 }
 
 async function requireUser(req) {
-  const match = String(req.headers.authorization || "").match(/^Bearer\\s+(.+)$/i);
+  const match = String(req.headers.authorization || "").match(/^Bearer\s+(.+)$/i);
   if (!match) { const e = new Error("กรุณาเข้าสู่ระบบก่อน"); e.status = 401; throw e; }
   return getAdminApp().auth().verifyIdToken(match[1]);
 }
 
 const LEGACY_IDS = new Set(["HM001", "HM002", "HM003", "HM004", "HM005", "HM006"]);
-const validId = id => /^HM\\d{3,}$/.test(id);
+const validId = id => /^HM\d{3,}$/.test(id);
 
 module.exports = async (req, res) => {
   res.setHeader("Cache-Control", "no-store");
