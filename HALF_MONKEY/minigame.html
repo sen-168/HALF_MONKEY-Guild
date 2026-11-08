@@ -85,73 +85,60 @@ td.score-cell,.rank{color:var(--gold2);font-weight:bold}
 .admin-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:12px}
 #adminPanel{display:none}
 
-/* แท่นรางวัล 3 อันดับ */
+/* HALL OF FAME: วงกลมอันดับ 1-7 */
 .podium-section{
-  margin:18px 0 24px;padding:20px 12px 12px;
+  margin:18px 0 24px;padding:22px 14px 14px;
   border:1px solid #344663;border-radius:16px;
-  background:radial-gradient(ellipse at 50% 100%,#263958 0%,#101a2b 70%);
+  background:radial-gradient(ellipse at 50% 45%,#263958 0%,#101a2b 72%);
 }
-.podium-title{text-align:center;color:var(--gold);margin:0 0 18px;font-size:20px}
+.podium-title{text-align:center;color:var(--gold);margin:0 0 20px;font-size:20px}
 .podium{
-  display:grid;grid-template-columns:1fr 1.1fr 1fr;
-  gap:8px;align-items:end;max-width:650px;margin:auto;
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:22px 14px;align-items:start;max-width:850px;margin:auto;
 }
-.podium-place{text-align:center;min-width:0}
+.podium-place{
+  --ring:#91a4c4;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  min-width:0;padding:4px 3px 10px;
+}
+.podium-place.first{--ring:#ffd45e}
+.podium-place.second{--ring:#65cfff}
+.podium-place.third{--ring:#d58b5c}
+.podium-place.fourth{--ring:#a78bfa}
+.podium-place.fifth{--ring:#55d6be}
+.podium-place.sixth{--ring:#f472b6}
+.podium-place.seventh{--ring:#a3b2c7}
+.podium-medallion{
+  position:relative;display:flex;align-items:center;justify-content:center;
+  width:clamp(112px,14vw,148px);aspect-ratio:1;border-radius:50%;
+  border:5px solid var(--ring);
+  background:radial-gradient(circle at 35% 25%,#344966 0%,#101827 72%);
+  box-shadow:0 0 8px var(--ring),0 0 20px color-mix(in srgb,var(--ring) 72%,transparent),
+    inset 0 0 18px color-mix(in srgb,var(--ring) 28%,transparent);
+}
+.podium-place.first .podium-medallion{box-shadow:0 0 12px #ffd45e,0 0 30px #ffd45e99,inset 0 0 22px #ffd45e55}
+.podium-place.second .podium-medallion{box-shadow:0 0 12px #65cfff,0 0 30px #65cfff99,inset 0 0 22px #65cfff55}
+.podium-place.third .podium-medallion{box-shadow:0 0 12px #d58b5c,0 0 30px #d58b5c99,inset 0 0 22px #d58b5c55}
+.podium-cup{
+  position:absolute;top:-19px;left:50%;transform:translateX(-50%);
+  font-size:30px;line-height:1.1;filter:drop-shadow(0 2px 5px #000);
+}
+.podium-number{font-size:clamp(34px,5vw,48px);font-weight:900;color:var(--ring);text-shadow:0 0 12px var(--ring)}
 .podium-name{
-  font-size:13px;font-weight:bold;overflow-wrap:anywhere;
-  margin:7px auto 4px;max-width:100%;color:#fff
+  width:100%;font-size:13px;font-weight:bold;overflow-wrap:anywhere;
+  margin:12px auto 4px;color:#fff
 }
-.podium-score{font-size:12px;color:var(--gold2);margin-bottom:8px}
-.podium-cup{font-size:clamp(28px,7vw,48px);line-height:1.3}
-.podium-number{font-size:12px;color:#d8e2f5;margin-bottom:6px}
-.podium-block{
-  display:flex;align-items:center;justify-content:center;
-  font-size:clamp(24px,6vw,38px);font-weight:bold;
-  color:#111827;border-radius:10px 10px 0 0;
-  border:1px solid #ffffff22;border-bottom:0;
-}
-.podium-place.first .podium-block{
-  height:115px;background:linear-gradient(#ffe9a0,#d9a32d);
-}
-.podium-place.second .podium-block{
-  height:78px;background:linear-gradient(#e0e8f4,#8295b1);
-}
-.podium-place.third .podium-block{
-  height:60px;background:linear-gradient(#e9b78a,#9b603d);
-}
-.podium-empty{font-size:12px;color:#d6deeb;margin-bottom:8px}
-.podium-place.first .podium-name{color:#ffe49b}
-.podium-place.second .podium-name{color:#dce7fa}
-.podium-place.third .podium-name{color:#e9b78a}
-.podium-note{text-align:center;color:var(--muted);font-size:11px;margin:14px 0 0}
+.podium-score{font-size:12px;color:var(--gold2);margin-bottom:0}
+.podium-note{text-align:center;color:var(--muted);font-size:11px;margin:18px 0 0}
 #adminPanel{display:none}
-
 @media(max-width:600px){
-  body{padding:10px 8px 24px}
-  .container{width:100%}
-  .header{margin-bottom:14px}
-  .game-panel{padding:8px}
-  .hud{gap:5px;margin-bottom:8px}
-  .hud-card{padding:8px 3px}
-  .hud-value{font-size:17px}
-  .game-wrap{width:100%;border-radius:10px}
-  #gameCanvas{width:100%;height:auto}
-  .overlay{padding:8px}
-  .overlay-card{width:100%;max-width:320px;max-height:95%;overflow-y:auto;padding:14px;border-radius:14px}
-  .overlay-card h2{font-size:21px;margin-bottom:8px}
-  .overlay-card p{font-size:12px;margin-bottom:10px}
-  .name-input{padding:12px;margin-bottom:10px;font-size:16px}
-  .controls{flex-wrap:nowrap;gap:8px;margin-top:12px;padding:0 4px}
-  .controls button{flex:1;min-width:0;min-height:44px;padding:8px 6px;font-size:14px}
-  .help{margin-top:10px;font-size:12px}
-  .leaderboard-panel{padding:12px;margin-top:14px}
-  .podium-section{padding:16px 6px 10px}
-  .podium{gap:4px}
-  .podium-name{font-size:11px}
+  .podium-section{padding:20px 8px 12px}
+  .podium{grid-template-columns:repeat(4,minmax(0,1fr));gap:20px 5px}
+  .podium-medallion{width:clamp(68px,20vw,112px);border-width:4px}
+  .podium-cup{font-size:22px;top:-15px}
+  .podium-number{font-size:clamp(25px,7vw,36px)}
+  .podium-name{font-size:11px;margin-top:10px}
   .podium-score{font-size:10px}
-  .podium-place.first .podium-block{height:90px}
-  .podium-place.second .podium-block{height:65px}
-  .podium-place.third .podium-block{height:50px}
 }
 </style>
 </head>
@@ -449,9 +436,13 @@ function renderPodium(records) {
   podium.replaceChildren();
 
   const places = [
+    {rank:1, className:"first", medal:"👑"},
     {rank:2, className:"second", medal:"🥈"},
-    {rank:1, className:"first", medal:"🏆"},
-    {rank:3, className:"third", medal:"🥉"}
+    {rank:3, className:"third", medal:"🥉"},
+    {rank:4, className:"fourth", medal:""},
+    {rank:5, className:"fifth", medal:""},
+    {rank:6, className:"sixth", medal:""},
+    {rank:7, className:"seventh", medal:""}
   ];
 
   places.forEach(place => {
@@ -459,9 +450,20 @@ function renderPodium(records) {
     const box = document.createElement("div");
     box.className = "podium-place " + place.className;
 
-    const cup = document.createElement("div");
-    cup.className = "podium-cup";
-    cup.textContent = place.medal;
+    const circle = document.createElement("div");
+    circle.className = "podium-medallion";
+
+    if (place.medal) {
+      const cup = document.createElement("div");
+      cup.className = "podium-cup";
+      cup.textContent = place.medal;
+      circle.appendChild(cup);
+    }
+
+    const number = document.createElement("div");
+    number.className = "podium-number";
+    number.textContent = String(place.rank);
+    circle.appendChild(number);
 
     const name = document.createElement("div");
     name.className = "podium-name";
@@ -469,13 +471,11 @@ function renderPodium(records) {
 
     const points = document.createElement("div");
     points.className = "podium-score";
-    points.textContent = record ? record.score.toLocaleString("th-TH") + " คะแนน" : "0 คะแนน";
+    points.textContent = record
+      ? record.score.toLocaleString("th-TH") + " คะแนน"
+      : "0 คะแนน";
 
-    const block = document.createElement("div");
-    block.className = "podium-block";
-    block.textContent = String(place.rank);
-
-    box.append(cup, name, points, block);
+    box.append(circle, name, points);
     podium.appendChild(box);
   });
 }
