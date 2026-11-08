@@ -1050,6 +1050,8 @@ footer {
     autocomplete="current-password"
     required
   >
+  <button type="button" id="forgotPasswordBtn" class="note" style="display:block;margin:9px 0 0;padding:0;border:0;background:none;color:#ff70c0;text-decoration:underline;cursor:pointer">ลืมรหัสผ่าน? แจ้งหัวหน้ากิลด์</button>
+  <p class="message" id="forgotPasswordMessage"></p>
 
   <button class="btn primary full" type="submit">
     เข้าสู่ระบบ
@@ -1292,6 +1294,28 @@ function restoreLogin() {
 $("loginForm").addEventListener("submit", async event => {
   event.preventDefault();
   await login($("memberId").value, $("password").value);
+});
+
+$("forgotPasswordBtn").addEventListener("click", async () => {
+  const memberId = $("memberId").value.trim().toUpperCase();
+  const message = $("forgotPasswordMessage");
+  if (!/^HM[0-9]{3,}$/.test(memberId)) {
+    message.textContent = "กรุณากรอกรหัสสมาชิก HM ก่อนกดแจ้งลืมรหัสผ่าน";
+    return;
+  }
+  message.textContent = "กำลังส่งคำขอ...";
+  try {
+    const response = await fetch("/api/member-password-request", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ memberId })
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "ส่งคำขอไม่สำเร็จ");
+    message.textContent = result.message || "ส่งคำขอแล้ว กรุณาติดต่อหัวหน้ากิลด์";
+  } catch (error) {
+    message.textContent = error.message || "ส่งคำขอไม่สำเร็จ กรุณาลองใหม่";
+  }
 });
 
 // Keep other tabs in sync when a member logs in or out.
