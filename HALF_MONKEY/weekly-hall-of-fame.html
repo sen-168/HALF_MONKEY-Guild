@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#100c14">
+<meta name="description" content="ทำเนียบยอดฝีมือประจำสัปดาห์ HALF MONKEY">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HALF MONKEY">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/assets/half-monkey-icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/half-monkey-icon.svg">
+<script src="/assets/pwa-install.js" defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Kanit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>ทำเนียบยอดฝีมือประจำสัปดาห์ | HALF MONKEY</title>
+<style>
+:root{--gold:#f5cf79;--gold2:#9b6b25;--blue:#58d9f5;--silver:#d9edff;--bronze:#ff9a6d;--ink:#090b13;--panel:#11121c;--line:#b98b42}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#090b13;color:#fff;font-family:Kanit,sans-serif}
+body:before{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg,#080a13c9,#080a13e8),url("./assets/background.jpg.jpg") center/cover no-repeat}
+body:after{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 22%,#b27b2d26,transparent 48%),linear-gradient(90deg,#05070b8a,transparent 18%,transparent 82%,#05070b8a)}
+button,input,select,textarea{font:inherit}.shell{width:min(1440px,calc(100% - 30px));margin:0 auto;padding:18px 0 28px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.back,.login-link{color:#f7d88d;text-decoration:none;border:1px solid #c99a4d88;background:#100e17d9;padding:9px 14px;border-radius:8px;font-size:13px}
+.headline{position:relative;width:min(850px,100%);margin:0 auto 8px;padding:12px 20px 10px;text-align:center;background:linear-gradient(180deg,#25202a,#0c0b12);border:2px solid #e6c27a;box-shadow:0 0 0 4px #3c2d1a,0 10px 32px #000b,inset 0 0 25px #d99b3726;clip-path:polygon(4% 0,96% 0,100% 50%,96% 100%,4% 100%,0 50%)}
+.headline h1{margin:0;color:#ffe39b;font-size:clamp(22px,4vw,48px);font-weight:800;text-shadow:0 2px 0 #71451b,0 0 20px #e6b94c88}
+.headline p{margin:5px 0 0;color:#eaf8ff;font-size:clamp(11px,1.6vw,17px);text-shadow:0 0 10px #4ccbe8}
+.weekline{display:flex;justify-content:center;align-items:center;gap:8px;margin:12px auto 20px;color:#f4d78e;font-size:13px}.weekline select{max-width:230px;background:#0d111b;color:#ffe6a6;border:1px solid #b88d47;border-radius:6px;padding:6px 10px}
+.podium{display:grid;grid-template-columns:1fr 1.12fr 1fr;align-items:end;gap:clamp(8px,2vw,24px);max-width:1060px;margin:0 auto 20px}
+.champion{position:relative;text-align:center;min-width:0;padding-top:22px}
+.champion .medal{position:absolute;top:0;left:50%;transform:translateX(-50%);font-size:clamp(25px,4vw,43px);filter:drop-shadow(0 0 10px currentColor);z-index:2}
+.champion .portrait{width:clamp(100px,17vw,190px);height:clamp(100px,17vw,190px);margin:0 auto -12px;border-radius:50%;padding:7px;position:relative;z-index:1;background:linear-gradient(145deg,var(--rank-color),#17121b 70%);box-shadow:0 0 0 3px #f6d78c88,0 0 25px var(--rank-glow)}
+.champion .portrait img{width:100%;height:100%;object-fit:cover;border-radius:50%;background:#17131c}
+.champion .rank-number{position:absolute;top:23px;left:4%;font:900 clamp(48px,8vw,100px) Cinzel,serif;color:var(--rank-color);text-shadow:0 0 22px var(--rank-glow),0 4px 5px #000}
+.champion .plaque{position:relative;z-index:2;padding:12px 8px 10px;border:1px solid var(--rank-color);background:linear-gradient(180deg,#29222b,#090a10);box-shadow:0 7px 18px #000b,inset 0 0 15px var(--rank-glow);clip-path:polygon(5% 0,95% 0,100% 18%,96% 100%,4% 100%,0 18%)}
+.champion .plaque b{display:block;font-size:clamp(12px,1.7vw,18px);overflow-wrap:anywhere}
+.champion .plaque small{display:block;margin-top:3px;color:var(--rank-color);font-size:clamp(10px,1.4vw,15px);overflow-wrap:anywhere}
+.champion.first{--rank-color:#ffd45f;--rank-glow:#ffbd3e88;transform:translateY(-8px)}
+.champion.second{--rank-color:#c9e9ff;--rank-glow:#5ecaff88}
+.champion.third{--rank-color:#ff9c70;--rank-glow:#ff754988}
+.board{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:10px;align-items:stretch}
+.frame{border:2px solid #c99a4c;background:linear-gradient(145deg,#18151bfa,#080a12f5);box-shadow:0 0 0 3px #3a2b1b,0 10px 30px #000b,inset 0 0 22px #d5a64b12;min-width:0}
+.rank-table{padding:8px 12px 12px}.table-head,.rank-row{display:grid;grid-template-columns:58px minmax(115px,1.1fr) minmax(125px,1.4fr) minmax(100px,1.1fr) 95px;align-items:center;gap:8px}
+.table-head{padding:7px 5px 10px;color:#f5d99b;font-weight:600;font-size:12px;border-bottom:1px solid #c28f3b88;text-align:center}
+.rank-row{min-height:57px;padding:5px;border-bottom:1px solid #9b733a55;background:linear-gradient(90deg,#ffffff08,transparent);font-size:13px}
+.rank-row:last-child{border-bottom:0}.rank-no{text-align:center;font:800 21px Cinzel,serif;color:#f6e6c5}.rank-no.top1{color:#ffd65d}.rank-no.top2{color:#d9edff}.rank-no.top3{color:#ff9b73}
+.position{display:inline-flex;align-items:center;gap:6px;min-width:0}.position span{display:inline-block;padding:4px 8px;border-radius:20px;border:1px solid #d3a34d;color:#ffdf8e;background:#8b5b182e;font-size:11px;overflow-wrap:anywhere}
+.player{display:flex;align-items:center;gap:8px;min-width:0}.player img{width:39px;height:39px;border-radius:50%;object-fit:cover;border:1px solid #d3aa5d;background:#211a22;flex-shrink:0}.player b{overflow-wrap:anywhere;font-weight:500}.highlight{color:#e5d5b8;overflow-wrap:anywhere;font-size:11px}.score{color:#ffe18a;font-weight:700;text-align:center;white-space:nowrap}.edit-row{border:1px solid #d2a44e;background:#1c1720;color:#ffdf9c;border-radius:6px;padding:5px 8px;font-size:11px}
+.admin{padding:13px;display:flex;flex-direction:column;gap:10px}.admin h2{margin:0;color:#ffd77c;font-size:17px;text-align:center}.admin .notice{font-size:11px;line-height:1.55;color:#d9efff;background:#123047;border:1px solid #48c7ed;border-radius:8px;padding:9px}
+.field{display:flex;flex-direction:column;gap:4px;color:#f3d89a;font-size:12px}.field input,.field select,.field textarea{width:100%;background:#0a0b12;border:1px solid #66503a;border-radius:6px;padding:8px;color:#fff;min-width:0}.field textarea{min-height:55px;resize:vertical}
+.gold-btn,.purple-btn{border:0;border-radius:7px;padding:10px;font-weight:700;cursor:pointer}.gold-btn{background:linear-gradient(180deg,#ffe58a,#c98a24);color:#241605;box-shadow:0 0 14px #e7aa3d55}.purple-btn{background:linear-gradient(180deg,#6b20a5,#31085c);color:#fff;border:1px solid #a65be0}
+.admin-help{font-size:10px;color:#b7a995;line-height:1.5}.status{min-height:18px;color:#9ee9b5;font-size:11px;text-align:center}
+.bottomline{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:13px;color:#f1d28a;font-size:12px}.bottomline a{color:#f7d98e;text-decoration:none;border:1px solid #b78d4c;padding:7px 12px;border-radius:20px}
+.login-wall{max-width:500px;margin:50px auto;padding:25px;text-align:center}.login-wall h2{color:#ffdc8c}.login-wall p{color:#cfc2a9;font-size:13px;line-height:1.7}.hidden{display:none!important}
+@media(max-width:900px){.board{grid-template-columns:1fr}.admin{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.admin h2,.admin .notice,.admin-help,.status{grid-column:1/-1}.table-head,.rank-row{grid-template-columns:45px minmax(100px,1fr) minmax(115px,1.2fr) minmax(90px,1fr) 75px}}
+@media(max-width:600px){.shell{width:calc(100% - 16px);padding-top:10px}.topbar{margin-bottom:8px}.back,.login-link{font-size:11px;padding:7px 9px}.headline{padding:9px 14px}.weekline{flex-wrap:wrap;margin:10px auto 15px}.podium{gap:5px;margin-bottom:13px}.champion{padding-top:19px}.champion .portrait{width:clamp(78px,26vw,120px);height:clamp(78px,26vw,120px);padding:5px}.champion .rank-number{font-size:clamp(37px,12vw,60px);top:25px;left:0}.champion .plaque{padding:9px 4px 8px}.champion .plaque b{font-size:11px}.champion .plaque small{font-size:10px}.champion .medal{font-size:27px}.rank-table{padding:5px}.table-head,.rank-row{grid-template-columns:30px minmax(76px,.85fr) minmax(105px,1.2fr) 65px 48px;gap:4px}.table-head{font-size:9px;padding:6px 1px}.rank-row{min-height:52px;font-size:10px;padding:4px 1px}.rank-no{font-size:15px}.position span{font-size:9px;padding:3px 4px}.player{gap:4px}.player img{width:29px;height:29px}.player b{font-size:9px}.highlight{display:none}.score{font-size:9px}.edit-row{font-size:9px;padding:4px 3px}.admin{grid-template-columns:1fr;padding:10px}.admin h2,.admin .notice,.admin-help,.status{grid-column:auto}.bottomline{font-size:10px;align-items:flex-start}.bottomline a{white-space:nowrap}}
+@media(max-width:390px){.table-head,.rank-row{grid-template-columns:26px minmax(68px,.8fr) minmax(90px,1.1fr) 57px 42px}.player img{width:25px;height:25px}.position span{font-size:8px}.rank-row{font-size:9px}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="topbar">
+    <a class="back" href="./Home.html">← หน้าหลัก</a>
+    <a class="login-link" id="loginLink" href="./HALF_MONKEY_calendar_page_added.html?login=1">เข้าสู่ระบบสมาชิก</a>
+  </div>
+  <header class="headline">
+    <h1>ทำเนียบยอดฝีมือประจำสัปดาห์</h1>
+    <p>อัปเดตล่าสุด: <span id="weekCaption">กำลังโหลดข้อมูล...</span></p>
+  </header>
+  <div class="weekline">เลือกสัปดาห์ <select id="weekSelect" aria-label="เลือกสัปดาห์"></select></div>
+  <section class="podium" aria-label="สามอันดับแรก">
+    <article class="champion second"><div class="medal">♛</div><div class="rank-number">2</div><div class="portrait"><img id="podium2Img" alt="อันดับ 2"></div><div class="plaque"><b id="podium2Name">รอประกาศ</b><small id="podium2Title">รองหัวหน้ามังกร</small></div></article>
+    <article class="champion first"><div class="medal">👑</div><div class="rank-number">1</div><div class="portrait"><img id="podium1Img" alt="อันดับ 1"></div><div class="plaque"><b id="podium1Name">รอประกาศ</b><small id="podium1Title">หัวหน้ามังกร</small></div></article>
+    <article class="champion third"><div class="medal">♛</div><div class="rank-number">3</div><div class="portrait"><img id="podium3Img" alt="อันดับ 3"></div><div class="plaque"><b id="podium3Name">รอประกาศ</b><small id="podium3Title">ผู้พิทักษ์อันดับ 1</small></div></article>
+  </section>
+  <section class="board">
+    <div class="frame rank-table">
+      <div class="table-head"><span>อันดับ</span><span>ตำแหน่ง</span><span>ชื่อผู้เล่น</span><span>ผลงานเด่น</span><span>คะแนน</span></div>
+      <div id="rankRows"></div>
+    </div>
+    <aside class="frame admin" id="adminPanel">
+      <h2>⚙ จัดการข้อมูล (เฉพาะหัวหน้ากิลด์)</h2>
+      <div class="notice" id="adminNotice">เข้าสู่ระบบด้วยบัญชีหัวหน้ากิลด์ HM001 เพื่อแก้ไขรายชื่อและตำแหน่งประจำสัปดาห์</div>
+      <div class="field"><label for="editWeek">สัปดาห์ที่แก้ไข</label><input id="editWeek" type="week"></div>
+      <div class="field"><label for="editRank">อันดับ</label><select id="editRank"><option value="1">อันดับ 1</option><option value="2">อันดับ 2</option><option value="3">อันดับ 3</option><option value="4">อันดับ 4</option><option value="5">อันดับ 5</option><option value="6">อันดับ 6</option><option value="7">อันดับ 7</option></select></div>
+      <div class="field"><label for="editTitle">คำเรียก / ตำแหน่ง (แก้ไขเองได้)</label><input id="editTitle" maxlength="50" placeholder="เช่น หัวหน้ามังกร"></div>
+      <div class="field"><label for="editName">ชื่อผู้เล่น</label><input id="editName" maxlength="60" placeholder="ชื่อในเกม"></div>
+      <div class="field"><label for="editScore">คะแนนรวม</label><input id="editScore" type="number" min="0" max="999999999" placeholder="คะแนน"></div>
+      <div class="field"><label for="editHighlight">ผลงานเด่น</label><input id="editHighlight" maxlength="90" placeholder="เช่น ทำคะแนนสูงสุดของทีม"></div>
+      <div class="field"><label for="editImage">รูปตัวละคร (URL หรือพาธรูปในเว็บ)</label><input id="editImage" maxlength="500" placeholder="images/leader.png.jpg"></div>
+      <button class="gold-btn" id="saveEntry" type="button">✓ บันทึกตำแหน่งนี้</button>
+      <button class="purple-btn" id="saveWeek" type="button">บันทึกข้อมูลทั้งสัปดาห์</button>
+      <p class="admin-help">เลือกอันดับแล้วแก้ชื่อ ตำแหน่ง ผลงาน คะแนน และรูปได้ตามต้องการ ข้อมูลจะถูกบันทึกแยกตามสัปดาห์และเก็บประวัติสัปดาห์ก่อนหน้า</p>
+      <div class="status" id="saveStatus" role="status"></div>
+    </aside>
+  </section>
+  <div class="bottomline"><span>✦ HALF MONKEY · UNITED AS ONE ✦</span><a href="./HALF_MONKEY_calendar_page_added.html">กลับหน้ากิลด์</a></div>
+</div>
+<div class="login-wall frame hidden" id="loginWall"><h2>กรุณาเข้าสู่ระบบสมาชิก</h2><p>ทำเนียบยอดฝีมือเปิดให้สมาชิก HALF MONKEY เข้าชมได้หลังเข้าสู่ระบบ<br>หากยังไม่ได้เข้าสู่ระบบ ให้ไปหน้าเว็บกิลด์ก่อน</p><a class="login-link" href="./HALF_MONKEY_calendar_page_added.html?login=1">ไปหน้าเข้าสู่ระบบ</a></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+const firebaseConfig={apiKey:"AIzaSyAIkUlUhiEBdt4hG_zFS2Eg9IwKsnxvIHw",authDomain:"sen-k168.firebaseapp.com",projectId:"sen-k168",storageBucket:"sen-k168.firebasestorage.app",messagingSenderId:"857989205427",appId:"1:857989205427:web:437c809c8ce741547b4fc6",measurementId:"G-JXKM11VK14"};
+const app=initializeApp(firebaseConfig),auth=getAuth(app);
+const $=id=>document.getElementById(id);
+const defaultRows=[
+{rank:1,title:"หัวหน้ามังกร",name:"銀河 \\ Yumeko",highlight:"ผลงานยอดเยี่ยมประจำสัปดาห์",score:0,image:"images/leader.png.jpg"},
+{rank:2,title:"รองหัวหน้ามังกร",name:"銀河 \\ Noriko",highlight:"ยอดเยี่ยมทุกสนาม",score:0,image:"images/leader1.png.jpg"},
+{rank:3,title:"ผู้พิทักษ์อันดับ 1",name:"銀河 \\ Kisumi",highlight:"สู้ไม่ถอยจนถึงที่สุด",score:0,image:"images/leader2.png.jpg"},
+{rank:4,title:"ผู้พิทักษ์อันดับ 2",name:"銀河 \\ Haruto",highlight:"พลังใจเต็มร้อย",score:0,image:"images/leader3.png.jpg"},
+{rank:5,title:"ผู้พิทักษ์อันดับ 3",name:"銀河 \\ Hanmuenli",highlight:"ทีมเวิร์กยอดเยี่ยม",score:0,image:"images/leader4.png.jpg"},
+{rank:6,title:"สมาชิกดีเด่น",name:"銀河 \\ Miyuki",highlight:"ไม่เคยยอมแพ้",score:0,image:"images/leader5.png.jpg"},
+{rank:7,title:"สมาชิกดีเด่น",name:"สมาชิก HALF MONKEY",highlight:"ร่วมแรงร่วมใจ",score:0,image:"images/leader.png.jpg"}
+];
+let member=null,rows=defaultRows.map(x=>({...x})),weekKey="",weeks=[];
+function currentWeek(){const d=new Date(),day=(d.getDay()+6)%7;d.setDate(d.getDate()-day+3);const first=new Date(d.getFullYear(),0,4);const firstDay=(first.getDay()+6)%7;first.setDate(first.getDate()-firstDay+3);const w=1+Math.round((d-first)/604800000);return d.getFullYear()+"-W"+String(w).padStart(2,"0")}
+function weekLabel(key){const m=key.match(/^(\d{4})-W(\d{2})$/);return m?"สัปดาห์ที่ "+m[2]+" ปี "+(Number(m[1])+543):key}
+function safeImage(value){const s=String(value||"").trim();return /^(https:\/\/|\/?images\/|\/?assets\/)/i.test(s)?s:""}
+function imgFallback(img){img.onerror=()=>{img.onerror=null;img.src="./assets/half-monkey-icon.svg"}}
+function render(){
+$("weekCaption").textContent=weekLabel(weekKey);
+for(let rank=1;rank<=3;rank++){const item=rows.find(x=>x.rank===rank)||defaultRows[rank-1];$("podium"+rank+"Name").textContent=item.name||"รอประกาศ";$("podium"+rank+"Title").textContent=item.title||"ยังไม่ระบุตำแหน่ง";const im=$("podium"+rank+"Img");im.src=safeImage(item.image)||"./assets/half-monkey-icon.svg";imgFallback(im)}
+$("rankRows").innerHTML="";
+rows.slice().sort((a,b)=>a.rank-b.rank).forEach(item=>{
+const row=document.createElement("div");row.className="rank-row";
+const no=document.createElement("div");no.className="rank-no "+(item.rank<=3?"top"+item.rank:"");no.textContent=["♛ 1","❖ 2","♕ 3"][item.rank-1]||String(item.rank);
+const pos=document.createElement("div");pos.className="position";const badge=document.createElement("span");badge.textContent=item.title||"ยังไม่ระบุตำแหน่ง";pos.append(badge);
+const player=document.createElement("div");player.className="player";const im=document.createElement("img");im.src=safeImage(item.image)||"./assets/half-monkey-icon.svg";im.alt="";imgFallback(im);const nm=document.createElement("b");nm.textContent=item.name||"รอประกาศ";player.append(im,nm);
+const hi=document.createElement("div");hi.className="highlight";hi.textContent=item.highlight||"—";
+const score=document.createElement("div");score.className="score";score.textContent=Number(item.score||0).toLocaleString("th-TH");
+const edit=document.createElement("button");edit.className="edit-row";edit.type="button";edit.textContent="แก้ไข";edit.addEventListener("click",()=>loadEntry(item.rank));
+row.append(no,pos,player,hi,score,edit);$("rankRows").append(row);
+});
+document.querySelectorAll(".edit-row").forEach(b=>b.classList.toggle("hidden",!member||member.role!=="leader"));
+$("adminPanel").classList.toggle("hidden",!member||member.role!=="leader");
+$("loginWall").classList.toggle("hidden",!!member);
+$("loginLink").textContent=member?"เข้าสู่ระบบแล้ว: "+member.name:"เข้าสู่ระบบสมาชิก";
+$("loginLink").href=member?"./HALF_MONKEY_calendar_page_added.html":"./HALF_MONKEY_calendar_page_added.html?login=1";
+}
+function loadEntry(rank){const item=rows.find(x=>x.rank===rank)||defaultRows[rank-1];$("editRank").value=String(rank);$("editTitle").value=item.title||"";$("editName").value=item.name||"";$("editScore").value=item.score||0;$("editHighlight").value=item.highlight||"";$("editImage").value=item.image||""}
+function applyEntry(){const rank=Number($("editRank").value);const item={rank,title:$("editTitle").value.trim(),name:$("editName").value.trim(),score:Math.max(0,Math.floor(Number($("editScore").value)||0)),highlight:$("editHighlight").value.trim(),image:$("editImage").value.trim()};if(!item.title||!item.name){$("saveStatus").textContent="กรุณากรอกคำเรียกตำแหน่งและชื่อผู้เล่น";return false}if(!safeImage(item.image)){ $("saveStatus").textContent="กรุณาใส่พาธรูป images/... หรือ URL https://";return false}rows=rows.filter(x=>x.rank!==rank);rows.push(item);rows.sort((a,b)=>a.rank-b.rank);render();$("saveStatus").textContent="แก้ไขอันดับ "+rank+" ในหน้าตัวอย่างแล้ว กดบันทึกข้อมูลทั้งสัปดาห์เพื่อเผยแพร่";return true}
+async function api(path,options={}){const user=auth.currentUser;if(!user)throw new Error("กรุณาเข้าสู่ระบบก่อน");const token=await user.getIdToken();const res=await fetch(path,{...options,headers:{"Content-Type":"application/json","Authorization":"Bearer "+token,...(options.headers||{})}});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||"เชื่อมต่อระบบไม่สำเร็จ");return data}
+async function loadWeeks(){const data=await api("/api/weekly-hall-of-fame");weeks=Array.isArray(data.weeks)?data.weeks:[];if(!weeks.some(x=>x.weekKey===weekKey))weeks.unshift({weekKey});$("weekSelect").innerHTML="";weeks.forEach(w=>{const o=document.createElement("option");o.value=w.weekKey;o.textContent=weekLabel(w.weekKey);$("weekSelect").append(o)});$("weekSelect").value=weekKey}
+async function loadWeek(key){weekKey=key;$("editWeek").value=key;try{const data=await api("/api/weekly-hall-of-fame?weekKey="+encodeURIComponent(key));rows=Array.isArray(data.rows)&&data.rows.length===7?data.rows:defaultRows.map(x=>({...x}));}catch(e){rows=defaultRows.map(x=>({...x}));$("saveStatus").textContent=e.message}render();loadEntry(1)}
+$("weekSelect").addEventListener("change",()=>loadWeek($("weekSelect").value));
+$("editRank").addEventListener("change",()=>loadEntry(Number($("editRank").value)));
+$("saveEntry").addEventListener("click",applyEntry);
+$("saveWeek").addEventListener("click",async()=>{if(!member||member.role!=="leader"){ $("saveStatus").textContent="เฉพาะหัวหน้ากิลด์ HM001 เท่านั้น";return}if(!applyEntry())return;const selected=$("editWeek").value;if(!/^\d{4}-W\d{2}$/.test(selected)){ $("saveStatus").textContent="กรุณาเลือกสัปดาห์ให้ถูกต้อง";return}weekKey=selected;try{await api("/api/weekly-hall-of-fame",{method:"POST",body:JSON.stringify({weekKey,rows})});await loadWeeks();$("weekSelect").value=weekKey;render();$("saveStatus").textContent="บันทึกทำเนียบสัปดาห์นี้เรียบร้อยแล้ว";}catch(e){$("saveStatus").textContent=e.message}});
+onAuthStateChanged(auth,async user=>{if(!user){member=null;render();return}try{const result=await user.getIdTokenResult();const c=result.claims;if(!c.memberId||!c.displayName){member=null;render();return}member={id:c.memberId,name:c.displayName,role:c.role||"member"};render();weekKey=currentWeek();await loadWeeks();await loadWeek(weekKey);}catch(e){member=null;render();$("saveStatus").textContent=e.message}});
+weekKey=currentWeek();$("editWeek").value=weekKey;render();
+if("serviceWorker"in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("/sw.js",{scope:"/"}).catch(e=>console.warn("SW",e)));
+</script>
+</body>
+</html>
