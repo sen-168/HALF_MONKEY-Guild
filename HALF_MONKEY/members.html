@@ -41,6 +41,14 @@
   <button class="btn primary" type="submit">รีเซ็ตรหัสผ่านสมาชิก</button>
   <p id="passwordResetMessage" class="message"></p>
  </form>
+<div style="border-top:1px solid #c49ae533;margin-top:18px;padding-top:14px">
+ <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+  <h3 style="margin:0;font-size:15px">คำขอลืมรหัสผ่านจากสมาชิก</h3>
+  <button class="btn" type="button" id="refreshPasswordRequests">รีเฟรชคำขอ</button>
+ </div>
+ <p class="muted">เมื่อสมาชิกแจ้งลืมรหัสผ่าน คำขอจะแสดงตรงนี้ ตั้งรหัสผ่านใหม่ในช่องด้านบน แล้วกด “ดำเนินการแล้ว”</p>
+ <div id="passwordRequestList"><p class="muted">กำลังโหลดคำขอ...</p></div>
+</div>
 </section>
 <section style="margin-top:22px"><h2>สมาชิก HALF MONKEY</h2><div id="memberList" class="grid"><p class="muted">กำลังโหลดสมาชิก...</p></div></section>
 </main>
@@ -109,6 +117,7 @@ onAuthStateChanged(auth,async firebaseUser=>{
  if(claims.memberId==="HM001"&&claims.role==="leader"){
   $("approvalPanel").hidden=false;
   $("passwordAdminPanel").hidden=false;
+  await loadPasswordRequests();
  }
 });
 $("registerForm").addEventListener("submit",async e=>{
@@ -121,6 +130,32 @@ $("profileForm").addEventListener("submit",async e=>{
  e.preventDefault();const f=e.currentTarget;const b=Object.fromEntries(new FormData(f).entries());$("profileMessage").textContent="กำลังบันทึก...";
  try{const r=await fetch("/api/member-profile",{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+await token()},body:JSON.stringify(b)});const d=await r.json();if(!r.ok)throw new Error(d.error||"บันทึกไม่สำเร็จ");$("profileMessage").textContent="บันทึกโปรไฟล์แล้ว";await loadMembers();}
  catch(err){$("profileMessage").textContent=err.message;}
+});
+async function loadPasswordRequests(){
+ const list=$("passwordRequestList");
+ if(!list)return;
+ list.innerHTML='<p class="muted">กำลังโหลดคำขอ...</p>';
+ try{
+  const r=await fetch("/api/member-password-request",{headers:{Authorization:"Bearer "+await token()},cache:"no-store"});
+  const d=await r.json();
+  if(!r.ok)throw new Error(d.error||"โหลดคำขอไม่สำเร็จ");
+  if(!d.requests||!d.requests.length){list.innerHTML='<p class="muted">ยังไม่มีคำขอลืมรหัสผ่าน</p>';return;}
+  list.innerHTML=d.requests.map(x=>'<article class="card pending" style="margin-top:8px"><b>'+esc(x.memberId)+' · '+esc(x.name)+'</b><p>ส่งคำขอ: '+esc(x.requestedAt?new Date(x.requestedAt).toLocaleString("th-TH"):"ไม่ระบุเวลา")+'</p><div class="actions"><button class="btn" type="button" data-resolve-request="'+esc(x.memberId)+'">ดำเนินการแล้ว</button><button class="btn" type="button" data-reset-request="'+esc(x.memberId)+'">เลือกเพื่อรีเซ็ตรหัสผ่าน</button></div></article>').join("");
+ }catch(err){list.innerHTML='<p class="message">'+esc(err.message)+'</p>';}
+}
+$("refreshPasswordRequests").addEventListener("click",loadPasswordRequests);
+$("passwordRequestList").addEventListener("click",async e=>{
+ const reset=e.target.closest("button[data-reset-request]");
+ if(reset){$("resetMemberId").value=reset.dataset.resetRequest;$("passwordResetMessage").textContent="เลือกรหัสผ่านใหม่ด้านบนสำหรับ "+reset.dataset.resetRequest;return;}
+ const done=e.target.closest("button[data-resolve-request]");
+ if(!done)return;
+ done.disabled=true;
+ try{
+  const r=await fetch("/api/member-password-request",{method:"PATCH",headers:{"Content-Type":"application/json",Authorization:"Bearer "+await token()},body:JSON.stringify({memberId:done.dataset.resolveRequest})});
+  const d=await r.json();
+  if(!r.ok)throw new Error(d.error||"อัปเดตคำขอไม่สำเร็จ");
+  await loadPasswordRequests();
+ }catch(err){alert(err.message);done.disabled=false;}
 });
 $("passwordResetForm").addEventListener("submit",async e=>{
  e.preventDefault();
