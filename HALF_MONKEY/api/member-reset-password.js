@@ -11,7 +11,7 @@ function getAdminApp() {
 }
 
 async function requireUser(req) {
-  const match = String(req.headers.authorization || "").match(/^Bearer\\s+(.+)$/i);
+  const match = String(req.headers.authorization || "").match(/^Bearer\s+(.+)$/i);
   if (!match) { const e = new Error("กรุณาเข้าสู่ระบบก่อน"); e.status = 401; throw e; }
   return getAdminApp().auth().verifyIdToken(match[1]);
 }
@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
     const body = typeof req.body === "string" ? JSON.parse(req.body || "{}") : (req.body || {});
     const memberId = String(body.memberId || "").trim().toUpperCase();
     const newPassword = String(body.newPassword || "");
-    if (!/^HM\\d{3,}$/.test(memberId) || memberId === "HM001") {
+    if (!/^HM\d{3,}$/.test(memberId) || memberId === "HM001") {
       return res.status(400).json({ error: "รหัสสมาชิกไม่ถูกต้อง หรือไม่สามารถรีเซ็ตรหัสผ่านหัวหน้ากิลด์จากเมนูนี้ได้" });
     }
     if (newPassword.length < 8 || newPassword.length > 128) {
