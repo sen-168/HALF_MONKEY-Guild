@@ -1,7 +1,10 @@
-const CACHE_NAME = "half-monkey-pwa-v1";
+const CACHE_NAME = "half-monkey-pwa-v2";
 const APP_SHELL = [
   "/",
   "/Home.html",
+  "/index.html",
+  "/manifest.webmanifest",
+  "/assets/pwa-install.js",
   "/HALF_MONKEY_calendar_page_added.html",
   "/assets/half-monkey-icon.svg"
 ];
