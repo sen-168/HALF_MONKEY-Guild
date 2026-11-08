@@ -1,0 +1,29 @@
+{
+  "id": "/",
+  "name": "HALF MONKEY | Guild Command",
+  "short_name": "HALF MONKEY",
+  "description": "พื้นที่สมาชิกกิลด์ HALF MONKEY",
+  "lang": "th",
+  "start_url": "/Home.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#090510",
+  "theme_color": "#160b24",
+  "icons": [
+    {
+      "src": "/assets/half-monkey-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "games",
+    "social"
+  ]
+}
