@@ -191,7 +191,38 @@ function loadEntry(rank){const item=rows.find(x=>x.rank===rank)||defaultRows[ran
 function applyEntry(){const rank=Number($("editRank").value);const item={rank,title:$("editTitle").value.trim(),name:$("editName").value.trim(),score:Math.max(0,Math.floor(Number($("editScore").value)||0)),highlight:$("editHighlight").value.trim(),image:$("editImage").value.trim()};if(!item.title||!item.name){$("saveStatus").textContent="กรุณากรอกคำเรียกตำแหน่งและชื่อผู้เล่น";return false}if(!safeImage(item.image)){ $("saveStatus").textContent="กรุณาใส่พาธรูป images/... หรือ URL https://";return false}rows=rows.filter(x=>x.rank!==rank);rows.push(item);rows.sort((a,b)=>a.rank-b.rank);render();$("saveStatus").textContent="แก้ไขอันดับ "+rank+" ในหน้าตัวอย่างแล้ว กดบันทึกข้อมูลทั้งสัปดาห์เพื่อเผยแพร่";return true}
 async function api(path,options={}){const user=auth.currentUser;if(!user)throw new Error("กรุณาเข้าสู่ระบบก่อน");const token=await user.getIdToken();const res=await fetch(path,{...options,headers:{"Content-Type":"application/json","Authorization":"Bearer "+token,...(options.headers||{})}});const data=await res.json().catch(()=>({}));if(!res.ok)throw new Error(data.error||"เชื่อมต่อระบบไม่สำเร็จ");return data}
 async function loadWeeks(){const data=await api("/api/weekly-hall-of-fame");weeks=Array.isArray(data.weeks)?data.weeks:[];if(!weeks.some(x=>x.weekKey===weekKey))weeks.unshift({weekKey});$("weekSelect").innerHTML="";weeks.forEach(w=>{const o=document.createElement("option");o.value=w.weekKey;o.textContent=weekLabel(w.weekKey);$("weekSelect").append(o)});$("weekSelect").value=weekKey}
-async function loadWeek(key){weekKey=key;$("editWeek").value=key;try{const data=await api("/api/weekly-hall-of-fame?weekKey="+encodeURIComponent(key));rows=Array.isArray(data.rows)&&data.rows.length===7?data.rows:defaultRows.map(x=>({...x}));}catch(e){rows=defaultRows.map(x=>({...x}));$("saveStatus").textContent=e.message}render();loadEntry(1)}
+async function loadWeek(key){
+  weekKey=key;
+  $("editWeek").value=key;
+  try{
+    const data=await api("/api/weekly-hall-of-fame?weekKey="+encodeURIComponent(key));
+    if(Array.isArray(data.rows)&&data.rows.length===7){
+      rows=data.rows;
+    }else{
+      // เมื่อเริ่มสัปดาห์ใหม่ ให้สืบทอดข้อมูลล่าสุดจากสัปดาห์ก่อน
+      // เพื่อไม่ให้รูปและรายชื่อกลับไปเป็นค่าเริ่มต้นทุกวันจันทร์
+      const previousWeek=weeks
+        .map(w=>w.weekKey)
+        .filter(w=>/^\\d{4}-W\\d{2}$/.test(w)&&w<key)
+        .sort()
+        .pop();
+      if(previousWeek){
+        const previous=await api("/api/weekly-hall-of-fame?weekKey="+encodeURIComponent(previousWeek));
+        rows=Array.isArray(previous.rows)&&previous.rows.length===7
+          ?previous.rows.map(item=>({...item}))
+          :defaultRows.map(x=>({...x}));
+        $("saveStatus").textContent="สัปดาห์ใหม่: กำลังแสดงข้อมูลและรูปจาก "+weekLabel(previousWeek)+" โดยเก็บประวัติเดิมไว้";
+      }else{
+        rows=defaultRows.map(x=>({...x}));
+      }
+    }
+  }catch(e){
+    rows=defaultRows.map(x=>({...x}));
+    $("saveStatus").textContent=e.message;
+  }
+  render();
+  loadEntry(1);
+}
 $("weekSelect").addEventListener("change",()=>loadWeek($("weekSelect").value));
 $("editRank").addEventListener("change",()=>loadEntry(Number($("editRank").value)));
 $("saveEntry").addEventListener("click",applyEntry);
