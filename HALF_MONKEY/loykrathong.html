@@ -203,18 +203,33 @@ function renderRiver(items){
     card.append(name,wish);card.addEventListener("click",()=>showWish(item));list.append(card);
   });
 }
+let stopKrathongListener=null;
+function startKrathongListener(){
+  if(stopKrathongListener) stopKrathongListener();
+  stopKrathongListener=onSnapshot(query(collection(db,"krathongs"),orderBy("createdAt","desc"),limit(100)),snapshot=>{
+    allKrathongs=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
+    renderRiver(allKrathongs);
+  },error=>{
+    console.error("krathong listener:",error);
+    $("formNotice").textContent="ยังโหลดกระทงไม่ได้: "+(error.code||error.message);
+    renderRiver([]);
+  });
+}
+// แสดงกระทงต้อนรับทันที ระหว่างรอ Firebase ตรวจสอบสถานะสมาชิก
+renderRiver([]);
 onAuthStateChanged(auth,async user=>{
   if(!user){
     currentMember=null;
     $("authStatus").textContent="ยังไม่ได้เข้าสู่ระบบ";
     $("memberName").value="";
     $("launchButton").disabled=true;
-    $("formNotice").textContent="กรุณาเข้าสู่ระบบผ่านหน้าเว็บหลักก่อนร่วมกิจกรรม";
     $("formNotice").innerHTML='กรุณา <a style="color:#f5d995" href="./HALF_MONKEY_calendar_page_added.html?login=1">เข้าสู่ระบบที่นี่</a> แล้วกลับมาลอยกระทง';
+    renderRiver([]);
+    if(stopKrathongListener){stopKrathongListener();stopKrathongListener=null;}
     return;
   }
   try{
-    const token=await user.getIdTokenResult();
+    const token=await user.getIdTokenResult(true);
     const claims=token.claims;
     if(!claims.memberId||!claims.displayName) throw new Error("บัญชีนี้ไม่ใช่บัญชีสมาชิกกิลด์");
     currentMember={id:claims.memberId,name:claims.displayName,role:claims.role||"member"};
@@ -223,20 +238,16 @@ onAuthStateChanged(auth,async user=>{
     $("memberName").value=currentMember.name;
     $("launchButton").disabled=false;
     $("formNotice").textContent="พร้อมแล้ว! เขียนคำอธิษฐานแล้วปล่อยกระทงได้เลย";
+    startKrathongListener();
   }catch(error){
+    console.error("member session:",error);
     currentMember=null;
     $("authStatus").textContent="บัญชีไม่ใช่สมาชิก";
     $("launchButton").disabled=true;
     $("formNotice").textContent="กรุณาเข้าสู่ระบบด้วยบัญชีสมาชิก HALF MONKEY";
+    renderRiver([]);
+    if(stopKrathongListener){stopKrathongListener();stopKrathongListener=null;}
   }
-});
-onSnapshot(query(collection(db,"krathongs"),orderBy("createdAt","desc"),limit(100)),snapshot=>{
-  allKrathongs=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
-  renderRiver(allKrathongs);
-},error=>{
-  console.error("krathong listener:",error);
-  $("formNotice").textContent="ยังโหลดกระทงไม่ได้ กรุณาตรวจสอบการตั้งค่าสิทธิ์ Firestore";
-  $("wishList").innerHTML='<div class="empty">ไม่สามารถโหลดข้อมูลกระทงได้ในขณะนี้</div>';
 });
 $("krathongForm").addEventListener("submit",async event=>{
   event.preventDefault();
