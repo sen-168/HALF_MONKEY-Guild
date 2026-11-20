@@ -19,6 +19,23 @@ service cloud.firestore {
         && request.auth.uid == "hm-" + request.auth.token.memberId;
     }
 
+    // Shared Loy Krathong wishes: only authenticated guild members can read and create.
+    match /krathongs/{krathongId} {
+      allow read: if isMember();
+      allow create: if isMember()
+        && request.resource.data.keys().hasOnly(["memberId", "author", "style", "wish", "createdAt"])
+        && request.resource.data.memberId == request.auth.token.memberId
+        && request.resource.data.author == request.auth.token.displayName
+        && request.resource.data.style is string
+        && request.resource.data.wish is string
+        && request.resource.data.wish.size() > 0
+        && request.resource.data.wish.size() <= 500
+        && request.resource.data.createdAt == request.time;
+      allow update: if false;
+      allow delete: if isMember()
+        && (resource.data.memberId == request.auth.token.memberId || isLeader());
+    }
+
     // Member-only guild content. Visitors must sign in before reading posts.
     match /posts/{postId} {
       allow read: if isMember();
