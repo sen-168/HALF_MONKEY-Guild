@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#100b25">
+<title>HALF MONKEY | Loy Krathong Festival</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Cinzel:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#f5d995;--pink:#f5a9d0;--violet:#bda5ff;--ink:#100b25}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:#fff8ee;font-family:Kanit,sans-serif;background:#100b25;overflow-x:hidden}
+button,input,textarea,select{font:inherit}
+.backdrop{position:fixed;inset:0;z-index:-3;background:radial-gradient(ellipse at 50% 18%,#57406c 0%,#28213f 38%,#100d26 78%,#08091b 100%)}
+.moon{position:fixed;z-index:-2;top:9%;left:calc(50% - 75px);width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#fffde9,#f6dca7 48%,#c89b91 75%,transparent 76%);box-shadow:0 0 55px #ffe7bc80,0 0 140px #e8b8ff30;opacity:.8}
+.tree{position:fixed;z-index:-1;top:-35px;font-size:clamp(80px,16vw,190px);opacity:.38;filter:drop-shadow(0 8px 15px #080514)}
+.tree.left{left:-35px;transform:rotate(-18deg)}.tree.right{right:-40px;transform:scaleX(-1) rotate(-18deg)}
+header{position:relative;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px clamp(14px,4vw,55px);background:linear-gradient(#0b081bbd,transparent)}
+.brand{font:800 clamp(15px,2vw,22px) Cinzel,serif;letter-spacing:2px;color:var(--gold);text-shadow:0 0 20px #f5d99570}
+header a{color:#f7e6c7;text-decoration:none;border:1px solid #f5d99565;border-radius:30px;padding:8px 14px;font-size:12px;background:#17132e88}
+main{width:min(1180px,96%);margin:auto;padding:20px 0 50px}
+.intro{text-align:center;margin:10px auto 24px}
+.eyebrow{font:600 10px Cinzel,serif;letter-spacing:4px;color:#f2c9e3}
+h1{font-size:clamp(30px,6vw,62px);line-height:1.12;margin:8px 0;color:#ffe7b5;text-shadow:0 0 22px #ffdb9d75,0 3px 8px #160b25}
+.subtitle{margin:0 auto;color:#e7d8ec;font-size:14px;line-height:1.8}
+.stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}
+.stat{border:1px solid #f4d99b50;background:#17132e8c;padding:7px 16px;border-radius:30px;font-size:12px;color:#f5e6c8;backdrop-filter:blur(8px)}
+.stat b{color:var(--gold);font-size:15px}
+.river{position:relative;height:clamp(360px,54vw,570px);overflow:hidden;border-top:1px solid #eac9ee55;border-bottom:1px solid #eac9ee55;background:linear-gradient(180deg,#44345022 0%,#3b294c80 22%,#211d3dbd 48%,#11162f 100%);box-shadow:0 0 60px #08061799,inset 0 0 70px #07091e88}
+.river:before,.river:after{content:"";position:absolute;inset:0;pointer-events:none}
+.river:before{opacity:.48;background:repeating-linear-gradient(174deg,transparent 0 24px,#d4b5e322 25px,#f6dfc522 26px,transparent 29px 56px);animation:water 8s linear infinite}
+.river:after{background:linear-gradient(90deg,#0e0d24aa,transparent 18%,transparent 82%,#0e0d24aa)}
+@keyframes water{to{background-position:0 180px}}
+.water-glow{position:absolute;width:50%;height:100px;left:25%;top:25%;background:#f4c9a0;filter:blur(65px);opacity:.17}
+.flower{position:absolute;z-index:1;opacity:.55;filter:drop-shadow(0 0 9px #ffc9e5);animation:petal 12s linear infinite}
+.flower:nth-child(2){top:18%;left:12%;font-size:22px;animation-delay:-4s}.flower:nth-child(3){top:72%;left:78%;font-size:28px;animation-delay:-8s}.flower:nth-child(4){top:46%;left:54%;font-size:18px;animation-delay:-2s}
+@keyframes petal{0%{transform:translate(0,20px) rotate(0);opacity:0}20%{opacity:.7}100%{transform:translate(80px,-100px) rotate(220deg);opacity:0}}
+.lane{position:absolute;left:0;right:0;height:90px;z-index:2}
+.krathong{position:absolute;left:-130px;top:0;width:130px;min-height:86px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;animation:floatAcross var(--duration,25s) linear var(--delay,0s) infinite;filter:drop-shadow(0 8px 12px #080616a8);transition:filter .2s}
+.krathong:hover{filter:drop-shadow(0 0 18px #ffe4a8)}
+.krathong .boat{font-size:43px;line-height:1.15;filter:drop-shadow(0 0 10px #ffd979b0);animation:bob 3.4s ease-in-out infinite}
+.krathong .candle{font-size:13px;margin-bottom:-6px;filter:drop-shadow(0 0 9px #ffe79b)}
+.krathong .owner{font-size:11px;white-space:nowrap;color:#fff4d9;text-shadow:0 2px 5px #09051a,0 0 8px #000;background:#17132e9c;padding:2px 9px;border-radius:20px;border:1px solid #f4d99b45;max-width:125px;overflow:hidden;text-overflow:ellipsis}
+@keyframes floatAcross{0%{transform:translateX(-2vw) translateY(0)}25%{transform:translateX(27vw) translateY(-9px)}50%{transform:translateX(54vw) translateY(5px)}75%{transform:translateX(82vw) translateY(-7px)}100%{transform:translateX(112vw) translateY(0)}}
+@keyframes bob{0%,100%{transform:rotate(-3deg) translateY(0)}50%{transform:rotate(3deg) translateY(-5px)}}
+.river-hint{position:absolute;z-index:3;bottom:13px;left:0;right:0;text-align:center;color:#e6d7ed9c;font-size:11px;pointer-events:none}
+.panel{width:min(760px,100%);margin:24px auto 0;padding:clamp(17px,3vw,28px);border:1px solid #f3d69b55;border-radius:20px;background:linear-gradient(145deg,#211a3be8,#120f2beF);box-shadow:0 15px 45px #05041188}
+.panel h2{text-align:center;color:var(--gold);font-size:23px;margin:0 0 5px}
+.panel>p{text-align:center;color:#d9cce4;font-size:12px;margin:0 0 15px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:block;color:#f1dcb2;font-size:12px;margin:9px 0 5px}
+input,textarea,select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid #e8c98a55;background:#0d0b20;color:#fff;outline:none}
+textarea{min-height:95px;resize:vertical}
+input[readonly]{color:#f6d995}
+.full{grid-column:1/-1}
+.submit{display:block;width:min(330px,100%);margin:17px auto 0;padding:13px 20px;border:1px solid #fff1bd;border-radius:40px;color:#4a3152;font-weight:700;background:linear-gradient(100deg,#e7bd6d,#fff0b4,#dba75e);box-shadow:0 0 22px #f4d58a55;cursor:pointer}
+.submit:disabled{opacity:.5;cursor:not-allowed}
+.notice{text-align:center;color:#e6d8ed;font-size:12px;min-height:22px;margin-top:10px}
+.wishes{width:min(900px,100%);margin:25px auto 0}
+.wishes h2{text-align:center;color:var(--gold);font-size:22px}
+.wish-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.wish{padding:14px;border:1px solid #e8c98a3d;border-radius:13px;background:#17132dcc;cursor:pointer;transition:.2s}
+.wish:hover{border-color:#f5d995;transform:translateY(-2px)}
+.wish b{display:block;color:#f6d995;font-size:13px;margin-bottom:4px}
+.wish span{display:block;color:#e9deef;font-size:12px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.empty{text-align:center;color:#d3c5df;padding:20px;border:1px dashed #e8c98a55;border-radius:12px;grid-column:1/-1}
+.modal{position:fixed;inset:0;z-index:20;display:none;place-items:center;padding:18px;background:#070514d9;backdrop-filter:blur(7px)}
+.modal.show{display:grid}
+.modal-card{width:min(440px,100%);padding:26px;border:1px solid #f4d99588;border-radius:20px;text-align:center;background:radial-gradient(ellipse at top,#443253,#17132d 70%);box-shadow:0 0 50px #f2c98b30}
+.modal-card .big{font-size:65px;filter:drop-shadow(0 0 15px #ffdc8a)}
+.modal-card h3{color:#f6d995;margin:5px 0}
+.modal-card p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8;color:#fff3e6}
+.modal-card button{border:1px solid #f4d995;border-radius:25px;background:#f4d995;color:#342342;padding:8px 22px}
+footer{text-align:center;color:#c4b5d4;font-size:11px;padding:28px 10px}
+@media(max-width:600px){header{padding:13px}.tree{top:30px}.moon{top:13%;width:100px;height:100px;left:calc(50% - 50px)}.river{height:430px}.lane{height:75px}.krathong{width:110px}.krathong .boat{font-size:37px}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.wish-list{grid-template-columns:1fr}.intro{margin-top:5px}.subtitle{font-size:12px;padding:0 10px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:30s!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="backdrop"></div><div class="moon"></div><div class="tree left">🌸</div><div class="tree right">🌸</div>
+<header><div class="brand">HALF MONKEY · FESTIVAL</div><a href="./HALF_MONKEY_calendar_page_added.html">← กลับหน้าเว็บหลัก</a></header>
+<main>
+<section class="intro">
+<div class="eyebrow">A NIGHT OF WISHES · GUILD EVENT</div>
+<h1>เทศกาลลอยกระทง</h1>
+<p class="subtitle">ฝากคำอธิษฐานของคุณไว้บนสายน้ำ<br>ให้กระทงลอยวนกลับมาเล่าเรื่องราวของพวกเราตลอดค่ำคืน</p>
+<div class="stats"><div class="stat">🪷 กระทงทั้งหมด <b id="krathongCount">0</b> ใบ</div><div class="stat">✨ ผู้ร่วมกิจกรรม <b id="memberCount">0</b> คน</div><div class="stat" id="authStatus">กำลังตรวจสอบสมาชิก...</div></div>
+</section>
+<section class="river" id="river" aria-label="แม่น้ำที่มีกระทงลอยวน">
+<div class="water-glow"></div><span class="flower">🌸</span><span class="flower">🌼</span><span class="flower">🌺</span>
+<div class="river-hint">แตะกระทงเพื่ออ่านคำอธิษฐาน · กระทงจะลอยวนกลับมาเสมอ</div>
+</section>
+<section class="panel">
+<h2>🪷 ส่งคำอธิษฐานของคุณ</h2>
+<p>หนึ่งสมาชิกสามารถฝากกระทงได้หลายใบ ทุกใบจะลอยวนให้เพื่อน ๆ ได้เห็น</p>
+<form id="krathongForm">
+<div class="form-grid">
+<div><label for="memberName">ชื่อสมาชิก</label><input id="memberName" readonly placeholder="กรุณาเข้าสู่ระบบ"></div>
+<div><label for="krathongStyle">เลือกรูปแบบกระทง</label><select id="krathongStyle"><option value="🪷">ดอกบัวทอง</option><option value="🌸">บุปผาชมพู</option><option value="🌼">ดอกไม้แห่งแสง</option><option value="蓮">กระทงบัวมรกต</option><option value="🏵️">กระทงบุปผาทอง</option></select></div>
+<div class="full"><label for="wishText">คำอธิษฐาน / คำอวยพร</label><textarea id="wishText" maxlength="500" required placeholder="เขียนคำอธิษฐานของคุณที่นี่..."></textarea></div>
+</div>
+<button class="submit" id="launchButton" type="submit" disabled>🕯️ ลอยกระทงของฉัน</button>
+<div class="notice" id="formNotice">กำลังตรวจสอบการเข้าสู่ระบบ...</div>
+</form>
+</section>
+<section class="wishes"><h2>✨ คำอธิษฐานจากสมาชิก</h2><div class="wish-list" id="wishList"><div class="empty">กำลังรอคำอธิษฐานจากสมาชิก...</div></div></section>
+</main>
+<footer>HALF MONKEY · UNITED AS ONE · MAY YOUR WISHES FIND THEIR WAY</footer>
+<div class="modal" id="wishModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-card"><div class="big" id="modalIcon">🪷</div><h3 id="modalTitle">คำอธิษฐาน</h3><div id="modalOwner" style="color:#e7c6ee;font-size:12px"></div><p id="modalWish"></p><button id="closeModal" type="button">ปิดหน้าต่าง</button></div></div>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAIkUlUhiEBdt4hG_zFS2Eg9IwKsnxvIHw",
+  authDomain: "sen-k168.firebaseapp.com",
+  projectId: "sen-k168",
+  storageBucket: "sen-k168.firebasestorage.app",
+  messagingSenderId: "857989205427",
+  appId: "1:857989205427:web:437c809c8ce741547b4fc6",
+  measurementId: "G-JXKM11VK14"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const $ = id => document.getElementById(id);
+let currentMember = null;
+let allKrathongs = [];
+const escapeText = value => String(value ?? "");
+function showWish(item){
+  $("modalIcon").textContent = item.style || "🪷";
+  $("modalTitle").textContent = "คำอธิษฐาน";
+  $("modalOwner").textContent = "จาก " + (item.author || "สมาชิก HALF MONKEY");
+  $("modalWish").textContent = item.wish || "";
+  $("wishModal").classList.add("show");
+}
+$("closeModal").addEventListener("click",()=>$("wishModal").classList.remove("show"));
+$("wishModal").addEventListener("click",e=>{if(e.target===$("wishModal"))$("wishModal").classList.remove("show")});
+function renderRiver(items){
+  const river=$("river");
+  river.querySelectorAll(".lane").forEach(node=>node.remove());
+  const count=items.length;
+  $("krathongCount").textContent=count;
+  $("memberCount").textContent=new Set(items.map(x=>x.memberId)).size;
+  if(!count){
+    $("wishList").innerHTML='<div class="empty">ยังไม่มีกระทงใบแรก มาเริ่มฝากคำอธิษฐานกันเลย 🪷</div>';
+    return;
+  }
+  const lanes=Math.min(7,Math.max(3,count));
+  items.forEach((item,index)=>{
+    const lane=document.createElement("div");
+    lane.className="lane";
+    const y=7+(index%lanes)*(Math.max(1,78/lanes));
+    lane.style.top=y+"%";
+    const boat=document.createElement("button");
+    boat.type="button";
+    boat.className="krathong";
+    const duration=24+(index%7)*5;
+    const delay=-(index*7.3)%(duration);
+    boat.style.setProperty("--duration",duration+"s");
+    boat.style.setProperty("--delay",delay+"s");
+    boat.style.top=((index%3)*5)+"px";
+    boat.innerHTML='<span class="candle">🕯️</span><span class="boat"></span><span class="owner"></span>';
+    boat.querySelector(".boat").textContent=item.style||"🪷";
+    boat.querySelector(".owner").textContent=item.author||"สมาชิก";
+    boat.setAttribute("aria-label","อ่านคำอธิษฐานของ "+(item.author||"สมาชิก"));
+    boat.addEventListener("click",()=>showWish(item));
+    lane.append(boat);
+    river.append(lane);
+  });
+  const list=$("wishList");
+  list.replaceChildren();
+  items.slice(0,12).forEach(item=>{
+    const card=document.createElement("button");
+    card.type="button";card.className="wish";
+    const name=document.createElement("b");name.textContent=(item.style||"🪷")+" "+(item.author||"สมาชิก");
+    const wish=document.createElement("span");wish.textContent=item.wish||"";
+    card.append(name,wish);card.addEventListener("click",()=>showWish(item));list.append(card);
+  });
+}
+onAuthStateChanged(auth,async user=>{
+  if(!user){
+    currentMember=null;
+    $("authStatus").textContent="ยังไม่ได้เข้าสู่ระบบ";
+    $("memberName").value="";
+    $("launchButton").disabled=true;
+    $("formNotice").textContent="กรุณาเข้าสู่ระบบผ่านหน้าเว็บหลักก่อนร่วมกิจกรรม";
+    $("formNotice").innerHTML='กรุณา <a style="color:#f5d995" href="./HALF_MONKEY_calendar_page_added.html?login=1">เข้าสู่ระบบที่นี่</a> แล้วกลับมาลอยกระทง';
+    return;
+  }
+  try{
+    const token=await user.getIdTokenResult();
+    const claims=token.claims;
+    if(!claims.memberId||!claims.displayName) throw new Error("บัญชีนี้ไม่ใช่บัญชีสมาชิกกิลด์");
+    currentMember={id:claims.memberId,name:claims.displayName,role:claims.role||"member"};
+    localStorage.setItem("hmLoggedInUser",JSON.stringify(currentMember));
+    $("authStatus").textContent="สมาชิก: "+currentMember.name;
+    $("memberName").value=currentMember.name;
+    $("launchButton").disabled=false;
+    $("formNotice").textContent="พร้อมแล้ว! เขียนคำอธิษฐานแล้วปล่อยกระทงได้เลย";
+  }catch(error){
+    currentMember=null;
+    $("authStatus").textContent="บัญชีไม่ใช่สมาชิก";
+    $("launchButton").disabled=true;
+    $("formNotice").textContent="กรุณาเข้าสู่ระบบด้วยบัญชีสมาชิก HALF MONKEY";
+  }
+});
+onSnapshot(query(collection(db,"krathongs"),orderBy("createdAt","desc"),limit(100)),snapshot=>{
+  allKrathongs=snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
+  renderRiver(allKrathongs);
+},error=>{
+  console.error("krathong listener:",error);
+  $("formNotice").textContent="ยังโหลดกระทงไม่ได้ กรุณาตรวจสอบการตั้งค่าสิทธิ์ Firestore";
+  $("wishList").innerHTML='<div class="empty">ไม่สามารถโหลดข้อมูลกระทงได้ในขณะนี้</div>';
+});
+$("krathongForm").addEventListener("submit",async event=>{
+  event.preventDefault();
+  if(!auth.currentUser||!currentMember){$("formNotice").textContent="กรุณาเข้าสู่ระบบก่อน";return}
+  const wish=$("wishText").value.trim();
+  if(!wish)return;
+  const button=$("launchButton");
+  button.disabled=true;button.textContent="กำลังปล่อยกระทง...";
+  try{
+    await addDoc(collection(db,"krathongs"),{
+      memberId:currentMember.id,
+      author:currentMember.name,
+      style:$("krathongStyle").value,
+      wish,
+      createdAt:serverTimestamp()
+    });
+    $("wishText").value="";
+    $("formNotice").textContent="🪷 กระทงของคุณกำลังลอยอยู่บนสายน้ำแล้ว!";
+  }catch(error){
+    console.error(error);
+    $("formNotice").textContent="บันทึกไม่สำเร็จ: "+error.message;
+  }finally{
+    button.disabled=!currentMember;
+    button.textContent="🕯️ ลอยกระทงของฉัน";
+  }
+});
+</script>
+</body>
+</html>
