@@ -144,7 +144,31 @@ function renderRiver(items){
   $("krathongCount").textContent=count;
   $("memberCount").textContent=new Set(items.map(x=>x.memberId)).size;
   if(!count){
-    $("wishList").innerHTML='<div class="empty">ยังไม่มีกระทงใบแรก มาเริ่มฝากคำอธิษฐานกันเลย 🪷</div>';
+    // Floating welcome krathongs are visual decorations only; they are not saved as member wishes.
+    const welcome=[
+      {style:"🪷",author:"กระทงต้อนรับ",wish:"สายน้ำแห่ง HALF MONKEY กำลังรอคำอธิษฐานแรกจากคุณ 🪷"},
+      {style:"🌸",author:"กระทงต้อนรับ",wish:"ขอให้ทุกความปรารถนาของสมาชิกเดินทางไปถึงวันที่เป็นจริง ✨"},
+      {style:"🌼",author:"กระทงต้อนรับ",wish:"ร่วมสร้างค่ำคืนแห่งความทรงจำ แล้วปล่อยกระทงของคุณลงสายน้ำ"},
+      {style:"🏵️",author:"กระทงต้อนรับ",wish:"กดสร้างกระทงด้านล่าง เพื่อฝากคำอธิษฐานของคุณให้เพื่อน ๆ ได้เห็น"}
+    ];
+    welcome.forEach((item,index)=>{
+      const lane=document.createElement("div");
+      lane.className="lane";
+      lane.style.top=(15+index*19)+"%";
+      const boat=document.createElement("button");
+      boat.type="button";
+      boat.className="krathong";
+      boat.style.setProperty("--duration",(27+index*5)+"s");
+      boat.style.setProperty("--delay",(-index*8)+"s");
+      boat.style.top=(index%2*8)+"px";
+      boat.innerHTML='<span class="candle">🕯️</span><span class="boat"></span><span class="owner"></span>';
+      boat.querySelector(".boat").textContent=item.style;
+      boat.querySelector(".owner").textContent=item.author;
+      boat.addEventListener("click",()=>showWish(item));
+      lane.append(boat);
+      river.append(lane);
+    });
+    $("wishList").innerHTML='<div class="empty">ยังไม่มีคำอธิษฐานจริงจากสมาชิก กระทงต้อนรับกำลังลอยรอคุณอยู่ 🪷</div>';
     return;
   }
   const lanes=Math.min(7,Math.max(3,count));
