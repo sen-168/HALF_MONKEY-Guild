@@ -7,73 +7,63 @@
 <title>HALF MONKEY | Loy Krathong Festival</title>
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Cinzel:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--gold:#f5d995;--pink:#f5a9d0;--violet:#bda5ff;--ink:#100b25}
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Kanit:wght@300;400;500;600&display=swap');
+:root{--gold:#e8c47d;--gold2:#fff0c6;--ink:#080b1b;--muted:#b8b4c7;--rose:#eaa5c6}
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;color:#fff8ee;font-family:Kanit,sans-serif;background:#100b25;overflow-x:hidden}
-button,input,textarea,select{font:inherit}
-.backdrop{position:fixed;inset:0;z-index:-3;background:radial-gradient(ellipse at 50% 18%,#57406c 0%,#28213f 38%,#100d26 78%,#08091b 100%)}
-.moon{position:fixed;z-index:-2;top:9%;left:calc(50% - 75px);width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#fffde9,#f6dca7 48%,#c89b91 75%,transparent 76%);box-shadow:0 0 55px #ffe7bc80,0 0 140px #e8b8ff30;opacity:.8}
-.tree{position:fixed;z-index:-1;top:-35px;font-size:clamp(80px,16vw,190px);opacity:.38;filter:drop-shadow(0 8px 15px #080514)}
-.tree.left{left:-35px;transform:rotate(-18deg)}.tree.right{right:-40px;transform:scaleX(-1) rotate(-18deg)}
-header{position:relative;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px clamp(14px,4vw,55px);background:linear-gradient(#0b081bbd,transparent)}
-.brand{font:800 clamp(15px,2vw,22px) Cinzel,serif;letter-spacing:2px;color:var(--gold);text-shadow:0 0 20px #f5d99570}
-header a{color:#f7e6c7;text-decoration:none;border:1px solid #f5d99565;border-radius:30px;padding:8px 14px;font-size:12px;background:#17132e88}
-main{width:min(1180px,96%);margin:auto;padding:20px 0 50px}
-.intro{text-align:center;margin:10px auto 24px}
-.eyebrow{font:600 10px Cinzel,serif;letter-spacing:4px;color:#f2c9e3}
-h1{font-size:clamp(30px,6vw,62px);line-height:1.12;margin:8px 0;color:#ffe7b5;text-shadow:0 0 22px #ffdb9d75,0 3px 8px #160b25}
-.subtitle{margin:0 auto;color:#e7d8ec;font-size:14px;line-height:1.8}
-.stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}
-.stat{border:1px solid #f4d99b50;background:#17132e8c;padding:7px 16px;border-radius:30px;font-size:12px;color:#f5e6c8;backdrop-filter:blur(8px)}
-.stat b{color:var(--gold);font-size:15px}
-.river{position:relative;height:clamp(360px,54vw,570px);overflow:hidden;border-top:1px solid #eac9ee55;border-bottom:1px solid #eac9ee55;background:linear-gradient(180deg,#44345022 0%,#3b294c80 22%,#211d3dbd 48%,#11162f 100%);box-shadow:0 0 60px #08061799,inset 0 0 70px #07091e88}
-.river:before,.river:after{content:"";position:absolute;inset:0;pointer-events:none}
-.river:before{opacity:.48;background:repeating-linear-gradient(174deg,transparent 0 24px,#d4b5e322 25px,#f6dfc522 26px,transparent 29px 56px);animation:water 8s linear infinite}
-.river:after{background:linear-gradient(90deg,#0e0d24aa,transparent 18%,transparent 82%,#0e0d24aa)}
-@keyframes water{to{background-position:0 180px}}
-.water-glow{position:absolute;width:50%;height:100px;left:25%;top:25%;background:#f4c9a0;filter:blur(65px);opacity:.17}
-.flower{position:absolute;z-index:1;opacity:.55;filter:drop-shadow(0 0 9px #ffc9e5);animation:petal 12s linear infinite}
-.flower:nth-child(2){top:18%;left:12%;font-size:22px;animation-delay:-4s}.flower:nth-child(3){top:72%;left:78%;font-size:28px;animation-delay:-8s}.flower:nth-child(4){top:46%;left:54%;font-size:18px;animation-delay:-2s}
-@keyframes petal{0%{transform:translate(0,20px) rotate(0);opacity:0}20%{opacity:.7}100%{transform:translate(80px,-100px) rotate(220deg);opacity:0}}
-.lane{position:absolute;left:0;right:0;height:90px;z-index:2}
-.krathong{position:absolute;left:-130px;top:0;width:130px;min-height:86px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;animation:floatAcross var(--duration,25s) linear var(--delay,0s) infinite;filter:drop-shadow(0 8px 12px #080616a8);transition:filter .2s}
-.krathong:hover{filter:drop-shadow(0 0 18px #ffe4a8)}
-.krathong .boat{font-size:43px;line-height:1.15;filter:drop-shadow(0 0 10px #ffd979b0);animation:bob 3.4s ease-in-out infinite}
-.krathong .candle{font-size:13px;margin-bottom:-6px;filter:drop-shadow(0 0 9px #ffe79b)}
-.krathong .owner{font-size:11px;white-space:nowrap;color:#fff4d9;text-shadow:0 2px 5px #09051a,0 0 8px #000;background:#17132e9c;padding:2px 9px;border-radius:20px;border:1px solid #f4d99b45;max-width:125px;overflow:hidden;text-overflow:ellipsis}
-@keyframes floatAcross{0%{transform:translateX(-2vw) translateY(0)}25%{transform:translateX(27vw) translateY(-9px)}50%{transform:translateX(54vw) translateY(5px)}75%{transform:translateX(82vw) translateY(-7px)}100%{transform:translateX(112vw) translateY(0)}}
-@keyframes bob{0%,100%{transform:rotate(-3deg) translateY(0)}50%{transform:rotate(3deg) translateY(-5px)}}
-.river-hint{position:absolute;z-index:3;bottom:13px;left:0;right:0;text-align:center;color:#e6d7ed9c;font-size:11px;pointer-events:none}
-.panel{width:min(760px,100%);margin:24px auto 0;padding:clamp(17px,3vw,28px);border:1px solid #f3d69b55;border-radius:20px;background:linear-gradient(145deg,#211a3be8,#120f2beF);box-shadow:0 15px 45px #05041188}
-.panel h2{text-align:center;color:var(--gold);font-size:23px;margin:0 0 5px}
-.panel>p{text-align:center;color:#d9cce4;font-size:12px;margin:0 0 15px}
+html{scroll-behavior:smooth}
+body{margin:0;background:#080b1b;color:#f8f1e8;font-family:Kanit,sans-serif;min-height:100vh;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(ellipse at 50% 4%,#44345d 0%,#171a36 32%,#090d20 72%);pointer-events:none}
+body:after{content:"";position:fixed;inset:0;z-index:-1;opacity:.15;background-image:linear-gradient(115deg,transparent 0 49.8%,#d7b87a22 50%,transparent 50.2%),radial-gradient(#fff 0.55px,transparent .7px);background-size:100% 100%,34px 34px;pointer-events:none}
+.backdrop{display:none}.moon{position:fixed;top:75px;right:11%;width:116px;height:116px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#fff7db,#f0d9a0 48%,#d9a45a 72%,#a26b45);box-shadow:0 0 45px #f7dba455,0 0 120px #f5d5a522;opacity:.82;z-index:-1}.tree{display:none}
+header{height:72px;padding:0 clamp(20px,6vw,84px);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e8c47d30;background:#080b1bcc;backdrop-filter:blur(18px);position:relative;z-index:5}
+.brand{font:600 13px Cinzel,serif;letter-spacing:3px;color:var(--gold2)}header a{font-size:12px;color:#e9d9b8;text-decoration:none;border:1px solid #e8c47d55;border-radius:30px;padding:9px 16px;transition:.25s}header a:hover{background:#e8c47d18;border-color:var(--gold)}
+main{width:min(1180px,94%);margin:auto;padding:0 0 70px}
+.intro{position:relative;text-align:center;padding:64px 18px 35px;isolation:isolate}
+.eyebrow{font:600 10px Cinzel,serif;letter-spacing:5px;color:#e7c98e}
+h1{font:600 clamp(34px,5.7vw,66px)/1.15 Cinzel,Kanit,serif;letter-spacing:1px;margin:15px 0 12px;color:#fff0d0;text-shadow:0 4px 30px #e9bb7560}
+.subtitle{margin:0 auto;color:#d6ccda;font-size:14px;line-height:2;letter-spacing:.2px}
+.stats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:24px}.stat{border:1px solid #e8c47d38;background:#10152caa;padding:9px 17px;border-radius:3px;font-size:11px;color:#d8d0d9;backdrop-filter:blur(12px);letter-spacing:.3px}.stat b{color:var(--gold2);font:600 16px Cinzel,serif;margin-left:5px}
+.river{position:relative;height:clamp(400px,54vw,610px);overflow:hidden;border:1px solid #e8c47d40;background:linear-gradient(180deg,#141b36 0%,#111a36 23%,#101a36 45%,#090f25 100%);box-shadow:0 24px 90px #02040eaa,inset 0 0 100px #030718}
+.river:before{content:"";position:absolute;inset:35% -10% -10%;background:repeating-linear-gradient(174deg,transparent 0 19px,#e5c27c12 20px,#e5c27c20 21px,transparent 23px 48px);filter:blur(.4px);animation:water 14s ease-in-out infinite alternate}
+.river:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#080c20b0,transparent 18%,transparent 82%,#080c20b0),linear-gradient(180deg,#111831 0%,transparent 42%,#080d20aa 100%);pointer-events:none}
+@keyframes water{from{transform:translate3d(-2%,0,0) scale(1)}to{transform:translate3d(2%,5px,0) scale(1.03)}}
+.water-glow{position:absolute;width:42%;height:100px;left:29%;top:56%;background:#e9b66d;filter:blur(75px);opacity:.18}
+.flower{position:absolute;z-index:1;opacity:.32;filter:drop-shadow(0 0 8px #ffc9e5);animation:petal 18s ease-in-out infinite}
+.flower:nth-child(2){top:18%;left:12%;font-size:18px}.flower:nth-child(3){top:72%;left:78%;font-size:22px;animation-delay:-6s}.flower:nth-child(4){top:46%;left:54%;font-size:15px;animation-delay:-12s}
+@keyframes petal{0%,100%{transform:translate3d(0,8px,0) rotate(-8deg);opacity:.18}50%{transform:translate3d(45px,-32px,0) rotate(35deg);opacity:.5}}
+.lane{position:absolute;left:0;right:0;height:105px;z-index:2;pointer-events:none}
+.krathong{position:absolute;left:0;top:0;width:140px;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;pointer-events:auto;border:0;background:transparent;color:white;animation:drift var(--duration,32s) ease-in-out var(--delay,0s) infinite;filter:drop-shadow(0 9px 16px #030713cc);transition:filter .3s}
+.krathong:hover{filter:drop-shadow(0 0 24px #ffe0a2);z-index:4}
+.krathong .boat{font-size:54px;line-height:1.1;filter:drop-shadow(0 0 13px #ffd97988);animation:bob 5.8s ease-in-out infinite}
+.krathong .candle{font-size:14px;margin-bottom:-7px;filter:drop-shadow(0 0 12px #ffe79b)}
+.krathong .owner{font-size:10px;white-space:nowrap;color:#fff1d6;text-shadow:0 2px 7px #000;background:#10172bcc;padding:3px 11px;border-radius:20px;border:1px solid #e8c47d50;max-width:132px;overflow:hidden;text-overflow:ellipsis;letter-spacing:.3px}
+@keyframes drift{0%{transform:translate3d(-5vw,7px,0) rotate(-2deg)}22%{transform:translate3d(22vw,-5px,0) rotate(1.5deg)}48%{transform:translate3d(48vw,8px,0) rotate(-1deg)}73%{transform:translate3d(75vw,-7px,0) rotate(2deg)}100%{transform:translate3d(108vw,4px,0) rotate(-1deg)}}
+@keyframes bob{0%,100%{transform:rotate(-4deg) translateY(1px)}50%{transform:rotate(4deg) translateY(-7px)}}
+.river-hint{position:absolute;z-index:3;bottom:17px;left:0;right:0;text-align:center;color:#d8c9b58c;font:10px Cinzel,Kanit,serif;letter-spacing:2px;pointer-events:none}
+.panel{width:min(780px,100%);margin:34px auto 0;padding:clamp(22px,4vw,38px);border:1px solid #e8c47d55;border-radius:2px;background:linear-gradient(145deg,#171a32f2,#0c1126f5);box-shadow:0 22px 60px #02040c88;position:relative}
+.panel:before,.panel:after{content:"";position:absolute;width:34px;height:34px;border-color:#e8c47d99;border-style:solid;pointer-events:none}.panel:before{top:8px;left:8px;border-width:1px 0 0 1px}.panel:after{right:8px;bottom:8px;border-width:0 1px 1px 0}
+.panel h2{text-align:center;color:var(--gold2);font:500 21px Cinzel,Kanit,serif;letter-spacing:1px;margin:0 0 8px}.panel>p{text-align:center;color:#bdb5c8;font-size:12px;margin:0 0 20px}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-label{display:block;color:#f1dcb2;font-size:12px;margin:9px 0 5px}
-input,textarea,select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid #e8c98a55;background:#0d0b20;color:#fff;outline:none}
-textarea{min-height:95px;resize:vertical}
-input[readonly]{color:#f6d995}
-.full{grid-column:1/-1}
-.submit{display:block;width:min(330px,100%);margin:17px auto 0;padding:13px 20px;border:1px solid #fff1bd;border-radius:40px;color:#4a3152;font-weight:700;background:linear-gradient(100deg,#e7bd6d,#fff0b4,#dba75e);box-shadow:0 0 22px #f4d58a55;cursor:pointer}
-.submit:disabled{opacity:.5;cursor:not-allowed}
-.notice{text-align:center;color:#e6d8ed;font-size:12px;min-height:22px;margin-top:10px}
-.wishes{width:min(900px,100%);margin:25px auto 0}
-.wishes h2{text-align:center;color:var(--gold);font-size:22px}
-.wish-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.wish{padding:14px;border:1px solid #e8c98a3d;border-radius:13px;background:#17132dcc;cursor:pointer;transition:.2s}
-.wish:hover{border-color:#f5d995;transform:translateY(-2px)}
-.wish b{display:block;color:#f6d995;font-size:13px;margin-bottom:4px}
-.wish span{display:block;color:#e9deef;font-size:12px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.empty{text-align:center;color:#d3c5df;padding:20px;border:1px dashed #e8c98a55;border-radius:12px;grid-column:1/-1}
-.modal{position:fixed;inset:0;z-index:20;display:none;place-items:center;padding:18px;background:#070514d9;backdrop-filter:blur(7px)}
-.modal.show{display:grid}
-.modal-card{width:min(440px,100%);padding:26px;border:1px solid #f4d99588;border-radius:20px;text-align:center;background:radial-gradient(ellipse at top,#443253,#17132d 70%);box-shadow:0 0 50px #f2c98b30}
-.modal-card .big{font-size:65px;filter:drop-shadow(0 0 15px #ffdc8a)}
-.modal-card h3{color:#f6d995;margin:5px 0}
-.modal-card p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8;color:#fff3e6}
-.modal-card button{border:1px solid #f4d995;border-radius:25px;background:#f4d995;color:#342342;padding:8px 22px}
-footer{text-align:center;color:#c4b5d4;font-size:11px;padding:28px 10px}
-@media(max-width:600px){header{padding:13px}.tree{top:30px}.moon{top:13%;width:100px;height:100px;left:calc(50% - 50px)}.river{height:430px}.lane{height:75px}.krathong{width:110px}.krathong .boat{font-size:37px}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.wish-list{grid-template-columns:1fr}.intro{margin-top:5px}.subtitle{font-size:12px;padding:0 10px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:30s!important;scroll-behavior:auto!important}}
+label{display:block;color:#e7d2a9;font-size:11px;letter-spacing:.4px;margin:10px 0 7px}
+input,textarea,select{width:100%;padding:13px 14px;border-radius:2px;border:1px solid #d9bc8050;background:#080d20;color:#fff;outline:none;font:13px Kanit,sans-serif;transition:border .2s,box-shadow .2s}
+input:focus,textarea:focus,select:focus{border-color:#e8c47d;box-shadow:0 0 0 3px #e8c47d18}
+textarea{min-height:112px;resize:vertical}input[readonly]{color:#f6d995}.full{grid-column:1/-1}
+.submit{display:block;width:min(340px,100%);margin:22px auto 0;padding:14px 20px;border:1px solid #fff0c6;border-radius:2px;color:#20182a;font:600 12px Cinzel,Kanit,serif;letter-spacing:1px;background:linear-gradient(100deg,#bd8d4c,#f7df9e,#c99b58);box-shadow:0 8px 30px #e6bd6b30;cursor:pointer;transition:transform .2s,filter .2s}
+.submit:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.08)}.submit:disabled{opacity:.45;cursor:not-allowed}
+.notice{text-align:center;color:#c9bdcf;font-size:11px;min-height:22px;margin-top:12px}
+.wishes{width:min(940px,100%);margin:42px auto 0}.wishes h2{text-align:center;color:var(--gold2);font:500 19px Cinzel,Kanit,serif;letter-spacing:1px;margin-bottom:18px}
+.wish-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.wish{padding:17px 18px;text-align:left;border:1px solid #e8c47d35;border-radius:2px;background:#11172be8;cursor:pointer;transition:.25s}
+.wish:hover{border-color:#e8c47d;transform:translateY(-2px);background:#171d34}
+.wish b{display:block;color:#e9ce99;font-size:12px;font-weight:500;margin-bottom:7px}.wish span{display:block;color:#d6cfdb;font-size:12px;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.empty{text-align:center;color:#bdb5c8;padding:24px;border:1px dashed #e8c47d55;grid-column:1/-1;font-size:12px}
+.modal{position:fixed;inset:0;z-index:20;display:none;place-items:center;padding:18px;background:#050817e8;backdrop-filter:blur(12px)}.modal.show{display:grid}
+.modal-card{width:min(460px,100%);padding:34px 28px;border:1px solid #e8c47d99;border-radius:2px;text-align:center;background:radial-gradient(ellipse at top,#30304a,#11172d 70%);box-shadow:0 0 70px #eacb8a25;position:relative}
+.modal-card .big{font-size:62px;filter:drop-shadow(0 0 15px #ffdc8a)}.modal-card h3{font:500 20px Cinzel,Kanit,serif;color:#f6d995;margin:8px 0}.modal-card p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.9;color:#fff3e6;font-size:14px}
+.modal-card button{border:1px solid #e8c47d;border-radius:2px;background:#e8c47d;color:#20182a;padding:9px 28px;font:500 12px Kanit,sans-serif;cursor:pointer}
+footer{text-align:center;color:#968da5;font:10px Cinzel,serif;letter-spacing:2px;padding:35px 10px}
+@media(max-width:650px){header{height:62px;padding:0 15px}.brand{font-size:10px;letter-spacing:2px}header a{font-size:10px;padding:8px 11px}.moon{top:80px;right:-15px;width:78px;height:78px;opacity:.55}.intro{padding:48px 8px 28px}h1{font-size:clamp(31px,9vw,46px)}.subtitle{font-size:12px}.river{height:430px}.lane{height:80px}.krathong{width:112px}.krathong .boat{font-size:43px}.form-grid{grid-template-columns:1fr}.full{grid-column:auto}.wish-list{grid-template-columns:1fr}.panel{margin-top:22px;padding:22px 16px}.river-hint{font-size:9px;letter-spacing:1px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:60s!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
@@ -81,17 +71,17 @@ footer{text-align:center;color:#c4b5d4;font-size:11px;padding:28px 10px}
 <header><div class="brand">HALF MONKEY · FESTIVAL</div><a href="./HALF_MONKEY_calendar_page_added.html">← กลับหน้าเว็บหลัก</a></header>
 <main>
 <section class="intro">
-<div class="eyebrow">A NIGHT OF WISHES · GUILD EVENT</div>
-<h1>เทศกาลลอยกระทง</h1>
-<p class="subtitle">ฝากคำอธิษฐานของคุณไว้บนสายน้ำ<br>ให้กระทงลอยวนกลับมาเล่าเรื่องราวของพวกเราตลอดค่ำคืน</p>
+<div class="eyebrow">HALF MONKEY · THE NIGHT OF WISHES</div>
+<h1>คืนแห่งคำอธิษฐาน</h1>
+<p class="subtitle">ปล่อยความปรารถนาให้ล่องลอยไปกับแสงจันทร์<br>หนึ่งกระทง หนึ่งคำอธิษฐาน หนึ่งความทรงจำของ HALF MONKEY</p>
 <div class="stats"><div class="stat">🪷 กระทงทั้งหมด <b id="krathongCount">0</b> ใบ</div><div class="stat">✨ ผู้ร่วมกิจกรรม <b id="memberCount">0</b> คน</div><div class="stat" id="authStatus">กำลังตรวจสอบสมาชิก...</div></div>
 </section>
 <section class="river" id="river" aria-label="แม่น้ำที่มีกระทงลอยวน">
 <div class="water-glow"></div><span class="flower">🌸</span><span class="flower">🌼</span><span class="flower">🌺</span>
-<div class="river-hint">แตะกระทงเพื่ออ่านคำอธิษฐาน · กระทงจะลอยวนกลับมาเสมอ</div>
+<div class="river-hint">TOUCH A FLOATING KRATHONG TO READ THE WISH</div>
 </section>
 <section class="panel">
-<h2>🪷 ส่งคำอธิษฐานของคุณ</h2>
+<h2>CREATE YOUR WISH</h2>
 <p>หนึ่งสมาชิกสามารถฝากกระทงได้หลายใบ ทุกใบจะลอยวนให้เพื่อน ๆ ได้เห็น</p>
 <form id="krathongForm">
 <div class="form-grid">
@@ -103,7 +93,7 @@ footer{text-align:center;color:#c4b5d4;font-size:11px;padding:28px 10px}
 <div class="notice" id="formNotice">กำลังตรวจสอบการเข้าสู่ระบบ...</div>
 </form>
 </section>
-<section class="wishes"><h2>✨ คำอธิษฐานจากสมาชิก</h2><div class="wish-list" id="wishList"><div class="empty">กำลังรอคำอธิษฐานจากสมาชิก...</div></div></section>
+<section class="wishes"><h2>WISHES ON THE RIVER</h2><div class="wish-list" id="wishList"><div class="empty">กำลังรอคำอธิษฐานจากสมาชิก...</div></div></section>
 </main>
 <footer>HALF MONKEY · UNITED AS ONE · MAY YOUR WISHES FIND THEIR WAY</footer>
 <div class="modal" id="wishModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-card"><div class="big" id="modalIcon">🪷</div><h3 id="modalTitle">คำอธิษฐาน</h3><div id="modalOwner" style="color:#e7c6ee;font-size:12px"></div><p id="modalWish"></p><button id="closeModal" type="button">ปิดหน้าต่าง</button></div></div>
