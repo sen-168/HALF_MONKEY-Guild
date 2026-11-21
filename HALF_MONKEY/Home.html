@@ -277,6 +277,11 @@ body {
   transition: .25s;
 }
 
+.festival-button {
+  background: linear-gradient(120deg,#a94c9b,#542c83);
+  border-top: 1px solid rgba(255,226,166,.25);
+}
+
 .download-button {
   flex: 1;
   min-width: 100px;
@@ -846,6 +851,7 @@ body {
         <small>มินิเกม</small>
       </div>
       <a class="bonus-button" href="minigame.html">ลิงเล่นเกม</a>
+      <a class="bonus-button festival-button" href="./loykrathong.html" id="festivalLink">🪷 กิจกรรมลอยกระทง</a>
     </div>
 
     <a class="download-button pc"
@@ -1110,6 +1116,22 @@ if ("serviceWorker" in navigator) {
       });
   });
 }
+</script>
+
+<script>
+/* ส่งสถานะเพลงไปยังกิจกรรมลอยกระทง */
+(() => {
+  const link = document.getElementById("festivalLink");
+  const music = document.getElementById("bgMusic");
+  if (!link || !music) return;
+  link.addEventListener("click", () => {
+    try {
+      sessionStorage.setItem("hmFestivalMusicWanted", music.paused ? "0" : "1");
+    } catch (error) {
+      console.warn("ไม่สามารถส่งสถานะเพลงไปหน้ากิจกรรมได้", error);
+    }
+  });
+})();
 </script>
 
 </body>
