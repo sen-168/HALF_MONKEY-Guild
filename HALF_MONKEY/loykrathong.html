@@ -157,8 +157,15 @@ document.querySelectorAll('.style-choice span[data-style]').forEach(node=>{node.
 
 let currentMember = null;
 let allKrathongs = [];
+let selectedWish = null;
+function canDeleteWish(item){
+  return !!currentMember && !!item && !!item.id &&
+    (String(item.memberId) === String(currentMember.id) || currentMember.role === "leader");
+}
 const escapeText = value => String(value ?? "");
 function showWish(item){
+  selectedWish=item;
+  $("deleteWishButton").hidden=!canDeleteWish(item);
   $("modalIcon").innerHTML = krathongSVG(item.style || "🪷");
   $("modalTitle").textContent = "คำอธิษฐาน";
   $("modalOwner").textContent = "จาก " + (item.author || "สมาชิก HALF MONKEY");
@@ -166,7 +173,7 @@ function showWish(item){
   $("wishModal").classList.add("show");
 }
 document.querySelectorAll('input[name="krathongStyleChoice"]').forEach(r=>r.addEventListener('change',()=>{$("krathongStyle").value=r.value;}));
-$("closeModal").addEventListener("click",()=>$("wishModal").classList.remove("show"));
+$("closeModal").addEventListener("click",()=>{$("wishModal").classList.remove("show");selectedWish=null;});
 $("deleteWishButton").addEventListener("click",async()=>{
   if(!selectedWish?.id || !canDeleteWish(selectedWish)) return;
   const confirmed=confirm("ต้องการลบกระทงและคำอธิษฐานนี้ใช่ไหม? เมื่อลบแล้วจะกู้คืนไม่ได้");
