@@ -38,9 +38,9 @@ h1{font:800 clamp(34px,5.4vw,72px)/1.05 Cinzel,serif;letter-spacing:1px;margin:1
 .water-glow{position:absolute;width:52%;height:130px;left:24%;top:58%;background:#ffbb68;filter:blur(80px);opacity:.24}
 .flower{position:absolute;z-index:1;color:#ff8ed1;text-shadow:0 0 15px #ff60c5;opacity:.7;animation:petal 19s ease-in-out infinite}.flower:nth-child(2){top:30%;left:9%;font-size:25px}.flower:nth-child(3){top:74%;left:83%;font-size:30px;animation-delay:-6s}.flower:nth-child(4){top:54%;left:54%;font-size:18px;animation-delay:-12s}
 @keyframes petal{0%,100%{transform:translate(0,10px) rotate(-12deg)}50%{transform:translate(50px,-35px) rotate(35deg)}}
-.lane{position:absolute;left:0;width:66%;height:150px;z-index:3;pointer-events:none}
+.lane{position:absolute;left:0;width:100%;height:150px;z-index:3;pointer-events:none}
 @media(max-width:850px){.lane{width:100%}}
-.krathong{position:absolute;left:0;top:0;width:clamp(105px,13vw,180px);min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;cursor:pointer;pointer-events:auto;border:0;background:transparent;color:white;animation:drift var(--duration,40s) ease-in-out var(--delay,0s) infinite;filter:drop-shadow(0 12px 15px #050316dd);transition:filter .3s}
+.krathong{position:absolute;left:0;top:0;width:clamp(105px,13vw,180px);min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;cursor:pointer;pointer-events:auto;border:0;background:transparent;color:white;animation:drift var(--duration,40s) linear var(--delay,0s) infinite;will-change:transform;filter:drop-shadow(0 12px 15px #050316dd);transition:filter .3s}
 .krathong:hover{filter:drop-shadow(0 0 22px #ffd77c);z-index:5}
 .krathong .boat{display:block;width:clamp(100px,11vw,150px);height:86px;line-height:1;filter:drop-shadow(0 7px 9px #030518aa) drop-shadow(0 0 12px #ffb4e855);animation:bob 5.6s ease-in-out infinite}
 .krathong .boat svg{width:100%;height:100%;overflow:visible}
@@ -48,8 +48,7 @@ h1{font:800 clamp(34px,5.4vw,72px)/1.05 Cinzel,serif;letter-spacing:1px;margin:1
 @keyframes flame{from{transform:scale(.92) skewX(-3deg)}to{transform:scale(1.08) skewX(3deg)}}
 .krathong .candle{font-size:17px;margin-bottom:-12px;filter:drop-shadow(0 0 13px #fff0a0)}
 .krathong .owner{font-size:10px;white-space:nowrap;color:#fff3dc;text-shadow:0 2px 7px #000;background:linear-gradient(120deg,#210c34ed,#471c4ce8);padding:5px 13px;border-radius:30px;border:1px solid #ffd16e;box-shadow:0 0 13px #ffb64c55;max-width:160px;overflow:hidden;text-overflow:ellipsis}
-@keyframes drift{0%{transform:translate3d(-70px,9px,0) rotate(-2deg)}24%{transform:translate3d(12vw,-9px,0) rotate(2deg)}49%{transform:translate3d(27vw,10px,0) rotate(-1.5deg)}76%{transform:translate3d(43vw,-8px,0) rotate(2deg)}100%{transform:translate3d(calc(66vw - 190px),6px,0) rotate(-1deg)}}
-@media(max-width:850px){@keyframes drift{0%{transform:translate3d(-55px,9px,0) rotate(-2deg)}24%{transform:translate3d(20vw,-9px,0) rotate(2deg)}49%{transform:translate3d(43vw,10px,0) rotate(-1.5deg)}76%{transform:translate3d(65vw,-8px,0) rotate(2deg)}100%{transform:translate3d(calc(100vw - 120px),6px,0) rotate(-1deg)}}}
+@keyframes drift{0%{transform:translate3d(-190px,8px,0) rotate(-2deg)}50%{transform:translate3d(calc(50vw - 75px),-7px,0) rotate(1.5deg)}100%{transform:translate3d(calc(100vw + 190px),6px,0) rotate(-1deg)}}
 @keyframes bob{0%,100%{transform:rotate(-5deg) translateY(2px)}50%{transform:rotate(5deg) translateY(-9px)}}
 .river-hint{position:absolute;z-index:3;bottom:18px;left:0;right:0;text-align:center;color:#f7d9b8a8;font:10px Cinzel,serif;letter-spacing:2px;pointer-events:none}
 .panel{position:absolute;z-index:8;top:32%;right:3.5%;width:min(350px,28vw);margin:0;padding:24px 22px 26px;border:1px solid #ffcf69;border-radius:22px;background:linear-gradient(145deg,#210c2df2,#10091ff5);box-shadow:0 0 0 4px #ffca5820,0 0 32px #ff9c4e55,inset 0 0 25px #ffb34c18}
