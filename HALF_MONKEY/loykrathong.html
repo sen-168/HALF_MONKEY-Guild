@@ -92,6 +92,85 @@ textarea{min-height:86px;resize:vertical}input[readonly]{color:#ffe0a0}.full{gri
 footer{text-align:center;color:#b7a1c5;font:10px Cinzel,serif;letter-spacing:2px;padding:30px 10px}
 @media(max-width:850px){.panel{position:relative;top:auto;right:auto;bottom:auto;left:auto;width:92%;margin:24px auto 0}.intro{top:60px;left:3%;width:94%;padding:0}.intro h1{font-size:clamp(30px,8vw,50px)}.river{height:850px;min-height:850px}.panel{top:auto;right:4%;left:4%;bottom:28px;width:auto;padding:18px 18px 20px}.panel h2{margin-bottom:10px}.form-grid{grid-template-columns:1fr 1fr}.form-grid .full{grid-column:1/-1}.form-grid label{font-size:11px}.form-grid textarea{min-height:65px}.submit{margin-top:12px;padding:11px}.stats{margin-top:10px}.wish-list{grid-template-columns:1fr 1fr}}
 @media(max-width:520px){header{height:58px;padding:0 12px}.brand{font-size:10px;letter-spacing:1.5px}header a{font-size:10px;padding:7px 10px}.intro{top:65px}.eyebrow{font-size:8px;letter-spacing:3px}.intro h1{font-size:32px}.subtitle{font-size:11px}.stats{gap:5px}.stat{font-size:9px;padding:5px 8px}.river{height:900px;min-height:900px}.lane{height:105px}.krathong{width:105px}.krathong .boat{font-size:48px}.panel{bottom:18px;left:12px;right:12px;padding:16px 14px;border-radius:17px}.panel h2{font-size:16px}.form-grid{grid-template-columns:1fr}.form-grid .full{grid-column:auto}.form-grid label{margin:5px 0}.form-grid textarea{min-height:56px}.form-grid input,.form-grid select{padding:9px 10px}.submit{font-size:13px;margin-top:10px;padding:10px}.notice{font-size:10px;margin-top:7px}.wish-list{grid-template-columns:1fr}}
+
+/* Responsive layout: keep the river, form and wishes balanced on phones and tablets */
+@media (max-width: 850px) {
+  main { padding: 0 0 30px; }
+  .intro { top: 76px; left: 4%; width: 92%; padding: 0 8px; }
+  .intro h1 { font-size: clamp(32px, 6vw, 52px); }
+  .subtitle { font-size: clamp(12px, 1.8vw, 15px); }
+  .stats { gap: 7px; }
+  .stat { padding: 6px 10px; }
+  .river {
+    height: clamp(620px, 88svh, 760px);
+    min-height: 620px;
+  }
+  .lane { height: 120px; }
+  .krathong { width: clamp(100px, 15vw, 145px); }
+  .krathong .boat { width: clamp(92px, 13vw, 130px); height: 78px; }
+  .panel {
+    position: relative !important;
+    inset: auto !important;
+    width: min(680px, calc(100% - 36px));
+    max-width: 680px;
+    margin: 22px auto 0;
+    padding: 22px clamp(18px, 3vw, 28px);
+  }
+  .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; }
+  .form-grid .full { grid-column: 1 / -1; }
+  .style-choices { gap: clamp(8px, 2vw, 14px); flex-wrap: wrap; }
+  .wishes { width: min(900px, calc(100% - 36px)); margin: 28px auto 0; }
+  .wish-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  header { padding: 0 10px; }
+  .brand { font-size: 9px; letter-spacing: 1px; }
+  .header-actions { gap: 5px; }
+  .festival-music-button, header a { font-size: 10px; padding: 7px 8px; white-space: nowrap; }
+  .intro { top: 70px; }
+  .eyebrow { font-size: 8px; letter-spacing: 2px; }
+  .intro h1 { font-size: clamp(27px, 8vw, 36px); margin-top: 8px; }
+  .subtitle { font-size: 11px; line-height: 1.65; }
+  .stats { gap: 5px; margin-top: 9px; }
+  .stat { font-size: 9px; padding: 5px 7px; }
+  .stat b { font-size: 12px; }
+  .river { height: 610px; min-height: 610px; }
+  .lane { height: 94px; }
+  .krathong { width: 100px; min-height: 96px; }
+  .krathong .boat { width: 88px; height: 68px; }
+  .krathong .owner { max-width: 100px; padding: 4px 8px; font-size: 9px; }
+  .river-hint { bottom: 12px; font-size: 8px; letter-spacing: 1px; }
+  .panel {
+    width: calc(100% - 24px);
+    margin: 16px auto 0;
+    padding: 18px 14px 20px;
+    border-radius: 18px;
+  }
+  .panel h2 { font-size: 17px; margin-bottom: 12px; }
+  .form-grid { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+  .form-grid .full { grid-column: auto; }
+  .style-choices { gap: 9px; justify-content: flex-start; }
+  .style-choice span { width: 50px; height: 50px; }
+  label { font-size: 12px; margin: 8px 0 5px; }
+  input, textarea, select { font-size: 13px; }
+  textarea { min-height: 72px; }
+  .submit { margin-top: 12px; padding: 12px; }
+  .wishes { width: calc(100% - 24px); margin-top: 24px; }
+  .wish-list { grid-template-columns: minmax(0, 1fr); gap: 9px; }
+  .wish { padding: 13px; }
+}
+@media (min-width: 521px) and (max-width: 850px) {
+  .river { height: clamp(650px, 82svh, 760px); min-height: 650px; }
+  .panel { padding: 24px clamp(22px, 4vw, 34px); }
+  .wishes { width: min(760px, calc(100% - 48px)); }
+}
+@media (max-width: 360px) {
+  .brand { font-size: 8px; }
+  .festival-music-button, header a { font-size: 9px; padding: 6px 7px; }
+  .intro h1 { font-size: 26px; }
+  .stat { font-size: 8px; padding: 4px 6px; }
+}
+
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:60s!important;scroll-behavior:auto!important}}
 </style>
 </head>
