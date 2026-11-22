@@ -203,6 +203,14 @@ footer{text-align:center;color:#b7a1c5;font:10px Cinzel,serif;letter-spacing:2px
   .stat { font-size: 8px; padding: 4px 6px; }
 }
 
+
+/* Desktop form overflow fix: keep fields inside the festival panel */
+.form-grid > div { min-width: 0; width: 100%; }
+.form-grid input,
+.form-grid textarea,
+.form-grid select { width: 100%; max-width: 100%; min-width: 0; }
+.style-choices { min-width: 0; max-width: 100%; flex-wrap: wrap; }
+
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:60s!important;scroll-behavior:auto!important}}
 </style>
 </head>
