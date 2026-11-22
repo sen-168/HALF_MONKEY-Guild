@@ -211,10 +211,61 @@ footer{text-align:center;color:#b7a1c5;font:10px Cinzel,serif;letter-spacing:2px
 .form-grid select { width: 100%; max-width: 100%; min-width: 0; }
 .style-choices { min-width: 0; max-width: 100%; flex-wrap: wrap; }
 
+
+/* Elegant corner fireworks: decorative only, never block page controls */
+.fireworks-corner{
+  position:absolute;top:78px;width:150px;height:220px;z-index:2;
+  pointer-events:none;overflow:visible;opacity:.9;
+}
+.fireworks-corner.left{left:3vw}
+.fireworks-corner.right{right:3vw}
+.fireworks-corner .burst{
+  position:absolute;top:58px;left:50%;width:3px;height:3px;border-radius:50%;
+  opacity:0;transform:scale(.08);
+  animation:cornerFirework 3.8s ease-out infinite;
+}
+.fireworks-corner .burst.gold{
+  background:#fff5c9;
+  box-shadow:0 -48px 0 1px #ffe8a0,17px -37px 0 1px #ffbf55,35px -20px 0 1px #fff0bd,
+    48px 0 0 1px #ffcf70,35px 20px 0 1px #ff9c65,17px 37px 0 1px #ffe8a0,
+    0 48px 0 1px #fff0bd,-17px 37px 0 1px #ffbf55,-35px 20px 0 1px #ffe8a0,
+    -48px 0 0 1px #ffcf70,-35px -20px 0 1px #ff9c65,-17px -37px 0 1px #fff0bd,
+    0 -29px 0 2px #fff8dc,29px 0 0 2px #ffd36d,0 29px 0 2px #fff0bd,-29px 0 0 2px #ffb86b;
+}
+.fireworks-corner .burst.pink{
+  top:145px;left:30%;background:#fff0fb;animation-delay:1.6s;animation-duration:4.4s;
+  box-shadow:0 -31px 0 1px #ffc1ed,22px -22px 0 1px #d9b6ff,31px 0 0 1px #ff8ed1,
+    22px 22px 0 1px #ffe0a0,0 31px 0 1px #ffb4e5,-22px 22px 0 1px #c8a8ff,
+    -31px 0 0 1px #ff9bdc,-22px -22px 0 1px #ffe0a0,0 -18px 0 2px #fff;
+}
+.fireworks-corner.right .burst.gold{animation-delay:1.1s;animation-duration:4.2s}
+.fireworks-corner.right .burst.pink{animation-delay:2.7s;animation-duration:4.6s}
+@keyframes cornerFirework{
+  0%{opacity:0;transform:scale(.08) rotate(0deg)}
+  12%{opacity:1}
+  58%{opacity:.9;transform:scale(1) rotate(18deg)}
+  100%{opacity:0;transform:scale(1.18) rotate(35deg)}
+}
+@media(max-width:850px){
+  .fireworks-corner{top:72px;width:105px;height:165px;transform:scale(.78);transform-origin:top center}
+  .fireworks-corner.left{left:0}
+  .fireworks-corner.right{right:0}
+}
+@media(max-width:520px){
+  .fireworks-corner{top:65px;transform:scale(.56);opacity:.78}
+}
+@media(prefers-reduced-motion:reduce){
+  .fireworks-corner{display:none}
+}
+
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:60s!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
+
+<div class="fireworks-corner left" aria-hidden="true"><span class="burst gold"></span><span class="burst pink"></span></div>
+<div class="fireworks-corner right" aria-hidden="true"><span class="burst gold"></span><span class="burst pink"></span></div>
+
 <div class="backdrop"></div><div class="moon"></div><div class="tree left">🌸</div><div class="tree right">🌸</div>
 <audio id="festivalMusic" loop preload="auto">
   <source src="./assets/bg-music.mp3.mp3" type="audio/mpeg">
