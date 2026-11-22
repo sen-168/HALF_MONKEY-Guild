@@ -19,21 +19,36 @@ service cloud.firestore {
         && request.auth.uid == "hm-" + request.auth.token.memberId;
     }
 
-    // Shared Loy Krathong wishes: only authenticated guild members can read and create.
+    function isAnonymousVisitor() {
+      return signedIn()
+        && request.auth.token.firebase.sign_in_provider == "anonymous";
+    }
+
+    // Public Loy Krathong festival: anyone can read; members and anonymous visitors can create.
     match /krathongs/{krathongId} {
-      allow read: if isMember();
-      allow create: if isMember()
-        && request.resource.data.keys().hasOnly(["memberId", "author", "style", "wish", "createdAt"])
-        && request.resource.data.memberId == request.auth.token.memberId
-        && request.resource.data.author == request.auth.token.displayName
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(["memberId", "author", "style", "wish", "createdAt"])
+        && request.resource.data.author is string
+        && request.resource.data.author.size() > 0
+        && request.resource.data.author.size() <= 24
         && request.resource.data.style is string
+        && request.resource.data.style in ["🪷", "🌺", "🌼", "🏵️", "🐒", "🐵"]
         && request.resource.data.wish is string
         && request.resource.data.wish.size() > 0
         && request.resource.data.wish.size() <= 500
-        && request.resource.data.createdAt == request.time;
+        && request.resource.data.createdAt == request.time
+        && (
+          (isMember()
+            && request.resource.data.memberId == request.auth.token.memberId
+            && request.resource.data.author == request.auth.token.displayName)
+          ||
+          (isAnonymousVisitor()
+            && request.resource.data.memberId == request.auth.uid)
+        );
       allow update: if false;
-      allow delete: if isMember()
-        && (resource.data.memberId == request.auth.token.memberId || isLeader());
+      allow delete: if
+        (isMember() && (resource.data.memberId == request.auth.token.memberId || isLeader()))
+        || (isAnonymousVisitor() && resource.data.memberId == request.auth.uid);
     }
 
     // Member-only guild content. Visitors must sign in before reading posts.
