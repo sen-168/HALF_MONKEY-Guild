@@ -234,8 +234,8 @@ footer{text-align:center;color:#b7a1c5;font:10px Cinzel,serif;letter-spacing:2px
 <p>หนึ่งสมาชิกสามารถฝากกระทงได้หลายใบ ทุกใบจะลอยวนให้เพื่อน ๆ ได้เห็น</p>
 <form id="krathongForm">
 <div class="form-grid">
-<div><label for="memberName">ชื่อสมาชิก</label><input id="memberName" readonly placeholder="กรุณาเข้าสู่ระบบ"></div>
-<div><label>เลือกรูปแบบกระทง</label><div class="style-choices"><label class="style-choice"><input type="radio" name="krathongStyleChoice" value="🪷" checked><span data-style="🪷"></span></label><label class="style-choice"><input type="radio" name="krathongStyleChoice" value="🌺"><span data-style="🌺"></span></label><label class="style-choice"><input type="radio" name="krathongStyleChoice" value="🌼"><span data-style="🌼"></span></label><label class="style-choice"><input type="radio" name="krathongStyleChoice" value="🏵️"><span data-style="🏵️"></span></label></div><select id="krathongStyle" hidden><option value="🪷">บัวชมพู</option><option value="🌺">บัวม่วง</option><option value="🌼">บัวทอง</option><option value="🏵️">บุปผาทอง</option></select></div>
+<div><label for="memberName">ชื่อที่ใช้ลอยกระทง</label><input id="memberName" maxlength="24" readonly placeholder="กำลังเตรียมพื้นที่ให้คุณ..."></div>
+<div><label>เลือกรูปแบบกระทง</label><div class="style-choices"><label class="style-choice"><input type="radio" name="krathongStyleChoice" value="🪷" checked><span data-style="🪷"></span></label><label class="style-choice"><input type="radio" name="krathongStyleChoice" value="🌺"><span data-style="🌺"></span></label><label class="style-choice"><input type="radio" name="krathongStyleChoice" value="🌼"><span data-style="🌼"></span></label><label class="style-choice"><input type="radio" name="krathongStyleChoice" value="🏵️"><span data-style="🏵️"></span></label><label class="style-choice"><input type="radio" name="krathongStyleChoice" value="🐒"><span data-style="🐒"></span></label><label class="style-choice"><input type="radio" name="krathongStyleChoice" value="🐵"><span data-style="🐵"></span></label></div><select id="krathongStyle" hidden><option value="🪷">บัวชมพู</option><option value="🌺">บัวม่วง</option><option value="🌼">บัวทอง</option><option value="🏵️">บุปผาทอง</option><option value="🐒">ลิงทอง</option><option value="🐵">ลิงจันทร์</option></select></div>
 <div class="full"><label for="wishText">คำอธิษฐาน / คำอวยพร</label><textarea id="wishText" maxlength="500" required placeholder="เขียนคำอธิษฐานของคุณที่นี่..."></textarea></div>
 </div>
 <button class="submit" id="launchButton" type="submit" disabled>🕯️ ลอยกระทงของฉัน</button>
@@ -248,7 +248,7 @@ footer{text-align:center;color:#b7a1c5;font:10px Cinzel,serif;letter-spacing:2px
 <div class="modal" id="wishModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal-card"><div class="big" id="modalIcon">🪷</div><h3 id="modalTitle">คำอธิษฐาน</h3><div id="modalOwner" style="color:#e7c6ee;font-size:12px"></div><p id="modalWish"></p><div class="modal-actions"><button id="deleteWishButton" class="danger" type="button" hidden>ลบกระทงนี้</button><button id="closeModal" type="button">ปิดหน้าต่าง</button></div></div></div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -268,13 +268,18 @@ const KRATHONG_PALETTES={
   "🪷":{petal:"#ff83c5",light:"#ffd4ed",deep:"#a92b75",leaf:"#174d39",gold:"#f8d77c",center:"#fff0a8"},
   "🌺":{petal:"#ad8cff",light:"#eadbff",deep:"#5938a5",leaf:"#174b42",gold:"#f6d17a",center:"#fff1b3"},
   "🌼":{petal:"#ffd66d",light:"#fff2bb",deep:"#b87825",leaf:"#22513b",gold:"#fff0a0",center:"#fff8d0"},
-  "🏵️":{petal:"#ff9b75",light:"#ffe1a6",deep:"#a84a35",leaf:"#174b3c",gold:"#ffe08a",center:"#fff3c4"}
+  "🏵️":{petal:"#ff9b75",light:"#ffe1a6",deep:"#a84a35",leaf:"#174b3c",gold:"#ffe08a",center:"#fff3c4"},
+  "🐒":{petal:"#d99a55",light:"#ffe0a0",deep:"#78401f",leaf:"#174b3c",gold:"#ffe08a",center:"#f7c98b"},
+  "🐵":{petal:"#b9a0ff",light:"#eee5ff",deep:"#514080",leaf:"#174b3c",gold:"#fff0b8",center:"#f4d7b0"}
 };
 function krathongSVG(style="🪷"){
   const p=KRATHONG_PALETTES[style]||KRATHONG_PALETTES["🪷"];
+  const monkeyFace=(style==="🐒"||style==="🐵")
+    ? '<g stroke="#75452f" stroke-width="1.5"><circle cx="44" cy="54" r="7" fill="#b97845"/><circle cx="76" cy="54" r="7" fill="#b97845"/><ellipse cx="60" cy="57" rx="16" ry="14" fill="#f1c99d"/><ellipse cx="54" cy="55" rx="2" ry="2.8" fill="#38251e" stroke="none"/><ellipse cx="66" cy="55" rx="2" ry="2.8" fill="#38251e" stroke="none"/><path d="M55 63 Q60 67 65 63" fill="none" stroke="#75452f" stroke-width="1.8" stroke-linecap="round"/></g>'
+    : "";
   const petals=Array.from({length:12},(_,i)=>{const a=i*30-90;return '<ellipse cx="60" cy="39" rx="7.5" ry="23" transform="rotate('+a+' 60 64)" fill="'+(i%2?p.petal:p.light)+'" stroke="'+p.gold+'" stroke-width="1.1"/>'}).join("");
   const outer=Array.from({length:14},(_,i)=>{const a=i*360/14;return '<path d="M60 56 Q48 38 60 20 Q72 38 60 56" transform="rotate('+a+' 60 66)'+'" fill="'+(i%2?p.petal:p.light)+'" stroke="'+p.gold+'" stroke-width="1.1"/>'}).join("");
-  return '<svg viewBox="0 0 120 112" role="img" aria-label="กระทงดอกบัวประดับทอง"><defs><radialGradient id="pond'+style.codePointAt(0)+'" cx="50%" cy="40%"><stop stop-color="#fff7dc"/><stop offset=".45" stop-color="'+p.petal+'"/><stop offset="1" stop-color="'+p.deep+'"/></radialGradient><linearGradient id="leaf'+style.codePointAt(0)+'" x2="0" y2="1"><stop stop-color="#5e9a69"/><stop offset="1" stop-color="'+p.leaf+'"/></linearGradient><filter id="glow'+style.codePointAt(0)+'"><feGaussianBlur stdDeviation="2.4"/></filter></defs><ellipse cx="60" cy="92" rx="43" ry="7" fill="#f8b9ed" opacity=".28" filter="url(#glow'+style.codePointAt(0)+')"/><path d="M14 72 Q60 98 106 72 L92 90 Q60 104 28 90Z" fill="url(#leaf'+style.codePointAt(0)+')" stroke="'+p.gold+'" stroke-width="1.5"/><path d="M19 74 Q60 91 101 74" fill="none" stroke="#b8d58a" stroke-width="2"/><path d="M27 81 Q60 97 93 81" fill="none" stroke="#d6b86a" stroke-width="1.4"/>'+outer+petals+'<ellipse cx="60" cy="58" rx="14" ry="12" fill="'+p.center+'" stroke="'+p.gold+'" stroke-width="1.4"/><path d="M60 53 L60 22" stroke="#d7a94d" stroke-width="2"/><path d="M60 25 Q52 19 60 9 Q68 19 60 25" fill="#fff5b0" class="flame"/><path d="M48 58 Q60 49 72 58" fill="none" stroke="'+p.gold+'" stroke-width="1.6"/><g fill="'+p.gold+'"><circle cx="30" cy="75" r="2"/><circle cx="40" cy="80" r="2"/><circle cx="50" cy="83" r="2"/><circle cx="70" cy="83" r="2"/><circle cx="80" cy="80" r="2"/><circle cx="90" cy="75" r="2"/></g><path d="M60 4 L63 10 L60 16 L57 10Z" fill="#fff9d0" filter="url(#glow'+style.codePointAt(0)+')"/></svg>';
+  return '<svg viewBox="0 0 120 112" role="img" aria-label="กระทงดอกบัวประดับทอง"><defs><radialGradient id="pond'+style.codePointAt(0)+'" cx="50%" cy="40%"><stop stop-color="#fff7dc"/><stop offset=".45" stop-color="'+p.petal+'"/><stop offset="1" stop-color="'+p.deep+'"/></radialGradient><linearGradient id="leaf'+style.codePointAt(0)+'" x2="0" y2="1"><stop stop-color="#5e9a69"/><stop offset="1" stop-color="'+p.leaf+'"/></linearGradient><filter id="glow'+style.codePointAt(0)+'"><feGaussianBlur stdDeviation="2.4"/></filter></defs><ellipse cx="60" cy="92" rx="43" ry="7" fill="#f8b9ed" opacity=".28" filter="url(#glow'+style.codePointAt(0)+')"/><path d="M14 72 Q60 98 106 72 L92 90 Q60 104 28 90Z" fill="url(#leaf'+style.codePointAt(0)+')" stroke="'+p.gold+'" stroke-width="1.5"/><path d="M19 74 Q60 91 101 74" fill="none" stroke="#b8d58a" stroke-width="2"/><path d="M27 81 Q60 97 93 81" fill="none" stroke="#d6b86a" stroke-width="1.4"/>'+outer+petals+'<ellipse cx="60" cy="58" rx="14" ry="12" fill="'+p.center+'" stroke="'+p.gold+'" stroke-width="1.4"/>'+monkeyFace+'<path d="M60 53 L60 22" stroke="#d7a94d" stroke-width="2"/><path d="M60 25 Q52 19 60 9 Q68 19 60 25" fill="#fff5b0" class="flame"/><path d="M48 58 Q60 49 72 58" fill="none" stroke="'+p.gold+'" stroke-width="1.6"/><g fill="'+p.gold+'"><circle cx="30" cy="75" r="2"/><circle cx="40" cy="80" r="2"/><circle cx="50" cy="83" r="2"/><circle cx="70" cy="83" r="2"/><circle cx="80" cy="80" r="2"/><circle cx="90" cy="75" r="2"/></g><path d="M60 4 L63 10 L60 16 L57 10Z" fill="#fff9d0" filter="url(#glow'+style.codePointAt(0)+')"/></svg>';
 }
 document.querySelectorAll('.style-choice span[data-style]').forEach(node=>{node.innerHTML=krathongSVG(node.dataset.style);});
 
@@ -403,19 +408,35 @@ function startKrathongListener(){
     renderRiver([]);
   });
 }
-// แสดงกระทงต้อนรับทันที ระหว่างรอ Firebase ตรวจสอบสถานะสมาชิก
+// ทุกคนเข้าร่วมได้โดยไม่ต้องสมัครสมาชิก: ผู้เยี่ยมชมจะได้ anonymous UID เบื้องหลัง
 renderRiver([]);
 onAuthStateChanged(auth,async user=>{
   if(!user){
     currentMember=null;
-    $("authStatus").textContent="ยังไม่ได้เข้าสู่ระบบ";
-    $("memberName").value="";
     $("launchButton").disabled=true;
-    $("formNotice").innerHTML='กรุณา <a style="color:#f5d995" href="./HALF_MONKEY_calendar_page_added.html?login=1">เข้าสู่ระบบที่นี่</a> แล้วกลับมาลอยกระทง';
-    renderRiver([]);
-    if(stopKrathongListener){stopKrathongListener();stopKrathongListener=null;}
+    $("formNotice").textContent="กำลังเตรียมพื้นที่ลอยกระทง...";
+    try{
+      await signInAnonymously(auth);
+    }catch(error){
+      console.error("anonymous sign-in:",error);
+      $("authStatus").textContent="เชื่อมต่อไม่สำเร็จ";
+      $("formNotice").textContent="เปิดใช้งาน Anonymous ใน Firebase Authentication ก่อน จึงจะร่วมลอยกระทงได้";
+    }
     return;
   }
+
+  if(user.isAnonymous){
+    currentMember={id:user.uid,name:"",role:"visitor",isVisitor:true};
+    $("authStatus").textContent="เปิดให้ทุกคนร่วมลอยกระทงได้";
+    $("memberName").readOnly=false;
+    $("memberName").value="";
+    $("memberName").placeholder="ใส่ชื่อเล่นของคุณ";
+    $("launchButton").disabled=false;
+    $("formNotice").textContent="ยินดีต้อนรับ! ใส่ชื่อเล่น เขียนคำอธิษฐาน แล้วปล่อยกระทงได้เลย";
+    startKrathongListener();
+    return;
+  }
+
   try{
     const token=await user.getIdTokenResult(true);
     const claims=token.claims;
@@ -423,31 +444,40 @@ onAuthStateChanged(auth,async user=>{
     currentMember={id:claims.memberId,name:claims.displayName,role:claims.role||"member"};
     localStorage.setItem("hmLoggedInUser",JSON.stringify(currentMember));
     $("authStatus").textContent="สมาชิก: "+currentMember.name;
+    $("memberName").readOnly=true;
     $("memberName").value=currentMember.name;
+    $("memberName").placeholder="ชื่อสมาชิก";
     $("launchButton").disabled=false;
-    $("formNotice").textContent="พร้อมแล้ว! เขียนคำอธิษฐานแล้วปล่อยกระทงได้เลย";
+    $("formNotice").textContent="ยินดีต้อนรับกลับมา! เขียนคำอธิษฐานแล้วปล่อยกระทงได้เลย";
     startKrathongListener();
   }catch(error){
     console.error("member session:",error);
     currentMember=null;
-    $("authStatus").textContent="บัญชีไม่ใช่สมาชิก";
+    $("authStatus").textContent="บัญชีไม่รองรับ";
     $("launchButton").disabled=true;
-    $("formNotice").textContent="กรุณาเข้าสู่ระบบด้วยบัญชีสมาชิก HALF MONKEY";
+    $("formNotice").textContent="ไม่สามารถยืนยันบัญชีนี้ได้ กรุณาเปิดหน้าเทศกาลใหม่";
     renderRiver([]);
     if(stopKrathongListener){stopKrathongListener();stopKrathongListener=null;}
   }
 });
 $("krathongForm").addEventListener("submit",async event=>{
   event.preventDefault();
-  if(!auth.currentUser||!currentMember){$("formNotice").textContent="กรุณาเข้าสู่ระบบก่อน";return}
+  if(!auth.currentUser||!currentMember){$("formNotice").textContent="กำลังเชื่อมต่อ กรุณารอสักครู่แล้วลองใหม่";return}
   const wish=$("wishText").value.trim();
+  const author=currentMember.isVisitor?$("memberName").value.trim():currentMember.name;
+  if(!author||author.length>24){
+    $("formNotice").textContent="กรุณาใส่ชื่อเล่น 1–24 ตัวอักษร";
+    $("memberName").focus();
+    return;
+  }
   if(!wish)return;
   const button=$("launchButton");
   button.disabled=true;button.textContent="กำลังปล่อยกระทง...";
   try{
+    currentMember.name=author;
     await addDoc(collection(db,"krathongs"),{
       memberId:currentMember.id,
-      author:currentMember.name,
+      author,
       style:document.querySelector('input[name="krathongStyleChoice"]:checked')?.value || $("krathongStyle").value,
       wish,
       createdAt:serverTimestamp()
